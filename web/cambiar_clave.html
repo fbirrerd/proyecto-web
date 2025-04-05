@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar Contraseña</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+     <style>
+        /* Estilos adicionales si son necesarios para esta página específica */
+        .container {
+            max-width: 600px;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 class="mb-4">Cambiar Contraseña</h3>
+        <div id="message-area">
+            </div>
+        <form id="change-password-form">
+            <div class="mb-3">
+                <label for="current_password" class="form-label">Contraseña Actual</label>
+                <input type="password" class="form-control" id="current_password" required>
+            </div>
+            <div class="mb-3">
+                <label for="new_password" class="form-label">Nueva Contraseña</label>
+                <input type="password" class="form-control" id="new_password" required minlength="6">
+                <div id="passwordHelp" class="form-text">
+                    Debe tener al menos 6 caracteres.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="confirm_new_password" class="form-label">Confirmar Nueva Contraseña</label>
+                <input type="password" class="form-control" id="confirm_new_password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+            <a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/cambiar_clave.js"></script>
+</body>
+</html>

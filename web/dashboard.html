@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escritorio</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>Mi Aplicación</h3>
+            <strong id="user-greeting">Hola, ...</strong>
+        </div>
+
+        <ul class="list-unstyled components menu-tree" id="menu-list">
+            <li class="loading-menu">
+                <a><i class="fas fa-spinner fa-spin fa-fw"></i> Cargando menú...</a>
+            </li>
+        </ul>
+
+        <ul class="list-unstyled CTAs">
+            <li>
+                <a href="cambiar_clave.html" class="article" target="main-iframe"> <i class="fas fa-key fa-fw"></i> Cambiar Clave</a>
+            </li>
+             <li>
+                <a href="#" id="logout-button" class="download"> <i class="fas fa-sign-out-alt fa-fw"></i> Cerrar Sesión</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="content">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-custom">
+            <div class="container-fluid">
+                <button type="button" id="sidebarCollapse" class="btn btn-info">
+                    <i class="fas fa-align-left"></i>
+                    </button>
+                <span class="navbar-text ms-auto" id="current-page-title">
+                    Dashboard
+                 </span>
+            </div>
+        </nav>
+
+        <iframe id="main-iframe" name="main-iframe" src="/iframes/dashboard_content.html">
+            Tu navegador no soporta iframes.
+        </iframe>
+
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
