@@ -1,5 +1,3 @@
-CREATE DATABASE ${POSTGRES_DB};
-use ${POSTGRES_DB};
 
 -- Tabla: empresa
 CREATE TABLE empresa (
@@ -182,6 +180,15 @@ INSERT INTO usuario (nombre_usuario, email, contrasena, estado)
 VALUES ('admin', 'fbirrer@gmail.com', 'cambiar', 0);
 
 
+-- Insertar un usuario
+INSERT INTO usuario (nombre_usuario, email, contrasena, estado)
+VALUES ('rbirrer', 'rbirrerd@gmail.com', 'cambiar', 0);
+
+-- Insertar un usuario
+INSERT INTO usuario (nombre_usuario, email, contrasena, estado)
+VALUES ('fbirrer', 'panchobirrerd@gmail.com', 'cambiar', 0);
+
+
 -- Nivel 1: Mi cuenta, Gestión, Informes
 -- Insertamos los elementos de nivel 1
 INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, estado)
@@ -206,3 +213,22 @@ VALUES (NULL, 'Accesos', 'url', '#', 'fas fa-lock', 3, 2, 0);
 
 INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id, estado)
 VALUES (NULL, 'Menú', 'url', '#', 'fas fa-bars', 4, 2, 0);
+
+INSERT INTO empresa (nombre) VALUES ('Bookstore');
+
+-- Insertar la empresa Soprole
+INSERT INTO empresa (nombre) VALUES ('Soprole');
+
+-- Insertar la empresa Banco de Chile
+INSERT INTO empresa (nombre) VALUES ('Banco de Chile');
+
+
+INSERT INTO usuario_empresa (usuario_id, empresa_id, fecha_inicio)
+VALUES (2, 1, CURRENT_DATE); -- O usar '2025-04-05' como en el ejemplo anterior
+
+INSERT INTO usuario_empresa (usuario_id, empresa_id, fecha_inicio)
+VALUES (3, 2, CURRENT_DATE); -- O usar '2025-04-05' como en el ejemplo anterior
+
+INSERT INTO usuario_empresa (usuario_id, empresa_id, fecha_inicio)
+VALUES (3, 3, CURRENT_DATE); -- O usar '2025-04-05' como en el ejemplo anterior
+

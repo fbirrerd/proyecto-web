@@ -44,11 +44,11 @@ function isAuthenticated() {
  * Redirige a la página de login si el usuario no está autenticado.
  */
 function redirectToLoginIfUnauthenticated() {
-    if (!isAuthenticated()) {
-        console.warn("Usuario no autenticado. Redirigiendo a login.");
-        // Asegúrate de que la ruta a index.html sea correcta desde donde llames esta función
-        window.location.href = '/index.html'; // O la ruta correcta a tu login
-    }
+    // if (!isAuthenticated()) {
+    //     console.warn("Usuario no autenticado. Redirigiendo a login.");
+    //     // Asegúrate de que la ruta a index.html sea correcta desde donde llames esta función
+    //     window.location.href = '/index.html'; // O la ruta correcta a tu login
+    // }
 }
 
 /**

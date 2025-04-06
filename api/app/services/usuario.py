@@ -1,6 +1,8 @@
+from fastapi import HTTPException
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from app.models.usuario import Usuario
-from app.schemas.usuario import UsuarioCreate, UsuarioLogin, UsuarioCambioPassword
+from app.schemas.usuario import UsuarioCreate, UsuarioLogin, UsuarioCambioPassword, UsuarioLoginRespuesta
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -21,17 +23,45 @@ def crear_usuario(db: Session, usuario: UsuarioCreate):
     return db_usuario
 
 
-def validar_login_usuario(db: Session, nombre_usuario: str, password: str) -> bool:
-    # Buscar el usuario con el nombre de usuario y la contraseña proporcionada
-    usuario = db.query(Usuario).filter(
-        and_(
-            Usuario.nombre_usuario == nombre_usuario,
-            Usuario.contrasena == password
-        )
-    ).first()  # .first() devuelve el primer registro o None si no existe
+# Inicialización del contexto de cifrado (ejemplo usando bcrypt)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    # Si el usuario existe, retornamos True, de lo contrario False
-    return usuario is not None
+def validar_login_usuario(db: Session, nombre_usuario: str, password: str) -> UsuarioLoginRespuesta:
+    """
+    Valida el login del usuario y verifica si necesita cambiar la contraseña.
+    """
+    # Buscar el usuario con el nombre de usuario proporcionado
+    usuario = db.query(Usuario).filter(Usuario.nombre_usuario == nombre_usuario).first()
+
+    # Si el usuario no existe, lanzar una excepción
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+
+    # Validar si la contraseña necesita ser cambiada
+    if usuario.contrasena == "cambiar":
+        return UsuarioLoginRespuesta(
+            respuesta=True,
+            data={'cambioClave': True}
+        )
+
+    # La contraseña enviada es igual a  la contraseña enviada
+    nueva_contrasena = get_password_hash(password)
+    if not password == usuario.contrasena:  # Verificar la contraseña encriptada
+        raise HTTPException(
+            status_code=401,
+            detail="Credenciales inválidas"
+        )
+
+
+
+    # Si el usuario existe y la contraseña es correcta, devolvemos la respuesta con los datos del usuario
+    return UsuarioLoginRespuesta(
+        respuesta=True,
+        data=usuario
+    )
 
 
 

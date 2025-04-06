@@ -11,6 +11,5 @@ class EmpresaOut(EmpresaBase):
     id: int
     fecha_creacion: datetime
     estado: int
-
     class Config:
         from_attributes = True

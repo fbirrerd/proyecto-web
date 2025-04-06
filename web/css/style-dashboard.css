@@ -1,0 +1,216 @@
+/* Importar una fuente opcional */
+@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700');
+
+/* Variables de color (tonos azules) */
+:root {
+    --primary-blue: #0d6efd; /* Azul primario de Bootstrap */
+    --secondary-blue: #6c757d; /* Gris azulado secundario */
+    --sidebar-bg: #1a2b4a; /* Azul oscuro para el sidebar */
+    --sidebar-link-color: #adb5bd; /* Color de texto/iconos en sidebar */
+    --sidebar-link-hover-bg: #2a3f6a; /* Fondo al pasar el mouse en sidebar */
+    --sidebar-link-active-color: #ffffff; /* Color de texto activo en sidebar */
+    --sidebar-link-active-bg: #0d6efd; /* Fondo activo en sidebar */
+    --navbar-bg: #e3f2fd; /* Azul muy claro para navbar */
+    --navbar-link-color: #0a58ca; /* Color enlaces navbar */
+    --content-bg: #f8f9fa; /* Fondo general del contenido */
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--content-bg);
+    /* Asegura que el body ocupe toda la altura */
+    min-height: 100vh;
+    display: flex; /* Necesario para el wrapper */
+}
+
+/* Elimina el subrayado y color por defecto de los enlaces */
+a, a:hover, a:focus {
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.wrapper {
+    width: 100%;
+    /* min-height: 100vh; */ /* Asegura que el wrapper también ocupe altura */
+}
+
+/*--------------------------------------------------------------
+# Sidebar
+--------------------------------------------------------------*/
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-link-color);
+    transition: all 0.3s;
+    /* position: relative; */ /* Asegura contexto para elementos hijos posicionados si los hubiera */
+    display: flex; /* Para organizar header, lista y footer */
+    flex-direction: column;
+    min-height: 100vh; /* Sidebar siempre ocupa toda la altura */
+}
+
+#sidebar.active {
+    margin-left: -250px;
+}
+
+/* Header del Sidebar */
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: var(--sidebar-bg); /* Puede ser ligeramente diferente si quieres */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff; /* Título más visible */
+}
+
+#sidebar .sidebar-header h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+}
+
+
+/* Estilos de los items del menú */
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-grow: 1; /* Hace que la lista de componentes crezca para empujar el footer hacia abajo */
+    overflow-y: auto; /* Scroll si el menú es muy largo */
+}
+
+#sidebar ul li a {
+    padding: 10px 20px;
+    font-size: 0.95em;
+    display: block;
+    color: var(--sidebar-link-color);
+    border-left: 3px solid transparent; /* Indicador activo */
+}
+
+#sidebar ul li a:hover {
+    color: var(--sidebar-link-active-color);
+    background: var(--sidebar-link-hover-bg);
+}
+
+/* Estilo para el enlace activo (requiere JS para añadir la clase 'active-link') */
+#sidebar ul li a.active-link {
+    color: var(--sidebar-link-active-color);
+    background: var(--sidebar-link-active-bg);
+    border-left-color: var(--primary-blue);
+}
+
+/* Estilo para los enlaces de submenús (dropdown-toggle) */
+#sidebar ul li a.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    font-family: "Font Awesome 6 Free"; /* Asegúrate que coincide con la versión de FontAwesome */
+    font-weight: 900;
+    content: '\f078'; /* Icono flecha abajo */
+    font-size: 0.8em;
+}
+
+#sidebar ul li a.dropdown-toggle[aria-expanded="true"]::after {
+     content: '\f077'; /* Icono flecha arriba */
+}
+
+/* Estilos de los submenús */
+#sidebar ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 40px !important; /* Indentación Nivel 2 */
+    background: rgba(0, 0, 0, 0.1); /* Fondo ligeramente distinto */
+}
+#sidebar ul ul ul a {
+    padding-left: 60px !important; /* Indentación Nivel 3 */
+    background: rgba(0, 0, 0, 0.15);
+}
+#sidebar ul ul ul ul a {
+    padding-left: 80px !important; /* Indentación Nivel 4 */
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/*--------------------------------------------------------------
+# Contenido Principal y Navbar
+--------------------------------------------------------------*/
+#content {
+    width: calc(100% - 250px); /* Ancho inicial */
+    min-height: 100vh;
+    transition: all 0.3s;
+    /* position: absolute; */ /* Descomentar si se usa position fixed en sidebar */
+    /* top: 0; */
+    /* right: 0; */
+}
+
+#sidebar.active + #content {
+    width: 100%; /* Ancho cuando el sidebar está oculto */
+}
+
+/* Navbar superior */
+.navbar-custom {
+    padding: 10px 15px;
+    background: var(--navbar-bg);
+    border: none;
+    border-radius: 0;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-custom .btn {
+    /* background: var(--primary-blue); */ /* Puedes usar el azul primario */
+    /* border-color: var(--primary-blue); */
+    color: #fff; /* Color del icono del botón de menú */
+}
+.navbar-custom .btn:hover, .navbar-custom .btn:focus {
+     /* background: #0b5ed7; */ /* Azul un poco más oscuro al pasar el mouse */
+     /* border-color: #0a58ca; */
+     box-shadow: none;
+}
+
+/* Iconos y links en la navbar */
+.navbar-custom .navbar-nav .nav-link {
+    color: var(--navbar-link-color);
+    font-weight: 500;
+}
+.navbar-custom .navbar-nav .nav-link:hover {
+    color: var(--primary-blue);
+}
+.navbar-custom .navbar-nav .nav-link i {
+    font-size: 1.1rem; /* Tamaño de los iconos */
+}
+
+/* Badge de notificación */
+.navbar-custom .badge {
+    position: absolute;
+    top: 5px;
+    right: -5px;
+    font-size: 0.6em;
+}
+
+/* Contenedor del Iframe */
+.iframe-container {
+    height: calc(100vh - 56px - 2rem); /* Ajusta según altura de navbar y padding */
+    /* 56px es la altura approx de la navbar, 2rem es el padding (p-3 = 1rem * 2) */
+    overflow: hidden; /* Opcional: para ocultar barras de scroll del contenedor */
+}
+
+#main-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+
+/*--------------------------------------------------------------
+# Media Queries (Responsividad)
+--------------------------------------------------------------*/
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px; /* Oculto por defecto en móviles */
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+    #content {
+        width: 100%;
+    }
+    #sidebarCollapse span { /* Ocultar texto del botón en móvil si existe */
+        display: none;
+    }
+}
