@@ -1,26 +1,32 @@
-/**
- * Funciones Comunes de JavaScript (con jQuery para utilidades de UI)
- * Asegúrate de que jQuery esté cargado ANTES que este script.
- */
+$(document).ready(function() {
 
-// --- Configuración ---
-const API_BASE_URL = 'http://localhost:8200/api/v1'; // URL base de tu API FastAPI (ajusta si es necesario)
+    function getToken() {
+        return localStorage.getItem('dataSystem');
+    }
 
-// --- Autenticación (Manejo de Token JWT) ---
-// (Estas funciones usan localStorage, no necesitan jQuery)
+    let data = localStorage.getItem('dataSystem');
+    
+    if (data) {
+        // Si 'data' es una cadena JSON, se convierte a un objeto
+        let tokenData = data; 
+        
+        // Si 'token' existe en el objeto, accedemos a él
+        let token = tokenData.token;
+        
+        alert(token);
+        console.log(token);
+    } else {
+        console.log('No token found in localStorage');
+    }
 
-/**
- * Obtiene el token JWT almacenado en localStorage.
- * @returns {string|null} El token o null si no existe.
- */
-function getToken() {
-    return localStorage.getItem('accessToken');
-}
+    // Aquí irías a rescatar la durabilidad del token si es necesario
 
-/**
- * Guarda el token JWT en localStorage.
- * @param {string} token - El token JWT a guardar.
- */
+})
+
+
+
+
+
 function setToken(token) {
     localStorage.setItem('accessToken', token);
     console.debug("Token guardado en localStorage.");
@@ -34,10 +40,6 @@ function removeToken() {
     console.debug("Token eliminado de localStorage.");
 }
 
-/**
- * Verifica si hay un token válido almacenado.
- * @returns {boolean} True si hay un token, false si no.
- */
 function isAuthenticated() {
     return !!getToken();
 }

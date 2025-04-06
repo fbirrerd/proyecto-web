@@ -24,5 +24,9 @@ class Acceso(Base):
     token = Column(String(255), nullable=False)
     fecha_creacion = Column(TIMESTAMP, server_default=func.current_timestamp())
     fecha_modificacion = Column(TIMESTAMP, onupdate=func.current_timestamp())
-    usuario = relationship('Usuario', backref='accesos')  # Relación con la tabla usuario
-    empresa = relationship('Empresa', backref='accesos')  # Relación con la tabla usuario
+    
+    # Relación con las tablas usuario y empresa
+    usuario = relationship('Usuario', backref='accesos')
+    empresa = relationship('Empresa', backref='accesos')
+
+# No es necesario `Acceso.update_forward_refs()`, ya que no estás usando Pydantic para este modelo

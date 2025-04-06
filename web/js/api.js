@@ -14,6 +14,9 @@ let API_URL_VERSION = 'v1/';
  */
 function callApi(method, endpoint, params) {
 
+    // Para mostrar el overlay
+    $('#overlay').fadeIn();
+    
     // Verificar si ya existen credenciales en localStorage
     let auth = getAuthFromLocalStorage();
     let headers = {};
@@ -43,6 +46,9 @@ function callApi(method, endpoint, params) {
             return { respuesta: false, error: errorMessage };
         }
     };
+
+    // Para ocultar el overlay
+    $('#overlay').fadeOut();
 
     // Realiza la solicitud AJAX
     let $resultado = $.ajax(config);

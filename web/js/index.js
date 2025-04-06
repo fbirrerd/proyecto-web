@@ -34,6 +34,7 @@ $(document).ready(function() {
                         }, 5000);  // 5 segundos de retraso                        
                     } else {
                         // Esperamos 5 segundos antes de redirigir a la página de cambio de contraseña
+                        updateDataSystem(response.data);
                         setTimeout(function() {
                             window.location.href = 'dashboard.html'; // Redirige a la página para cambiar la clave
                         }, 5000);  // 5 segundos de retraso
@@ -49,6 +50,28 @@ $(document).ready(function() {
                 $('#error-message').text('Hubo un error al conectar con el servidor. Intenta de nuevo.').removeClass('d-none');
             });
     });
+
+    function updateDataSystem(newToken) {
+        // Verifica si ya existe el token en localStorage
+        if (localStorage.getItem('dataSystem')) {
+            // Elimina el token existente
+            localStorage.removeItem('dataSystem');
+        }
+    
+        // Guarda el nuevo token en localStorage
+        localStorage.setItem('dataSystem', newToken);
+        alert(`Se guarda el token 'dataSystem'`);
+        alert(newToken);
+    }    
+    // function updateAccesToken(newToken) {
+    //     // Verifica si ya existe el token en localStorage
+    //     if (localStorage.getItem('accessToken')) {
+    //         // Elimina el token existente
+    //         localStorage.removeItem('accessToken');
+    //     }
+    //     // Guarda el nuevo token en localStorage
+    //     localStorage.setItem('accessToken', newToken);
+    // }    
 });
 
 console.log("login.js cargado (versión con jQuery para UI).");

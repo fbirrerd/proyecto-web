@@ -11,14 +11,29 @@ def crear_usuario_empresa(db: Session, relacion: UsuarioEmpresaCreate):
     db.refresh(db_rel)
     return db_rel
 
+def obtener_empresas_por_usuario(db: Session, usuario_id: int):
+    if usuario_id==1:
+        result2 = db.query(Empresa.id, Empresa.nombre).all()
+        return result2            
+    else:
+    # Realizamos la consulta con las condiciones que mencionaste
+        result1 = db.query(UsuarioEmpresa.usuario_id).filter(
+            and_(
+                UsuarioEmpresa.usuario_id == usuario_id,
+                Empresa.estado == 0
+            )
+        ).all()
 
-# def obtener_empresas_por_usuario(db: Session, usuario_id: int):
-#     # Realizamos la consulta con las condiciones que mencionaste
-#     result = db.query(UsuarioEmpresa, Empresa).join(Empresa, UsuarioEmpresa.empresa_id == Empresa.id).filter(
-#         and_(
-#             UsuarioEmpresa.usuario_id == usuario_id,
-#             Empresa.estado == 0,
-#         )
-#     ).all()
+        # Extraer los ids de empresas de result1
+        empresa_ids = [r.empresa_id for r in result1]
 
-#     return result
+        # Filtrar result2 usando los ids de empresa extraídos de result1
+        result2 = db.query(Empresa.id, Empresa.nombre).filter(
+            and_(
+                Empresa.id.in_(empresa_ids),  # Filtrar por los ids de empresas
+                Empresa.estado==0
+            )
+        ).all()
+        return result2        
+    
+    

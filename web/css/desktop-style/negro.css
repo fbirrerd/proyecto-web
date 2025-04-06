@@ -1,0 +1,50 @@
+
+body {
+    background-color: #000000;
+    color: #333333;
+}
+.navbar-custom {
+    background-color: #333333;
+    color: #000000;
+}
+.navbar-custom .navbar-brand {
+    color: #000000;
+}
+.navbar-custom .nav-link {
+    color: #000000;
+}
+.navbar-custom .nav-link:hover {
+    color: #fff;
+}
+#sidebar {
+    background-color: #333333;
+    color: #000000;
+}
+#sidebar .sidebar-header {
+    background-color: #333333;
+    color: #fff;
+}
+#sidebar ul li a {
+    color: #000000;
+}
+#sidebar ul li a:hover {
+    background-color: #333333;
+    color: #fff;
+}
+#sidebar ul li.active > a, a[aria-expanded="true"] {
+    background-color: #333333;
+    color: #fff;
+}
+#sidebar ul ul a {
+    background-color: #333333;
+    color: #000000;
+}
+.iframe-container {
+    background-color: #333333;
+    border-color: #333333;
+}
+.iframe-footer {
+    background-color: #333333;
+    color: #000000;
+    border-top-color: #333333;
+}

@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache"> 
+    <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-
     <title>Dashboard Principal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="css/style-dashboard.css" rel="stylesheet">
+    <link href="css/dashboard.css" rel="stylesheet">
+    <link id="theme-stylesheet" href="css/style-black.css" rel="stylesheet">
 </head>
 <body>
 
@@ -22,110 +22,273 @@
 
         <ul class="list-unstyled components mb-5">
             <li>
-                <a href="dashboard_content.html" target="main-iframe" class="menu-link"><i class="fas fa-tachometer-alt fa-fw me-2"></i> Dashboard</a>
+                <a href="dashboard_content.html" target="main-iframe" class="menu-link"><i class="fas fa-home fa-fw me-2"></i> Dashboard</a>
             </li>
             <li>
-                <a href="#submenu1" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-folder fa-fw me-2"></i> Módulo 1</a>
-                <ul class="collapse list-unstyled" id="submenu1">
+                <a href="#gestionMenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-folder fa-fw me-2"></i> Gestión</a>
+                <ul class="collapse list-unstyled" id="gestionMenu">
                     <li>
-                        <a href="page1_1.html" target="main-iframe" class="menu-link"><i class="fas fa-file-alt fa-fw me-2"></i> Página 1.1</a>
-                    </li>
-                    <li>
-                        <a href="#submenu1_2" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-folder-open fa-fw me-2"></i> Sub Módulo 1.2</a>
-                        <ul class="collapse list-unstyled" id="submenu1_2">
+                        <a href="#mantenedoresSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-database fa-fw me-2"></i> Mantenedor de Tablas</a>
+                        <ul class="collapse list-unstyled" id="mantenedoresSubmenu">
                             <li>
-                                <a href="page1_2_1.html" target="main-iframe" class="menu-link"><i class="fas fa-file-invoice fa-fw me-2"></i> Página 1.2.1</a>
+                                <a href="empresas.html" target="main-iframe" class="menu-link"><i class="fas fa-building fa-fw me-2"></i> Empresas</a>
                             </li>
                             <li>
-                                <a href="#submenu1_2_2" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-cogs fa-fw me-2"></i> Sub Módulo 1.2.2</a>
-                                <ul class="collapse list-unstyled" id="submenu1_2_2">
-                                    <li>
-                                        <a href="page1_2_2_1.html" target="main-iframe" class="menu-link"><i class="fas fa-cog fa-fw me-2"></i> Configuración A</a>
-                                    </li>
-                                     <li>
-                                        <a href="page1_2_2_2.html" target="main-iframe" class="menu-link"><i class="fas fa-wrench fa-fw me-2"></i> Configuración B</a>
-                                    </li>
-                                </ul>
+                                <a href="usuarios.html" target="main-iframe" class="menu-link"><i class="fas fa-users fa-fw me-2"></i> Usuarios</a>
+                            </li>
+                            <li>
+                                <a href="roles.html" target="main-iframe" class="menu-link"><i class="fas fa-user-tag fa-fw me-2"></i> Roles</a>
+                            </li>
+                            <li>
+                                <a href="permisos.html" target="main-iframe" class="menu-link"><i class="fas fa-lock fa-fw me-2"></i> Permisos</a>
+                            </li>
+                            <li>
+                                <a href="menus.html" target="main-iframe" class="menu-link"><i class="fas fa-list-ul fa-fw me-2"></i> Menú</a>
+                            </li>
+                            <li>
+                                <a href="otros.html" target="main-iframe" class="menu-link"><i class="fas fa-cubes fa-fw me-2"></i> Otros</a>
                             </li>
                         </ul>
                     </li>
-                     <li>
-                        <a href="page1_3.html" target="main-iframe" class="menu-link"><i class="fas fa-chart-bar fa-fw me-2"></i> Página 1.3</a>
+                    <li>
+                        <a href="opcion_gestion_2.html" target="main-iframe" class="menu-link"><i class="fas fa-cog fa-fw me-2"></i> Opción Gestión 2</a>
                     </li>
                 </ul>
             </li>
-             <li>
-                <a href="#submenu2" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-users fa-fw me-2"></i> Módulo 2</a>
-                <ul class="collapse list-unstyled" id="submenu2">
-                     <li>
-                        <a href="page2_1.html" target="main-iframe" class="menu-link"><i class="fas fa-user-plus fa-fw me-2"></i> Agregar Usuario</a>
+            <li>
+                <a href="#informesMenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-chart-bar fa-fw me-2"></i> Informes</a>
+                <ul class="collapse list-unstyled" id="informesMenu">
+                    <li>
+                        <a href="acceso_usuarios.html" target="main-iframe" class="menu-link"><i class="fas fa-user-clock fa-fw me-2"></i> Acceso de Usuarios</a>
                     </li>
                     <li>
-                        <a href="page2_2.html" target="main-iframe" class="menu-link"><i class="fas fa-list fa-fw me-2"></i> Listar Usuarios</a>
+                        <a href="links_vistos.html" target="main-iframe" class="menu-link"><i class="fas fa-eye fa-fw me-2"></i> Links Más Vistos</a>
+                    </li>
+                    <li>
+                        <a href="estadisticas.html" target="main-iframe" class="menu-link"><i class="fas fa-chart-pie fa-fw me-2"></i> Estadísticas Generales</a>
+                    </li>
+                    <li>
+                        <a href="#subinformesMenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-file-alt fa-fw me-2"></i> Sub Informes</a>
+                        <ul class="collapse list-unstyled" id="subinformesMenu">
+                            <li>
+                                <a href="subinforme_1.html" target="main-iframe" class="menu-link"><i class="fas fa-file-invoice fa-fw me-2"></i> Sub Informe 1</a>
+                            </li>
+                            <li>
+                                <a href="subinforme_2.html" target="main-iframe" class="menu-link"><i class="fas fa-file-contract fa-fw me-2"></i> Sub Informe 2</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </li>
-             <li>
-                <a href="settings.html" target="main-iframe" class="menu-link"><i class="fas fa-cog fa-fw me-2"></i> Configuración</a>
+            <li>
+                <a href="#configuracionMenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-wrench fa-fw me-2"></i> Configuración</a>
+                <ul class="collapse list-unstyled" id="configuracionMenu">
+                    <li>
+                        <a href="config_empresa.html" target="main-iframe" class="menu-link"><i class="fas fa-building fa-fw me-2"></i> Configuración por Empresa</a>
+                    </li>
+                    <li>
+                        <a href="config_colores.html" target="main-iframe" class="menu-link"><i class="fas fa-palette fa-fw me-2"></i> Colores del Tema</a>
+                    </li>
+                    <li>
+                        <a href="config_general.html" target="main-iframe" class="menu-link"><i class="fas fa-tools fa-fw me-2"></i> Configuración General</a>
+                    </li>
+                </ul>
             </li>
         </ul>
+        
+        <ul class="list-unstyled components mb-5">
+            <li>
+                <a href="dashboard_content.html" target="main-iframe" class="menu-link"><i class="fas fa-home fa-fw me-2"></i> Dashboard</a>
+            </li>
+            <li>
+                <a href="#gestionMenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-folder fa-fw me-2"></i> Gestión</a>
+                <ul class="collapse list-unstyled" id="gestionMenu">
+                    <li>
+                        <a href="#mantenedoresSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-database fa-fw me-2"></i> Mantenedor de Tablas</a>
+                        <ul class="collapse list-unstyled" id="mantenedoresSubmenu">
+                            <li>
+                                <a href="empresas.html" target="main-iframe" class="menu-link"><i class="fas fa-building fa-fw me-2"></i> Empresas</a>
+                            </li>
+                            <li>
+                                <a href="usuarios.html" target="main-iframe" class="menu-link"><i class="fas fa-users fa-fw me-2"></i> Usuarios</a>
+                            </li>
+                            <li>
+                                <a href="roles.html" target="main-iframe" class="menu-link"><i class="fas fa-user-tag fa-fw me-2"></i> Roles</a>
+                            </li>
+                            <li>
+                                <a href="permisos.html" target="main-iframe" class="menu-link"><i class="fas fa-lock fa-fw me-2"></i> Permisos</a>
+                            </li>
+                            <li>
+                                <a href="menus.html" target="main-iframe" class="menu-link"><i class="fas fa-list-ul fa-fw me-2"></i> Menú</a>
+                            </li>
+                            <li>
+                                <a href="otros.html" target="main-iframe" class="menu-link"><i class="fas fa-cubes fa-fw me-2"></i> Otros</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="opcion_gestion_2.html" target="main-iframe" class="menu-link"><i class="fas fa-cog fa-fw me-2"></i> Opción Gestión 2</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#informesMenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-chart-bar fa-fw me-2"></i> Informes</a>
+                <ul class="collapse list-unstyled" id="informesMenu">
+                    <li>
+                        <a href="acceso_usuarios.html" target="main-iframe" class="menu-link"><i class="fas fa-user-clock fa-fw me-2"></i> Acceso de Usuarios</a>
+                    </li>
+                    <li>
+                        <a href="links_vistos.html" target="main-iframe" class="menu-link"><i class="fas fa-eye fa-fw me-2"></i> Links Más Vistos</a>
+                    </li>
+                    <li>
+                        <a href="estadisticas.html" target="main-iframe" class="menu-link"><i class="fas fa-chart-pie fa-fw me-2"></i> Estadísticas Generales</a>
+                    </li>
+                    <li>
+                        <a href="#subinformesMenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-file-alt fa-fw me-2"></i> Sub Informes</a>
+                        <ul class="collapse list-unstyled" id="subinformesMenu">
+                            <li>
+                                <a href="subinforme_1.html" target="main-iframe" class="menu-link"><i class="fas fa-file-invoice fa-fw me-2"></i> Sub Informe 1</a>
+                            </li>
+                            <li>
+                                <a href="subinforme_2.html" target="main-iframe" class="menu-link"><i class="fas fa-file-contract fa-fw me-2"></i> Sub Informe 2</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#configuracionMenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-wrench fa-fw me-2"></i> Configuración</a>
+                <ul class="collapse list-unstyled" id="configuracionMenu">
+                    <li>
+                        <a href="config_empresa.html" target="main-iframe" class="menu-link"><i class="fas fa-building fa-fw me-2"></i> Configuración por Empresa</a>
+                    </li>
+                    <li>
+                        <a href="config_colores.html" target="main-iframe" class="menu-link"><i class="fas fa-palette fa-fw me-2"></i> Colores del Tema</a>
+                    </li>
+                    <li>
+                        <a href="config_general.html" target="main-iframe" class="menu-link"><i class="fas fa-tools fa-fw me-2"></i> Configuración General</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        
 
-        </nav>
+    </nav>
 
     <div id="content" class="flex-fill">
         <nav class="navbar navbar-expand-lg navbar-custom">
             <div class="container-fluid">
-
                 <button type="button" id="sidebarCollapse" class="btn btn-info me-3">
                     <i class="fas fa-align-left"></i>
-                    <span></span> </button>
-
+                    <span></span>
+                </button>
                 <a class="navbar-brand" href="#">
-                    <img src="img/logo_small.png" alt="Logo" style="height: 30px;"> </a>
-
+                    <img src="img/logo_small.png" alt="Logo" style="height: 30px;">
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="#" title="Inicio">
+                                <i class="fas fa-house-user fa-fw"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="#" title="Mensajes">
+                                <i class="fas fa-envelope fa-fw"></i>
+                                <span class="badge rounded-pill bg-success">5</span>
+                            </a>
+                        </li>
                         <li class="nav-item dropdown me-3">
                             <a class="nav-link dropdown-toggle" href="#" id="companyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                               <i class="fas fa-building fa-fw me-1"></i> Empresa Actual
+                                <i class="fas fa-building fa-fw me-1"></i> Empresa Actual
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="companyDropdown">
                                 <li><a class="dropdown-item" href="#">Empresa A</a></li>
                                 <li><a class="dropdown-item" href="#">Empresa B</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Otra Empresa</a></li>
+                                <li><a class="dropdown-item" href="#">Cambiar Empresa</a></li>
                             </ul>
                         </li>
-
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="#" title="Perfil">
+                                <i class="fas fa-user-circle fa-fw"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="#" title="Configuración">
+                                <i class="fas fa-cog fa-fw"></i>
+                            </a>
+                        </li>
                         <li class="nav-item me-3">
                             <a class="nav-link" href="#" title="Notificaciones">
                                 <i class="fas fa-bell fa-fw"></i>
-                                <span class="badge rounded-pill bg-danger">3</span> </a>
+                                <span class="badge rounded-pill bg-danger">3</span>
+                            </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" href="#" id="logout-button" title="Cerrar Sesión">
                                 <i class="fas fa-sign-out-alt fa-fw"></i>
                             </a>
+                        </li>
+                        <li class="nav-item">
+                            <div class="theme-selector p-0">
+                                <label for="theme" class="visually-hidden">Seleccionar Tema:</label>
+                                <select id="theme" class="form-select form-select-sm">
+                                    <option value="primavera">Primavera: Colores brillantes</option>
+                                    <option value="verano">Verano: Tonos calidos</option>
+                                    <option value="otono">Otono: Colores calidos</option>
+                                    <option value="invierno">Invierno: Colores frios</option>
+                                    <option value="calma">Calma y Serenidad</option>
+                                    <option value="energia">Energia y Accion</option>
+                                    <option value="profesionalismo">Profesionalismo y Confianza</option>
+                                    <option value="creatividad">Creatividad y Juego</option>
+                                    <option value="naturaleza">Naturaleza y Organico</option>
+                                    <option value="monocromatico">Monocromatico</option>
+                                    <option value="analogo">Analogo</option>
+                                    <option value="complementario">Complementario</option>
+                                    <option value="triadico">Triadico</option>
+                                    <option value="tetradico">Tetradico</option>
+                                    <option value="pastel">Colores Pastel</option>
+                                    <option value="neon">Colores Neon</option>
+                                    <option value="grises">Escalas de Grises</option>
+                                    <option value="rojos">Rojos</option>
+                                    <option value="atardecer">Atardecer</option>
+                                    <option value="tonosblancos">Tonos de Blancos</option>
+                                    <option value="azul">Azul</option>
+                                    <option value="bosque">Bosque</option>
+                                    <option value="formal">Formal</option>
+                                    <option value="muyformal">Muy Formal</option>
+                                    <option value="negro">Negro</option>
+                                    <option value="oceano">Oceano</option>
+                                    <option value="oro">Oro</option>
+                                    <option value="silver">Silver</option>
+                                    <option value="verde">Verde</option>
+                                </select>
+                            </div>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-        <div class="iframe-container p-3"> <iframe id="main-iframe" name="main-iframe" src="dashboard_content.html" frameborder="0">
+        <div class="iframe-container p-3">
+            <iframe id="main-iframe" name="main-iframe" src="dashboard_content.html" frameborder="0">
                 Tu navegador no soporta iframes.
             </iframe>
+            <div class="iframe-footer">
+                © 2025 Mi Empresa | Desarrollado por [Tu Nombre]
+            </div>
         </div>
-
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="js/js-dashboard.js"></script>
+
+<script src="js/common.js"></script>
+<script src="js/dashboard.js"></script>
 </body>
 </html>

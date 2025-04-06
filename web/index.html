@@ -15,9 +15,14 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Carga jQuery desde CDN -->
 
     <script src="js/api.js"></script>
-    <script src="js/login.js"></script>   
+    <script src="js/index.js"></script>   
 </head> 
 <body>
+    <div id="overlay" class="overlay">
+        <div  class="cargando-message">
+            <img src="img/loading.gif">
+        </div>
+    </div>    
     <div class="login-container">
         <h2 class="text-center mb-4">Iniciar Sesión</h2>
         <div id="error-message" class="alert alert-danger d-none" role="alert"></div>

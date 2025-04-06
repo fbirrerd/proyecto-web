@@ -20,6 +20,12 @@
         <h3 class="mb-4">Cambiar Contraseña</h3>
         <div id="api-error" class="alert alert-danger d-none" role="alert"></div>
         <div id="change-success" class="alert alert-success d-none" role="alert">¡Contraseña cambiada con éxito!</div>
+
+        <!-- Mensaje temporal de redirección con loading -->
+        <div id="redirecting-message" class="alert alert-info d-none" role="alert">
+            <span>Cargando</span> 
+            <img src="img/loading.gif" alt="Cargando..." style="width: 30px; vertical-align: middle;">
+        </div>
        
         <form id="change-password-form">
             <div class="mb-3">
@@ -32,7 +38,7 @@
             </div>
             <div class="mb-3">
                 <label for="new_password" class="form-label">Nueva Contraseña</label>
-                <input type="password" class="form-control" id="new_password" required minlength="6">
+                <input type="password" class="form-control" id="new_password" required minlength="10">
                 <ul id="password-errors" class="text-danger small mt-2"></ul>
             </div>
             <div class="mb-3">
@@ -56,39 +62,39 @@
                 .text(message);
             setTimeout(() => $element.addClass('d-none'), 5000);
         }
-    
+
         function validateNewPassword() {
             const password = $('#new_password').val();
             const username = $('#username').val();
             const errors = [];
-    
-            if (password.length < 6) errors.push("Debe tener al menos 6 caracteres.");
+
+            if (password.length < 10) errors.push("Debe tener al menos 10 caracteres.");
             if (!/[A-Z]/.test(password)) errors.push("Debe tener al menos una mayúscula.");
             if (!/[a-z]/.test(password)) errors.push("Debe tener al menos una minúscula.");
             if (!/[\W_]/.test(password)) errors.push("Debe tener al menos un carácter especial.");
             if (username && password.toLowerCase().includes(username.toLowerCase())) errors.push("La contraseña no debe contener el nombre de usuario.");
             if (/\d{5,}/.test(password)) errors.push("No debe contener 5 números secuenciales.");
-    
+
             const $errorsList = $('#password-errors');
             $errorsList.empty();
             errors.forEach(error => $errorsList.append(`<li>${error}</li>`));
-    
+
             return errors.length === 0;
         }
-    
+
         function validateConfirmPassword() {
             const password = $('#new_password').val();
             const confirmPassword = $('#confirm_new_password').val();
             const $confirmErrors = $('#confirm-password-errors');
             $confirmErrors.empty();
-    
+
             if (password !== confirmPassword) {
                 $confirmErrors.append(`<li>Las contraseñas no coinciden.</li>`);
                 return false;
             }
             return true;
         }
-    
+
         function changePasswordAPI() {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -97,24 +103,27 @@
                 }, 1500);
             });
         }
-    
+
         $(document).ready(function () {
             $('#new_password').on('input', validateNewPassword);
             $('#confirm_new_password').on('input', validateConfirmPassword);
-    
+
             $('#change-password-form').on('submit', function (e) {
                 e.preventDefault();
-    
+
                 const isPasswordValid = validateNewPassword();
                 const isConfirmValid = validateConfirmPassword();
-    
+
                 if (isPasswordValid && isConfirmValid) {
                     $('#api-error, #change-success').addClass('d-none');
-    
+
+                    // Mostrar el mensaje de redirección
+                    $('#redirecting-message').removeClass('d-none');
+
                     changePasswordAPI()
                         .then(() => {
                             showMessage('#change-success', '¡Contraseña cambiada con éxito!', 'success');
-                            setTimeout(() => window.location.href = 'index.html', 5000);
+                            setTimeout(() => window.location.href = 'index.html', 2000);
                         })
                         .catch(err => {
                             showMessage('#api-error', err, 'danger');
