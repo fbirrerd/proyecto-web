@@ -15,9 +15,9 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/", response_model=UsuarioOut, responses={400: {"model": ApiRespuesta}})
-def crear(usuario: UsuarioCreate, db: Session = Depends(get_db)):
-    return crear_usuario(db, usuario)
+# @router.post("/", response_model=UsuarioOut, responses={400: {"model": ApiRespuesta}})
+# def crear(usuario: UsuarioCreate, db: Session = Depends(get_db)):
+#     return crear_usuario(db, usuario)
 
 
 

@@ -165,7 +165,7 @@ CREATE TABLE parametro_sistema (
 CREATE TABLE acceso (
     id SERIAL PRIMARY KEY,
     usuario_id INT NOT NULL,
-    empresa_id INT NOT NULL,
+    empresa_id INT NULL,
     fecha_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_vencimiento TIMESTAMP NOT NULL,
     token VARCHAR(255) NOT NULL,
@@ -181,60 +181,40 @@ CREATE UNIQUE INDEX idx_token ON acceso(token);
 
 -- Insertar un usuario
 INSERT INTO usuario (nombre_usuario, email, contrasena, estado)
-VALUES ('admin', 'fbirrer@gmail.com', 'cambiar', 0);
-
-
--- Insertar un usuario
-INSERT INTO usuario (nombre_usuario, email, contrasena, estado)
-VALUES ('rbirrer', 'rbirrerd@gmail.com', 'cambiar', 0);
-
--- Insertar un usuario
-INSERT INTO usuario (nombre_usuario, email, contrasena, estado)
-VALUES ('fbirrer', 'panchobirrerd@gmail.com', 'cambiar', 0);
+VALUES 
+('admin', 'fbirrer@gmail.com', 'cambiar', 0),
+('rbirrer', 'rbirrerd@gmail.com', 'cambiar', 0),
+('fbirrer', 'panchobirrerd@gmail.com', 'cambiar', 0);
 
 
 -- Nivel 1: Mi cuenta, Gestión, Informes
 -- Insertamos los elementos de nivel 1
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, estado)
-VALUES (NULL, 'Mi Cuenta', 'url', '#', 'fas fa-user', 1, 0);
-
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, estado)
-VALUES (NULL, 'Gestión', 'url', '#', 'fas fa-cogs', 2, 0);
-
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, estado)
-VALUES (NULL, 'Informes', 'url', '#', 'fas fa-chart-line', 3, 0);
+INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, estado) 
+VALUES 
+(NULL, 'Gestión', 'url', '#', 'fas fa-cogs', 2, 0),
+(NULL, 'Informes', 'url', '#', 'fas fa-chart-line', 3, 0),
+(NULL, 'Auditoria', 'url', '#', 'fas fa-chart-line', 3, 0);
 
 -- Nivel 2: Bajo 'Gestión'
 -- Insertamos los elementos de nivel 2 bajo 'Gestión'
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id, estado)
-VALUES (NULL, 'Usuarios', 'url', '#', 'fas fa-users', 1, 2, 0);  -- 'padre_id' es 2, que corresponde a 'Gestión'
+INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id, estado) 
+VALUES 
+(NULL, 'Usuarios', 'url', '#', 'fas fa-users', 1, 2, 0),  -- 'padre_id' es 2, que corresponde a 'Gestión'
+(NULL, 'Empresas', 'url', '#', 'fas fa-building', 2, 2, 0),
+(NULL, 'Accesos', 'url', '#', 'fas fa-lock', 3, 2, 0),
+(NULL, 'Menú', 'url', '#', 'fas fa-bars', 4, 2, 0);
 
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id, estado)
-VALUES (NULL, 'Empresas', 'url', '#', 'fas fa-building', 2, 2, 0);
-
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id, estado)
-VALUES (NULL, 'Accesos', 'url', '#', 'fas fa-lock', 3, 2, 0);
-
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id, estado)
-VALUES (NULL, 'Menú', 'url', '#', 'fas fa-bars', 4, 2, 0);
-
-INSERT INTO empresa (nombre) VALUES ('Bookstore');
-
--- Insertar la empresa Soprole
-INSERT INTO empresa (nombre) VALUES ('Soprole');
-
--- Insertar la empresa Banco de Chile
-INSERT INTO empresa (nombre) VALUES ('Banco de Chile');
-
+INSERT INTO empresa (nombre) 
+VALUES 
+('Bookstore'),
+('Soprole'),
+('Banco de Chile');
 
 INSERT INTO usuario_empresa (usuario_id, empresa_id, fecha_inicio)
-VALUES (2, 1, CURRENT_DATE); -- O usar '2025-04-05' como en el ejemplo anterior
-
-INSERT INTO usuario_empresa (usuario_id, empresa_id, fecha_inicio)
-VALUES (3, 2, CURRENT_DATE); -- O usar '2025-04-05' como en el ejemplo anterior
-
-INSERT INTO usuario_empresa (usuario_id, empresa_id, fecha_inicio)
-VALUES (3, 3, CURRENT_DATE); -- O usar '2025-04-05' como en el ejemplo anterior
+VALUES 
+(2, 1, CURRENT_DATE),
+(3, 2, CURRENT_DATE),
+(3, 3, CURRENT_DATE);
 
 INSERT INTO rol (nombre, descripcion, estado) VALUES 
 ('soberano', 'Rol con todos los privilegios del sistema', 0),
@@ -245,4 +225,5 @@ INSERT INTO rol (nombre, descripcion, estado) VALUES
 INSERT INTO usuario_rol (usuario_id, rol_id) VALUES
 (2, 2),  -- Usuario 1 => Rol soberano
 (2, 4),  -- Usuario 2 => Rol administrador
-(1, 1)   -- Usuario 3 => Rol informes
+(1, 1);   -- Usuario 3 => Rol informes
+

@@ -6,3 +6,5 @@ pydantic==1.9.1
 SQLAlchemy==2.0.4
 h11==0.13.0       # Asegúrate de tener la versión más reciente
 uvicorn==0.20.0   # O la versión más reciente
+pyjwt
+dotenv

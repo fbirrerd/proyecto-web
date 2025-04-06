@@ -7,6 +7,7 @@ class UsuarioBase(BaseModel):
     email: str
     class Config:
         from_attributes = True
+        
 class UsuarioCreate(UsuarioBase):
     contrasena: str
 

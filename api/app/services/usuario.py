@@ -1,7 +1,8 @@
-from datetime import datetime, timezone
 from fastapi import HTTPException
+from datetime import datetime, timezone
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
+from app.services.complejos import get_objeto_acceso
 from app.schemas.respond import ApiRespuesta
 from app.models.usuario import Usuario
 from app.schemas.usuario import UsuarioCreate, UsuarioLogin, UsuarioCambioPassword
@@ -33,9 +34,6 @@ def crear_usuario(db: Session, usuario: UsuarioCreate):
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def validar_login_usuario(db: Session, user: UsuarioLogin) -> ApiRespuesta:
-    """
-    Valida el login del usuario y verifica si necesita cambiar la contraseña.
-    """
     # Buscar el usuario con el nombre de usuario proporcionado
     userObj = db.query(Usuario).filter(
         or_(Usuario.nombre_usuario == user.userName, 
@@ -64,10 +62,12 @@ def validar_login_usuario(db: Session, user: UsuarioLogin) -> ApiRespuesta:
                 'error': 'Usuario y clave inválidos'}
         )
 
+    # Armamos el nuevo objeto gigante
+    objAcceso = get_objeto_acceso(db, user)
     # Si el usuario existe y la contraseña es correcta, devolvemos la respuesta con los datos del usuario
     return ApiRespuesta(
         respuesta=True,
-        data=userObj
+        data=objAcceso
     )
 
 
