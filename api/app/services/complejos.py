@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
-from app.services.usuario_empresa import obtener_empresas_por_usuario
+# from app.services.usuario_empresa import obtener_empresas_por_usuario
 from app.models.empresa import Empresa
 from app.utils.security import generar_jwt
 from app.services.acceso import create_acceso
@@ -41,19 +41,19 @@ def get_objeto_acceso(db: Session, user: UsuarioLogin) -> DatosAcceso:
     #retornar los roles
     #crear el super objeto
 
-    empresaList = obtener_empresas_por_usuario(db, idUsuario)
+    # empresaList = obtener_empresas_por_usuario(db, idUsuario)
     
     duracion = AccesoDuracion(
-        inicio= datetime.now,
-        termino= datetime.now+ timedelta(minutes=minutosAcceso),
-        minutos= minutosAcceso
+        inicio = datetime.now(),
+        termino = datetime.now()+ timedelta(minutes=minutosAcceso),
+        minutos = minutosAcceso
     )
     return DatosAcceso(
         nombre_usuario = userObj.nombre_usuario,
         email = userObj.email,
         token = objAcceso.token,
         duracionAcceso=duracion, 
-        empresas=empresaList  # Lista de empresas
+        # empresas=empresaList  # Lista de empresas
     )
 
     

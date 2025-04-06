@@ -12,14 +12,13 @@ def crear_usuario_empresa(db: Session, relacion: UsuarioEmpresaCreate):
     return db_rel
 
 
-def obtener_empresas_por_usuario(db: Session, usuario_id: int):
-    # Realizamos la consulta con las condiciones que mencionaste
-    result = db.query(UsuarioEmpresa, Empresa).join(Empresa, UsuarioEmpresa.empresa_id == Empresa.id).filter(
-        and_(
-            UsuarioEmpresa.usuario_id == usuario_id,
-            Empresa.estado == 0,
-            UsuarioEmpresa.estado == 0  # Suponiendo que en la tabla UsuarioEmpresa también tienes un campo "estado"
-        )
-    ).all()
+# def obtener_empresas_por_usuario(db: Session, usuario_id: int):
+#     # Realizamos la consulta con las condiciones que mencionaste
+#     result = db.query(UsuarioEmpresa, Empresa).join(Empresa, UsuarioEmpresa.empresa_id == Empresa.id).filter(
+#         and_(
+#             UsuarioEmpresa.usuario_id == usuario_id,
+#             Empresa.estado == 0,
+#         )
+#     ).all()
 
-    return result
+#     return result

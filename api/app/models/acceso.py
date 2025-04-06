@@ -3,6 +3,16 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
 
+class Usuario(Base):
+    __tablename__ = 'usuario'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String)
+
+class Empresa(Base):
+    __tablename__ = 'empresa'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String)
+
 class Acceso(Base):
     __tablename__ = 'acceso'
 
@@ -14,7 +24,5 @@ class Acceso(Base):
     token = Column(String(255), nullable=False)
     fecha_creacion = Column(TIMESTAMP, server_default=func.current_timestamp())
     fecha_modificacion = Column(TIMESTAMP, onupdate=func.current_timestamp())
-
-    # Relaciones
-    usuario = relationship("Usuario", backref="accesos")  # Asumiendo que tienes el modelo Usuario
-    empresa = relationship("Empresa", backref="accesos")  # Asumiendo que tienes el modelo Empresa
+    usuario = relationship('Usuario', backref='accesos')  # Relación con la tabla usuario
+    empresa = relationship('Empresa', backref='accesos')  # Relación con la tabla usuario
