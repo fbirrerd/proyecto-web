@@ -1,94 +1,92 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Verificar autenticación al cargar la página
-    // Si esta página se carga FUERA del iframe del dashboard, necesita esta verificación.
-    // Si siempre se carga DENTRO del iframe, el dashboard ya hizo la verificación.
-    // Por seguridad, es bueno tenerla aquí también.
-    redirectToLoginIfUnauthenticated();
+// js/login.js
 
-    const changePasswordForm = document.getElementById('change-password-form');
-    const messageArea = document.getElementById('message-area'); // Div para mostrar mensajes
+$(document).ready(function() {
+    // Cuando el formulario se envíe
+    $('#change-password-form').submit(function(event) {
+        event.preventDefault();  // Evita el comportamiento predeterminado del formulario (recarga de página)
 
-    changePasswordForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        messageArea.innerHTML = ''; // Limpiar mensajes anteriores
+        // Obtiene los valores de los campos de usuario y contraseña
+        const username = $('#username').val();
+        const email = $('#email').val();
+        const pass1 = $('#new_password').val();
+        const pass2 = $('#confirm_new_password').val();
 
-        const currentPassword = document.getElementById('current_password').value;
-        const newPassword = document.getElementById('new_password').value;
-        const confirmNewPassword = document.getElementById('confirm_new_password').value;
-
-        // Validación simple de cliente
-        if (newPassword.length < 6) {
-            showError('La nueva contraseña debe tener al menos 6 caracteres.', 'message-area');
-            return;
-        }
-        if (newPassword !== confirmNewPassword) {
-            showError('Las nuevas contraseñas no coinciden.', 'message-area');
-            return;
-        }
-        if (currentPassword === newPassword) {
-             showError('La nueva contraseña no puede ser igual a la actual.', 'message-area');
+        // Muestra un mensaje de error si no se llenan los campos
+        if (!username || !pass1) {
+            $('#api-error').text('Por favor, ingresa tu usuario y contraseña.').removeClass('d-none');
             return;
         }
 
-        const passwordData = {
-            current_password: currentPassword,
-            new_password: newPassword,
+        // Valida si las contraseñas coinciden
+        if (pass1 !== pass2) {
+            $('#api-error').text('Las contraseñas no coinciden.').removeClass('d-none');
+            return;
+        }
+
+        // Parámetros para la API
+        const params = {
+            userName: username,
+            email: email,
+            password: pass1
         };
 
-        console.log("Intentando cambiar contraseña...");
-
-        try {
-            const response = await fetchWithAuth('/api/v1/auth/users/change-password', {
-                method: 'POST',
-                body: JSON.stringify(passwordData), // Enviar como JSON
-                // fetchWithAuth añadirá Content-Type y Authorization
+        // Llamada a la API para autenticar al usuario con Basic Auth
+        callApi('PUT', 'usuario/password', params)
+            .done(function(response) {
+                if (response.respuesta) {
+                    // Si la respuesta es exitosa y 'cambioClave' es true, muestra un mensaje adecuado
+                    if (response.data.cambioClave) {
+                        $('#error-message').text('Es necesario cambiar tu contraseña.').removeClass('d-none');
+                        // Esperamos 5 segundos antes de redirigir a la página de cambio de contraseña
+                        setTimeout(function() {
+                            window.location.href = 'cambiar_clave.html'; // Redirige a la página para cambiar la clave
+                        }, 5000);  // 5 segundos de retraso                        
+                    } else {
+                        // Esperamos 5 segundos antes de redirigir a la página de cambio de contraseña
+                        setTimeout(function() {
+                            window.location.href = 'dashboard.html'; // Redirige a la página para cambiar la clave
+                        }, 5000);  // 5 segundos de retraso
+                    }
+                } else {
+                    // Si hay un error en la respuesta
+                    console.log(response.error);
+                    $('#error-message').text(`Error en el login. Verifica tus credenciales. (${response.data.error})`).removeClass('d-none');
+                }
+            })
+            .fail(function() {
+                // En caso de que falle la solicitud
+                $('#error-message').text('Hubo un error al conectar con el servidor. Intenta de nuevo.').removeClass('d-none');
             });
-
-             // Un 204 No Content no tiene cuerpo JSON, así que no intentes parsearlo
-             if (response.status === 204) {
-                 console.log("Contraseña cambiada exitosamente.");
-                 showSuccess('Contraseña cambiada exitosamente. Serás redirigido.', 'message-area', 0); // No ocultar automáticamente
-                 // Opcional: Redirigir después de un tiempo o al dashboard
-                 setTimeout(() => {
-                     // Si está en iframe, podría intentar recargar el dashboard padre
-                     if (window.parent && window.parent !== window) {
-                         // Intenta navegar el iframe a una página de dashboard inicial
-                          window.parent.document.getElementById('main-iframe').src = '/iframes/dashboard_content.html';
-                     } else {
-                         // Si es página independiente, ir al dashboard
-                         window.location.href = '/dashboard.html';
-                     }
-                 }, 3000); // Espera 3 segundos antes de redirigir
-                 changePasswordForm.reset(); // Limpia el formulario
-            } else {
-                 // Si no es 204, intentar leer el cuerpo del error
-                 const errorData = await response.json();
-                 const errorMessage = errorData.detail || `Error ${response.status}: ${response.statusText}`;
-                 console.error('Error al cambiar contraseña:', errorMessage);
-                 showError(errorMessage, 'message-area');
-            }
-
-        } catch (error) {
-            console.error('Fallo en la petición de cambio de contraseña:', error);
-            // No mostrar error si fue 'Unauthorized' y ya se redirigió
-            if (error.message !== 'Unauthorized') {
-                 showError(`Error de conexión o del servidor: ${error.message || ''}`, 'message-area');
-            }
-        }
     });
 });
 
-// Reutilizar funciones de common.js para mostrar mensajes
-function showError(message, elementId) {
-    const msgDiv = document.getElementById(elementId);
-    if (msgDiv) {
-        msgDiv.innerHTML = `<div class="alert alert-danger" role="alert">${message}</div>`;
+
+function showMessage(message, type) {
+    // Limpiar las clases previas (en caso de que ya haya un mensaje mostrado)
+    $('#error-message').removeClass('message-error message-warning message-info');
+    
+    // Establecer el mensaje
+    $('#error-message').text(message).removeClass('d-none');
+    
+    // Agregar la clase correspondiente según el tipo
+    switch (type) {
+        case 'error':
+            $('#error-message').addClass('message-error');
+            break;
+        case 'warning':
+            $('#error-message').addClass('message-warning');
+            break;
+        case 'info':
+            $('#error-message').addClass('message-info');
+            break;
+        default:
+            $('#error-message').addClass('message-info'); // Default to 'info' if no type is provided
     }
+
+    // Ocultar el mensaje después de 5 segundos
+    setTimeout(function() {
+        $('#error-message').addClass('d-none');
+    }, 5000); // El mensaje se ocultará después de 5 segundos
 }
 
-function showSuccess(message, elementId) {
-     const msgDiv = document.getElementById(elementId);
-    if (msgDiv) {
-        msgDiv.innerHTML = `<div class="alert alert-success" role="alert">${message}</div>`;
-    }
-}
+console.log("cambiar_clave.js cargado (versión con jQuery para UI).");

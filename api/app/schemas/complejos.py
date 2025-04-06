@@ -1,11 +1,11 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from datetime import datetime
 from typing import List
 
 # Clase que representa los datos de acceso del usuario
 class DatosAcceso(BaseModel):
     nombre_usuario: str
-    email: EmailStr
+    email: str
     token: str
     duracionAcceso: 'AccesoDuracion'  # Usamos 'string' para el tipo anticipado de la clase
     empresas: List['AccesoEmpresas']  # Lista de empresas

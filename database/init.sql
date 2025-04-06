@@ -1,4 +1,8 @@
 
+
+CREATE ROLE postgres WITH LOGIN PASSWORD 'PasswordPostgres';
+ALTER ROLE postgres CREATEDB;
+
 -- Tabla: empresa
 CREATE TABLE empresa (
     id SERIAL PRIMARY KEY,
@@ -232,3 +236,13 @@ VALUES (3, 2, CURRENT_DATE); -- O usar '2025-04-05' como en el ejemplo anterior
 INSERT INTO usuario_empresa (usuario_id, empresa_id, fecha_inicio)
 VALUES (3, 3, CURRENT_DATE); -- O usar '2025-04-05' como en el ejemplo anterior
 
+INSERT INTO rol (nombre, descripcion, estado) VALUES 
+('soberano', 'Rol con todos los privilegios del sistema', 0),
+('administrador', 'Administrador del sistema con permisos avanzados', 0),
+('informes', 'Acceso solo a generación y visualización de informes', 0),
+('bookstore', 'Rol específico para gestión de libros y catálogos', 0);
+
+INSERT INTO usuario_rol (usuario_id, rol_id) VALUES
+(2, 2),  -- Usuario 1 => Rol soberano
+(2, 4),  -- Usuario 2 => Rol administrador
+(1, 1)   -- Usuario 3 => Rol informes

@@ -1,0 +1,28 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+.container {
+    max-width: 600px;
+    margin-top: 2rem;
+}
+/* Clase para mensajes de error */
+.message-error {
+    color: red;
+    border-color: red;
+}
+
+/* Clase para mensajes de advertencia */
+.message-warning {
+    color: orange;
+    border-color: orange;
+}
+
+/* Clase para mensajes de información */
+.message-info {
+    color: blue;
+    border-color: blue;
+}
