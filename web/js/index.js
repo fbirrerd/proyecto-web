@@ -34,6 +34,8 @@ $(document).ready(function() {
                         }, 5000);  // 5 segundos de retraso                        
                     } else {
                         // Esperamos 5 segundos antes de redirigir a la página de cambio de contraseña
+                        console.log("response");
+                        console.log(response.data);
                         updateDataSystem(response.data);
                         setTimeout(function() {
                             window.location.href = 'dashboard.html'; // Redirige a la página para cambiar la clave
@@ -57,11 +59,13 @@ $(document).ready(function() {
             // Elimina el token existente
             localStorage.removeItem('dataSystem');
         }
-    
+        alert("updateDataSystem");
+        console.log(newToken)    
+        console.log(JSON.stringify(newToken))    
         // Guarda el nuevo token en localStorage
-        localStorage.setItem('dataSystem', newToken);
-        alert(`Se guarda el token 'dataSystem'`);
-        alert(newToken);
+        localStorage.setItem('dataSystem', JSON.stringify(newToken));
+
+
     }    
     // function updateAccesToken(newToken) {
     //     // Verifica si ya existe el token en localStorage

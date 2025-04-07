@@ -4,7 +4,7 @@ from app.database import SessionLocal
 from app.schemas.usuario_empresa import UsuarioEmpresaCreate, UsuarioEmpresaOut
 from app.services.usuario_empresa import crear_usuario_empresa
 
-router = APIRouter(prefix="/usuario-empresa", tags=["UsuarioEmpresa"])
+router = APIRouter(tags=["UsuarioEmpresa"])
 
 def get_db():
     db = SessionLocal()

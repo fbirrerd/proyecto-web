@@ -1,29 +1,145 @@
 $(document).ready(function() {
 
-    function getToken() {
-        return localStorage.getItem('dataSystem');
+    function getDatos() {
+        console.log("getTOken");
+        let cadena = localStorage.getItem('dataSystem')
+        let data = JSON.parse(cadena);
+        return data;
     }
 
-    let data = localStorage.getItem('dataSystem');
-    
+    let data = getDatos();
+
     if (data) {
         // Si 'data' es una cadena JSON, se convierte a un objeto
         let tokenData = data; 
         
         // Si 'token' existe en el objeto, accedemos a él
         let token = tokenData.token;
-        
-        alert(token);
-        console.log(token);
+        let menus = tokenData.menu;
+        let empresas = tokenData.empresas;
+        // validarToken(token)
+        LoadMenu(menus)
+        // LoadEmpresas(empresas)
     } else {
         console.log('No token found in localStorage');
     }
 
+    function getHijosOrdenados(menuJson, padreId) {
+        return menuJson
+            .filter(item => item.padre_id === padreId)
+            .sort((a, b) => a.orden - b.orden);
+    }
+
+
+    function LoadMenu(menus){
+
+        let dataPadre = getHijosOrdenados(menus, null);
+        let menuHTML =`<ul class="list-unstyled components mb-5">`;
+        dataPadre.forEach(padre => {
+            let linkPadre = ""
+            if(padre.tipo=="padre"){
+                linkPadre = `#subMenu${padre.id}`;
+            }else{
+                linkPadre = null;
+            }                    
+
+
+            let strPadre = `<li><a href="${linkPadre==null?padre.valor:linkPadre}" target="main-iframe" class="menu-link"><i class="fas fa-${padre.icono} fa-fw me-2"></i> ${padre.nombre}</a></li>`
+            let strHijo =""; 
+            menuHTML += strPadre + '\n';
+            let dataHijo = getHijosOrdenados(menus, padre.id);
+            dataHijo.forEach(hijo => {
+                strHijo = `<li>
+                <a href="${linkPadre==null?padre.valor:linkPadre}" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-${hijo.icono} fa-fw me-2"></i>${hijo.nombre}</a>`
+                let dataNieto = getHijosOrdenados(menus, hijo.id);
+                let nietoConHijo = false;
+                if(! dataNieto.length==0){
+                    nietoConHijo = true;            
+                }
+
+
+                if(nietoConHijo){
+                    strHijo += `<ul class="collapse list-unstyled" id="mantenedoresSubmenu">`           
+                }
+                dataNieto.forEach(nieto => {
+                    strHijo += `<li><a href="empresas.html" target="main-iframe" class="menu-link"><i class="fas fa-building fa-fw me-2"></i> Empresas</a></li>`
+                });
+            
+                if(nietoConHijo){
+                    strHijo += `</ul>`           
+                }
+                strHijo =`</li>`        
+            });
+            menuHTML += strHijo;
+        });
+        menuHTML += `</ul>`;
+
+        document.getElementById("leftMenuContainer").innerHTML = menuHTML;
+    }
+
+
+
+
+    function buildMenuTree(menuItems) {
+        const map = {};
+        const roots = [];
+    
+        // Inicializa el mapa
+        menuItems.forEach(item => {
+            item.children = [];
+            map[item.id] = item;
+        });
+    
+        // Construye el árbol
+        menuItems.forEach(item => {
+            if (item.padre_id !== null) {
+                map[item.padre_id].children.push(item);
+            } else {
+                roots.push(item);
+            }
+        });
+    
+        return roots;
+    }
+    
+    function createMenuHTML(menuItems, parentId = "leftMenu") {
+        let html = `<ul class="list-unstyled components mb-5" id="${parentId}">`;
+    
+        menuItems.sort((a, b) => a.orden - b.orden).forEach(item => {
+            const hasChildren = item.children.length > 0;
+            const iconClass = `fas fa-${item.icono} fa-fw me-2`;
+    
+            if (hasChildren) {
+                const submenuId = `submenu${item.id}`;
+                html += `
+                    <li>
+                        <a href="#${submenuId}" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                            <i class="${iconClass}"></i> ${item.nombre}
+                        </a>
+                        ${createMenuHTML(item.children, submenuId)}
+                    </li>
+                `;
+            } else {
+                // Determinar si es URL o Formulario
+                const link = item.tipo === 'url' ? item.valor : `${item.valor}.html`;
+                html += `
+                    <li>
+                        <a href="${link}" target="main-iframe" class="menu-link">
+                            <i class="${iconClass}"></i> ${item.nombre}
+                        </a>
+                    </li>
+                `;
+            }
+        });
+    
+        html += `</ul>`;
+        return html;
+    }
+    
+
     // Aquí irías a rescatar la durabilidad del token si es necesario
 
 })
-
-
 
 
 

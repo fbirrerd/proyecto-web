@@ -36,7 +36,7 @@ CREATE TABLE usuario (
 
 
 -- Tabla: menu
-CREATE TYPE tipo_menu AS ENUM ('formulario', 'url', 'iframe');
+CREATE TYPE tipo_menu AS ENUM ('formulario', 'url', 'iframe','padre');
 
 CREATE TABLE menu (
     id SERIAL PRIMARY KEY,
@@ -180,7 +180,7 @@ CREATE UNIQUE INDEX idx_token ON acceso(token);
 
 
 -- Insertar un usuario
-INSERT INTO usuario (nombre_usuario, email, contrasena, estado)
+INSERT INTO usuario (nombre_usuario, email, contrasena)
 VALUES 
 ('admin', 'fbirrer@gmail.com', 'cambiar', 0),
 ('rbirrer', 'rbirrerd@gmail.com', 'cambiar', 0),
@@ -189,20 +189,31 @@ VALUES
 
 -- Nivel 1: Mi cuenta, Gestión, Informes
 -- Insertamos los elementos de nivel 1
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, estado) 
+INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden) 
 VALUES 
-(NULL, 'Gestión', 'url', '#', 'fas fa-cogs', 2, 0),
-(NULL, 'Informes', 'url', '#', 'fas fa-chart-line', 3, 0),
-(NULL, 'Auditoria', 'url', '#', 'fas fa-chart-line', 3, 0);
+(NULL, 'Dashboard', 'url', '#', 'home', 2)
+(NULL, 'Gestión', 'padre', '#', 'fas fa-cogs', 2)
+(NULL, 'Informes', 'padre', '#', 'fas fa-chart-line', 3)
+(NULL, 'Auditoria', 'url', 'auditoria.html', 'chart-line', 4)
+(NULL, 'Ayuda', 'padre', '#', 'help', 4);
 
 -- Nivel 2: Bajo 'Gestión'
--- Insertamos los elementos de nivel 2 bajo 'Gestión'
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id, estado) 
+-- Insertamos los elementosmenu de nivel 2 bajo 'Gestión'
+INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id) 
 VALUES 
-(NULL, 'Usuarios', 'url', '#', 'fas fa-users', 1, 2, 0),  -- 'padre_id' es 2, que corresponde a 'Gestión'
-(NULL, 'Empresas', 'url', '#', 'fas fa-building', 2, 2, 0),
-(NULL, 'Accesos', 'url', '#', 'fas fa-lock', 3, 2, 0),
-(NULL, 'Menú', 'url', '#', 'fas fa-bars', 4, 2, 0);
+(NULL, 'Usuarios', 'url', 'usuarios.html', 'users', 1, 2)  -- 'padre_id' es 2, que corresponde a 'Gestión'
+(NULL, 'Empresas', 'url', 'empresas.html', 'building', 2, 2)
+(NULL, 'Accesos', 'url', 'accesos.html', 'lock', 3, 2)
+(NULL, 'Menú', 'url', 'menu.html', 'bars', 4, 2);
+
+-- Nivel 2: Bajo 'Gestión'
+-- Insertamos los elementosmenu de nivel 2 bajo 'Gestión'
+INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id) 
+VALUES 
+(NULL, 'Informe de accesos', 'url', 'http://www.emol.com', 'users', 1, 3)  -- 'padre_id' es 2, que corresponde a 'Gestión'
+(NULL, 'Informe de empresas', 'url', 'http://www.lun.cl', 'building', 2,3)
+(NULL, 'Informe de usuarios', 'url', 'http://www.latercera.cl', 'building', 3,3);
+
 
 INSERT INTO empresa (nombre) 
 VALUES 
@@ -217,10 +228,10 @@ VALUES
 (3, 3, CURRENT_DATE);
 
 INSERT INTO rol (nombre, descripcion, estado) VALUES 
-('soberano', 'Rol con todos los privilegios del sistema', 0),
-('administrador', 'Administrador del sistema con permisos avanzados', 0),
-('informes', 'Acceso solo a generación y visualización de informes', 0),
-('bookstore', 'Rol específico para gestión de libros y catálogos', 0);
+('soberano', 'Rol con todos los privilegios del sistema',
+('administrador', 'Administrador del sistema con permisos avanzados',
+('informes', 'Acceso solo a generación y visualización de informes',
+('bookstore', 'Rol específico para gestión de libros y catálogos';
 
 INSERT INTO usuario_rol (usuario_id, rol_id) VALUES
 (2, 2),  -- Usuario 1 => Rol soberano

@@ -1,8 +1,5 @@
-function getToken() {
-    return localStorage.getItem('dataSystem');
-}
-$(document).ready(function() {
 
+$(document).ready(function() {
 
 
 

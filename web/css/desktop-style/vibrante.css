@@ -1,0 +1,118 @@
+/* Estilo Vibrante para Dashboard */
+body {
+    background-color: #f5f7fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #343a40;
+}
+
+/* Sidebar */
+#sidebar {
+    background: linear-gradient(to bottom, #3f51b5, #5c6bc0);
+    color: #fff;
+}
+
+#sidebar .sidebar-header {
+    background: #303f9f;
+    padding: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+#sidebar ul.components li a {
+    color: #e0e0e0;
+    padding: 12px 20px;
+    display: block;
+    transition: all 0.3s;
+}
+
+#sidebar ul.components li a:hover,
+#sidebar ul.components li.active > a {
+    background: #7986cb;
+    color: #fff;
+    border-left: 4px solid #ffeb3b;
+}
+
+/* Submenús */
+#sidebar ul ul a {
+    font-size: 0.9rem;
+    padding-left: 40px;
+    background-color: #3949ab;
+}
+
+#sidebar ul ul a:hover {
+    background-color: #5c6bc0;
+}
+
+/* Contenido principal */
+#content {
+    background: #ffffff;
+    padding: 0;
+}
+
+/* Navbar */
+.navbar-custom {
+    background: linear-gradient(to right, #7986cb, #3f51b5);
+    color: white;
+}
+
+.navbar-custom .nav-link,
+.navbar-custom .navbar-brand {
+    color: white;
+}
+
+.navbar-custom .nav-link:hover {
+    color: #ffeb3b;
+}
+
+.navbar-custom .badge {
+    font-size: 0.75rem;
+}
+
+/* iFrame container */
+.iframe-container {
+    background-color: #fafafa;
+    min-height: 80vh;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(63, 81, 181, 0.1);
+}
+
+.iframe-container iframe {
+    width: 100%;
+    height: 80vh;
+    border: none;
+    border-radius: 8px;
+}
+
+/* Footer */
+.iframe-footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 0.85rem;
+    color: #999;
+}
+
+/* Select de tema */
+.theme-selector select {
+    background-color: #5c6bc0;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+.theme-selector select:focus {
+    border-color: #ffeb3b;
+    box-shadow: 0 0 5px #ffeb3b;
+}
+
+/* Transiciones suaves */
+a,
+button,
+select {
+    transition: all 0.3s ease;
+}
+
+/* Iconos */
+i.fas, i.fa {
+    color: #ffeb3b;
+}
