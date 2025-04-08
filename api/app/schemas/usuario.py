@@ -1,23 +1,30 @@
+# app/schemas/usuario.py
 from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import datetime
 
 class UsuarioBase(BaseModel):
-    userName: str
+    username: str
+    nombres: str
+    apellidos: str
     email: str
-    class Config:
-        from_attributes = True
-        
+    direccion_id: Optional[int] = None
+    duracion: Optional[int] = 20
+
 class UsuarioCreate(UsuarioBase):
-    contrasena: str
+    password: str
+
+class UsuarioUpdate(UsuarioBase):
+    password: Optional[str] = None
 
 class UsuarioOut(UsuarioBase):
     id: int
-    fecha_creacion: datetime
+    fecha_creacion: str
+    fecha_modificacion: str
     estado: int
-    duracion: int
+
     class Config:
-        from_attributes = True
+        orm_mode = True
+
 
 
 # Modelos Pydantic (con descripciones)
