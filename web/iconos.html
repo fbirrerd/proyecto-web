@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Selector de Iconos Font Awesome</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .dropdown-menu i {
+      width: 20px;
+      margin-right: 8px;
+    }
+    .dropdown-toggle i {
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body class="p-4">
+  <div class="container">
+    <h4>Selecciona un ícono</h4>
+    
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownIconBtn" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fa fa-home"></i> fa-home
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownIconBtn" id="iconDropdownList" style="max-height: 300px; overflow-y: auto;"></ul>
+    </div>
+  </div>
+
+  <script>
+    const icons = [
+    "fa-home", "fa-user", "fa-lock", "fa-cog", "fa-envelope", "fa-search",
+    "fa-check", "fa-times", "fa-plus", "fa-minus", "fa-edit", "fa-trash",
+    "fa-download", "fa-upload", "fa-save", "fa-camera", "fa-calendar", "fa-clock",
+    "fa-bell", "fa-heart", "fa-star", "fa-user-plus", "fa-user-edit", "fa-user-circle",
+    "fa-users", "fa-user-friends", "fa-globe", "fa-map-marker-alt", "fa-compass",
+    "fa-chart-bar", "fa-chart-line", "fa-chart-pie", "fa-comments", "fa-comment",
+    "fa-envelope-open", "fa-folder", "fa-folder-open", "fa-file", "fa-file-alt",
+    "fa-file-pdf", "fa-file-image", "fa-link", "fa-external-link-alt", "fa-phone",
+    "fa-mobile-alt", "fa-laptop", "fa-desktop", "fa-tablet-alt", "fa-print",
+    "fa-shopping-cart", "fa-cart-plus", "fa-credit-card", "fa-wallet", "fa-gift",
+    "fa-barcode", "fa-qrcode", "fa-tag", "fa-tags", "fa-bolt", "fa-lightbulb",
+    "fa-info-circle", "fa-question-circle", "fa-exclamation-circle", "fa-exclamation-triangle",
+    "fa-shield-alt", "fa-lock-open", "fa-key", "fa-wifi", "fa-signal",
+    "fa-cog", "fa-wrench", "fa-tools", "fa-sync", "fa-redo", "fa-undo",
+    "fa-arrow-up", "fa-arrow-down", "fa-arrow-left", "fa-arrow-right",
+    "fa-long-arrow-alt-up", "fa-long-arrow-alt-down", "fa-long-arrow-alt-left", "fa-long-arrow-alt-right",
+    "fa-sign-in-alt", "fa-sign-out-alt", "fa-share", "fa-share-alt", "fa-upload",
+    "fa-play", "fa-pause", "fa-stop", "fa-forward", "fa-backward",
+    "fa-volume-up", "fa-volume-down", "fa-volume-mute", "fa-microphone", "fa-headphones",
+    "fa-image", "fa-images", "fa-video", "fa-music", "fa-film",
+    // Íconos adicionales para documentos y programas
+    "fa-file-word", "fa-file-excel", "fa-file-powerpoint", "fa-file-archive",
+    "fa-file-code", "fa-file-audio", "fa-file-video", "fa-file-contract",
+    "fa-book", "fa-book-open", "fa-bookmark", "fa-clipboard", "fa-clipboard-check",
+    "fa-paste", "fa-paperclip", "fa-paper-plane", "fa-project-diagram", "fa-sitemap",
+    "fa-database", "fa-code-branch", "fa-network-wired", "fa-server",
+    "fa-laptop-code", "fa-terminal", "fa-layer-group", "fa-vector-square"
+  ];
+  
+    const dropdownList = document.getElementById("iconDropdownList");
+    const dropdownBtn = document.getElementById("dropdownIconBtn");
+
+    icons.forEach(icon => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <a class="dropdown-item" href="#">
+          <i class="fa ${icon}"></i> ${icon}
+        </a>
+      `;
+      li.querySelector("a").addEventListener("click", () => {
+        dropdownBtn.innerHTML = `<i class="fa ${icon}"></i> ${icon}`;
+      });
+      dropdownList.appendChild(li);
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
