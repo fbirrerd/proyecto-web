@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
-from app.schemas.menu import MenuBase
+from app.schemas.menu import MenuSchema
 
 # Clase que representa los datos de acceso del usuario
 class DatosAcceso(BaseModel):
@@ -12,7 +12,7 @@ class DatosAcceso(BaseModel):
     empresas: Optional[List['AccesoEmpresas']]  # Lista de empresas, usamos Forward Reference
     empresaSeleccionada: int
     # roles: List['AccesoRoles']
-    menu: List['MenuBase']
+    menus: List['MenuSchema']
 
     class Config:
         orm_mode = True

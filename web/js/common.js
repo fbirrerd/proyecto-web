@@ -15,11 +15,14 @@ $(document).ready(function() {
         
         // Si 'token' existe en el objeto, accedemos a él
         let token = tokenData.token;
-        let menus = tokenData.menu;
+        let menus = tokenData.menus;
         let empresas = tokenData.empresas;
         // validarToken(token)
+
+   
+
         LoadMenu(menus)
-        // LoadEmpresas(empresas)
+        LoadEmpresas(empresas)
     } else {
         console.log('No token found in localStorage');
     }
@@ -31,50 +34,116 @@ $(document).ready(function() {
     }
 
 
-    function LoadMenu(menus){
-
-        let dataPadre = getHijosOrdenados(menus, null);
+    function LoadMenu(menuJson){
+        console.log(menuJson);
+        let datos = getHijosOrdenados(menuJson, null);
         let menuHTML =`<ul class="list-unstyled components mb-5">`;
-        dataPadre.forEach(padre => {
-            let linkPadre = ""
+        let strPadre = "";
+        datos.forEach(padre => {
+            let linkPadre = null;
+            let strHijo = ""; 
+            let strNieto = ""; 
+            let strTataraNieto = ""; 
+            let identificadorMenuHijo  = "";
+            let sTarget = `target="main-iframe"`; 
+            let sCaption = `<i class="fas fa-${padre.icono} fa-fw me-2"></i>\n ${padre.nombre}`
+            if(padre.tipo=="url"){
+                menuHTML += `<li><a href="${padre.url}" ${sTarget} class="menu-link">${sCaption}</a></li>\n`
+            }
             if(padre.tipo=="padre"){
-                linkPadre = `#subMenu${padre.id}`;
-            }else{
-                linkPadre = null;
-            }                    
-
-
-            let strPadre = `<li><a href="${linkPadre==null?padre.valor:linkPadre}" target="main-iframe" class="menu-link"><i class="fas fa-${padre.icono} fa-fw me-2"></i> ${padre.nombre}</a></li>`
-            let strHijo =""; 
-            menuHTML += strPadre + '\n';
-            let dataHijo = getHijosOrdenados(menus, padre.id);
-            dataHijo.forEach(hijo => {
-                strHijo = `<li>
-                <a href="${linkPadre==null?padre.valor:linkPadre}" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-${hijo.icono} fa-fw me-2"></i>${hijo.nombre}</a>`
-                let dataNieto = getHijosOrdenados(menus, hijo.id);
-                let nietoConHijo = false;
-                if(! dataNieto.length==0){
-                    nietoConHijo = true;            
-                }
-
-
-                if(nietoConHijo){
-                    strHijo += `<ul class="collapse list-unstyled" id="mantenedoresSubmenu">`           
-                }
-                dataNieto.forEach(nieto => {
-                    strHijo += `<li><a href="empresas.html" target="main-iframe" class="menu-link"><i class="fas fa-building fa-fw me-2"></i> Empresas</a></li>`
-                });
+                identificadorMenuHijo = `menu-${padre.id}` 
+                menuHTML += `<li>
+                                <a href="#${identificadorMenuHijo}" 
+                                    data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                                    ${sCaption}
+                                </a>\n`
+                menuHTML += armarSegundo(menuJson,padre.id, padre.tipo ,identificadorMenuHijo)
+                menuHTML += `</li>\n`
+            }
             
-                if(nietoConHijo){
-                    strHijo += `</ul>`           
-                }
-                strHijo =`</li>`        
-            });
-            menuHTML += strHijo;
         });
         menuHTML += `</ul>`;
-
+        console.log(menuHTML);
         document.getElementById("leftMenuContainer").innerHTML = menuHTML;
+    }
+
+    function armarSegundo(menuJson, padreId, TipoPadre, identificadorMenuHijo){ 
+
+        let datos = getHijosOrdenados(menuJson, padreId)
+        let str = "" 
+        if(TipoPadre=="menu"){
+
+        }
+
+        str += `<ul class="collapse list-unstyled" id="${identificadorMenuHijo}">` 
+
+            datos.forEach(padre => {
+                // str += `\n${padre.tipo}\n`
+                let sTarget = `target="main-iframe"`;  
+                let sCaption = `<i class="fas fa-${padre.icono} fa-fw me-2"></i>\n ${padre.nombre}`
+                if(padre.tipo=="url"){
+                    str += `<li><a href="${padre.url}"  ${sTarget}  class="menu-link">${sCaption}</a></li>\n`
+                }
+                if(padre.tipo=="padre"){
+                    identificadorMenuHijo = `submenu-${padre.id}` 
+                    str += `<li>
+                            <a href="#${identificadorMenuHijo}" 
+                                data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                                ${sCaption}
+                            </a>\n`
+                    str += armarSegundo(menuJson,padre.id, padre.tipo ,identificadorMenuHijo)
+                    str += `</li>\n`
+                }                   
+
+            });
+        str += `</ul>`
+        return str;
+    }
+
+    function armarTercero(menuJson, padreId, TipoPadre, identificadorMenuHijo){
+
+        let datos = getHijosOrdenados(menuJson, padreId)
+        let str = "<li>" 
+        datos.forEach(padre => {
+            let sCaption = `<i class="fas fa-${padre.icono} fa-fw me-2"></i> ${padre.nombre}</a></li>`
+            if(padre.tipo=="url"){
+                str += `<li><a href="${padre.url}" data-bs-toggle="collapse" target="main-iframe" class="menu-link">${sCaption}\n`
+            }
+            if(padre.tipo=="padre"){
+                identificadorMenuHijo = `submenu-${padre.id}` 
+                str += `<li><a href="#${identificadorMenuHijo}" target="main-iframe" class="menu-link">${sCaption}\n`
+                //menuHTML += armarSegundo(menuJson,padre.id, padre.tipo ,identificadorMenuHijo)
+                str += `</li>\n`  
+            }
+        });
+
+        return str
+    }
+
+    function LoadEmpresas(empresasJSON){
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+        // Limpiar el contenido inicial del dropdown (opcional)
+        dropdownMenu.innerHTML = '';
+        
+        empresasJSON.forEach((empresa, index) => {
+          const listItem = document.createElement('li');
+          const linkItem = document.createElement('a');
+          linkItem.classList.add('dropdown-item');
+          linkItem.href = '#'; // Puedes agregar aquí la URL específica de cada empresa si la tienes
+          linkItem.textContent = empresa.nombre;
+          listItem.appendChild(linkItem);
+          dropdownMenu.appendChild(listItem);
+        
+          // Agregar un separador después de cada empresa, excepto la última
+          if (index < empresasJSON.length - 1) {
+            const divider = document.createElement('li');
+            const hr = document.createElement('hr');
+            hr.classList.add('dropdown-divider');
+            divider.appendChild(hr);
+            dropdownMenu.appendChild(divider);
+          }
+        });       
     }
 
 

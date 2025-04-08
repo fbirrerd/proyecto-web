@@ -1,7 +1,11 @@
 
 $(document).ready(function() {
 
-
+    $('#logout-button').on('click', function (e) {
+        e.preventDefault(); // Evita el comportamiento predeterminado del enlace
+        localStorage.removeItem("dataSystem"); // Borra el localStorage
+        window.location.href = 'index.html'; // Redirige a index.html
+    });
 
     // Verificar el estado del sidebar al cargar la página
     if (localStorage.getItem('sidebarState') === 'hidden') {

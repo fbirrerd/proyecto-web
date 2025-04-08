@@ -35,16 +35,13 @@ CREATE TABLE usuario (
 );
 
 
--- Tabla: menu
-CREATE TYPE tipo_menu AS ENUM ('formulario', 'url', 'iframe','padre');
-
 CREATE TABLE menu (
     id SERIAL PRIMARY KEY,
     empresa_id INT NULL,
     nombre VARCHAR(255) NOT NULL,
-    tipo tipo_menu NOT NULL,
-    valor VARCHAR(255) NOT NULL, -- Almacena la URL, nombre del formulario, etc.
-    icono VARCHAR(255) NULL, 
+    tipo VARCHAR(10) NOT NULL,
+    "url" VARCHAR(255) NOT NULL,
+    icono VARCHAR(50) NULL, 
     orden INT,
     padre_id INT NULL, -- Para la estructura multinivel
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -182,36 +179,37 @@ CREATE UNIQUE INDEX idx_token ON acceso(token);
 -- Insertar un usuario
 INSERT INTO usuario (nombre_usuario, email, contrasena)
 VALUES 
-('admin', 'fbirrer@gmail.com', 'cambiar', 0),
-('rbirrer', 'rbirrerd@gmail.com', 'cambiar', 0),
-('fbirrer', 'panchobirrerd@gmail.com', 'cambiar', 0);
+('admin', 'fbirrer@gmail.com', 'cambiar'),
+('rbirrer', 'rbirrerd@gmail.com', 'cambiar'),
+('fbirrer', 'panchobirrerd@gmail.com', 'cambiar');
 
 
 -- Nivel 1: Mi cuenta, Gestión, Informes
 -- Insertamos los elementos de nivel 1
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden) 
+INSERT INTO menu (empresa_id, nombre, tipo, url, icono, orden) 
 VALUES 
-(NULL, 'Dashboard', 'url', '#', 'home', 2)
-(NULL, 'Gestión', 'padre', '#', 'fas fa-cogs', 2)
-(NULL, 'Informes', 'padre', '#', 'fas fa-chart-line', 3)
-(NULL, 'Auditoria', 'url', 'auditoria.html', 'chart-line', 4)
+(NULL, 'Dashboard', 'url', '#', 'home', 2),
+(NULL, 'Gestión', 'padre', '#', 'fas fa-cogs', 2),
+(NULL, 'Informes', 'padre', '#', 'fas fa-chart-line', 3),
+(NULL, 'Auditoria', 'padre', '#', 'chart-line', 4),
+(NULL, 'Farmacia', 'padre', '#', 'chart-line', 4),
 (NULL, 'Ayuda', 'padre', '#', 'help', 4);
 
 -- Nivel 2: Bajo 'Gestión'
 -- Insertamos los elementosmenu de nivel 2 bajo 'Gestión'
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id) 
+INSERT INTO menu (empresa_id, nombre, tipo, url, icono, orden, padre_id) 
 VALUES 
-(NULL, 'Usuarios', 'url', 'usuarios.html', 'users', 1, 2)  -- 'padre_id' es 2, que corresponde a 'Gestión'
-(NULL, 'Empresas', 'url', 'empresas.html', 'building', 2, 2)
-(NULL, 'Accesos', 'url', 'accesos.html', 'lock', 3, 2)
+(NULL, 'Usuarios', 'url', 'usuarios.html', 'users', 1, 2) , -- 'padre_id' es 2, que corresponde a 'Gestión'
+(NULL, 'Empresas', 'url', 'empresas.html', 'building', 2, 2),
+(NULL, 'Accesos', 'url', 'accesos.html', 'lock', 3, 2),
 (NULL, 'Menú', 'url', 'menu.html', 'bars', 4, 2);
 
 -- Nivel 2: Bajo 'Gestión'
 -- Insertamos los elementosmenu de nivel 2 bajo 'Gestión'
-INSERT INTO menu (empresa_id, nombre, tipo, valor, icono, orden, padre_id) 
+INSERT INTO menu (empresa_id, nombre, tipo, url, icono, orden, padre_id) 
 VALUES 
-(NULL, 'Informe de accesos', 'url', 'http://www.emol.com', 'users', 1, 3)  -- 'padre_id' es 2, que corresponde a 'Gestión'
-(NULL, 'Informe de empresas', 'url', 'http://www.lun.cl', 'building', 2,3)
+(NULL, 'Informe de accesos', 'url', 'http://www.emol.com', 'users', 1, 3) , -- 'padre_id' es 2, que corresponde a 'Gestión'
+(NULL, 'Informe de empresas', 'url', 'http://www.lun.cl', 'building', 2,3),
 (NULL, 'Informe de usuarios', 'url', 'http://www.latercera.cl', 'building', 3,3);
 
 
@@ -219,7 +217,8 @@ INSERT INTO empresa (nombre)
 VALUES 
 ('Bookstore'),
 ('Soprole'),
-('Banco de Chile');
+('Banco de Chile'),
+('Farmacia de la calle');
 
 INSERT INTO usuario_empresa (usuario_id, empresa_id, fecha_inicio)
 VALUES 
@@ -227,11 +226,12 @@ VALUES
 (3, 2, CURRENT_DATE),
 (3, 3, CURRENT_DATE);
 
-INSERT INTO rol (nombre, descripcion, estado) VALUES 
-('soberano', 'Rol con todos los privilegios del sistema',
-('administrador', 'Administrador del sistema con permisos avanzados',
-('informes', 'Acceso solo a generación y visualización de informes',
-('bookstore', 'Rol específico para gestión de libros y catálogos';
+INSERT INTO rol (nombre, descripcion) VALUES 
+('soberano', 'Rol con todos los privilegios del sistema'),
+('administrador', 'Administrador del sistema con permisos avanzados'),
+('informes', 'Acceso solo a generación y visualización de informes'),
+('bookstore', 'Rol específico para usuarios de la empresa de Bookstore'),
+('farmacia', 'Rol específico para usuarios de farmacia');
 
 INSERT INTO usuario_rol (usuario_id, rol_id) VALUES
 (2, 2),  -- Usuario 1 => Rol soberano
