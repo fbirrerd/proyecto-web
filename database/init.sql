@@ -3,121 +3,193 @@
 CREATE ROLE postgres WITH LOGIN PASSWORD 'PasswordPostgres';
 ALTER ROLE postgres CREATEDB;
 
--- Tabla: empresa
-CREATE TABLE empresa (
+
+
+-- -----------------------------------------------
+-- 1. Crear Tablas GIS
+-- -----------------------------------------------
+
+-- Tabla de regiones
+-- Activar extensión
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+-- Crear tabla
+CREATE TABLE regiones (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL UNIQUE,
+    codigo VARCHAR(5) NOT NULL UNIQUE,
+    nombre VARCHAR(100) NOT NULL,
+    geom GEOMETRY(MULTIPOLYGON, 4326),
+    area_km2 DOUBLE PRECISION,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado SMALLINT NOT NULL DEFAULT 0 -- 0: Habilitado, 1: Deshabilitado
+    estado BOOLEAN DEFAULT TRUE
 );
 
--- Tabla: rol
-CREATE TABLE rol (
+-- Tabla de provincias
+CREATE TABLE provincias (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL UNIQUE,
-    descripcion TEXT,
+    codigo VARCHAR(5) NOT NULL UNIQUE,
+    nombre VARCHAR(100) NOT NULL,
+    region_id INTEGER REFERENCES regiones(id),
+    geom GEOMETRY(MULTIPOLYGON, 4326),
+    area_km2 DOUBLE PRECISION,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado SMALLINT NOT NULL DEFAULT 0 -- 0: Habilitado, 1: Deshabilitado
+    estado BOOLEAN DEFAULT TRUE
 );
 
--- Tabla: usuario
-CREATE TABLE usuario (
+-- Tabla de comunas
+CREATE TABLE comunas (
     id SERIAL PRIMARY KEY,
-    nombre_usuario VARCHAR(255) NOT NULL UNIQUE,
+    codigo VARCHAR(10) NOT NULL UNIQUE,
+    nombre VARCHAR(100) NOT NULL,
+    provincia_id INTEGER REFERENCES provincias(id),
+    region_id INTEGER REFERENCES regiones(id),
+    geom GEOMETRY(MULTIPOLYGON, 4326),
+    area_km2 DOUBLE PRECISION,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE direcciones (
+    id SERIAL PRIMARY KEY,
+    calle VARCHAR(150) NOT NULL,
+    numero VARCHAR(20),
+    complemento VARCHAR(100), -- depto, block, oficina, etc.
+    comuna_id INTEGER REFERENCES comunas(id),
+    provincia_id INTEGER REFERENCES provincias(id),
+    region_id INTEGER REFERENCES regiones(id),
+    codigo_postal VARCHAR(10),
+    latitud DOUBLE PRECISION,
+    longitud DOUBLE PRECISION,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado BOOLEAN DEFAULT TRUE
+);
+
+-- -----------------------------------------------
+-- 1. Crear Tabla de Empresas
+-- -----------------------------------------------
+CREATE TABLE empresas (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    tipo_empresa VARCHAR(50) NOT NULL,
+    direccion_id INTEGER REFERENCES direcciones(id), -- Nullable por defecto
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado BOOLEAN DEFAULT TRUE
+);
+
+-- -----------------------------------------------
+-- 2. Crear Tabla de Usuarios
+-- -----------------------------------------------CREATE TABLE usuarios (
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    contrasena VARCHAR(255) NOT NULL, -- Considera usar hashing para contraseñas
+    "password" VARCHAR(255) NOT NULL, -- Recomendado: almacenar hash
+    direccion_id INTEGER REFERENCES direcciones(id), -- Nullable por defecto
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     estado SMALLINT NOT NULL DEFAULT 0, -- 0: Habilitado, 1: Deshabilitado
-    duracion INT DEFAULT 20 -- Duración con valor por defecto de 20
+    duracion INT DEFAULT 20 -- Minutos de sesión u otro uso
 );
 
-
-CREATE TABLE menu (
+-- -----------------------------------------------
+-- 3. Crear Tabla de Roles
+-- -----------------------------------------------
+CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
-    empresa_id INT NULL,
-    nombre VARCHAR(255) NOT NULL,
-    tipo VARCHAR(10) NOT NULL,
-    "url" VARCHAR(255) NOT NULL,
-    icono VARCHAR(50) NULL, 
-    orden INT,
-    padre_id INT NULL, -- Para la estructura multinivel
+    nombre VARCHAR(50) NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado SMALLINT NOT NULL DEFAULT 0, -- 0: Habilitado, 1: Deshabilitado
-    FOREIGN KEY (empresa_id) REFERENCES empresa(id),
-    FOREIGN KEY (padre_id) REFERENCES menu(id) ON DELETE SET NULL
+    estado BOOLEAN DEFAULT TRUE
 );
 
--- Tabla de relación: usuario_empresa
-CREATE TABLE usuario_empresa (
-    usuario_id INT NOT NULL,
-    empresa_id INT NOT NULL,
-    fecha_inicio DATE NOT NULL,
-    fecha_fin DATE,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (usuario_id, empresa_id),
-    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-    FOREIGN KEY (empresa_id) REFERENCES empresa(id)
-);
-
--- Tabla de relación: usuario_rol
-CREATE TABLE usuario_rol (
-    usuario_id INT NOT NULL,
-    rol_id INT NOT NULL,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (usuario_id, rol_id),
-    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-    FOREIGN KEY (rol_id) REFERENCES rol(id)
-);
-
--- Tabla: modulo
-CREATE TABLE modulo (
+-- -----------------------------------------------
+-- 4. Crear Tabla Relacionada entre Usuarios, Empresas y Roles
+-- -----------------------------------------------
+CREATE TABLE usuario_empresa_rol (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL UNIQUE,
-    descripcion TEXT,
+    id_usuario INT REFERENCES usuarios(id),
+    id_empresa INT REFERENCES empresas(id),
+    id_rol INT REFERENCES roles(id),
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado SMALLINT NOT NULL DEFAULT 0
+    estado BOOLEAN DEFAULT TRUE,
+    UNIQUE (id_usuario, id_empresa, id_rol)
 );
 
--- Tabla de relación: rol_modulo
-CREATE TABLE rol_modulo (
-    rol_id INT NOT NULL,
-    modulo_id INT NOT NULL,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (rol_id, modulo_id),
-    FOREIGN KEY (rol_id) REFERENCES rol(id),
-    FOREIGN KEY (modulo_id) REFERENCES modulo(id)
-);
-
--- Tabla: permiso
-CREATE TABLE permiso (
+-- -----------------------------------------------
+-- 5. Crear Tabla de Menús Generales
+-- -----------------------------------------------
+CREATE TABLE menus_generales (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL UNIQUE,
-    descripcion TEXT,
+    nombre VARCHAR(100) NOT NULL,
+    icono VARCHAR(50),
+    ruta VARCHAR(255),
+    id_padre INT REFERENCES menus_generales(id) ON DELETE SET NULL,
+    es_publico BOOLEAN DEFAULT FALSE,  -- Indica si el menú es público
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado SMALLINT NOT NULL DEFAULT 0
+    estado BOOLEAN DEFAULT TRUE
 );
 
--- Tabla de relación: rol_permiso_menu
-CREATE TABLE rol_permiso_menu (
-    rol_id INT NOT NULL,
-    permiso_id INT NOT NULL,
-    menu_id INT NOT NULL,
+-- -----------------------------------------------
+-- 6. Crear Tabla de Relación entre Menús Generales y Roles
+-- -----------------------------------------------
+CREATE TABLE menu_general_rol (
+    id_menu INT REFERENCES menus_generales(id),
+    id_rol INT REFERENCES roles(id),
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (rol_id, permiso_id, menu_id),
-    FOREIGN KEY (rol_id) REFERENCES rol(id),
-    FOREIGN KEY (permiso_id) REFERENCES permiso(id),
-    FOREIGN KEY (menu_id) REFERENCES menu(id)
+    estado BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (id_menu, id_rol)
 );
+
+-- -----------------------------------------------
+-- 7. Crear Tabla de Menús Específicos
+-- -----------------------------------------------
+CREATE TABLE menus_especificos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    icono VARCHAR(50),
+    ruta VARCHAR(255),
+    id_padre INT REFERENCES menus_especificos(id) ON DELETE SET NULL,
+    es_publico BOOLEAN DEFAULT FALSE,  -- Indica si el menú específico es público
+    tipo_ventana VARCHAR(50),  -- 'popup', 'iframe', 'pagina'
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado BOOLEAN DEFAULT TRUE
+);
+
+-- -----------------------------------------------
+-- 8. Crear Tabla de Relación entre Menús Específicos y Tipos de Empresa
+-- -----------------------------------------------
+CREATE TABLE menu_especifico_tipo_empresa (
+    id_menu INT REFERENCES menus_especificos(id),
+    tipo_empresa VARCHAR(50),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (id_menu, tipo_empresa)
+);
+
+-- -----------------------------------------------
+-- 9. Crear Tabla de Menús Públicos
+-- -----------------------------------------------
+CREATE TABLE menus_publicos (
+    id SERIAL PRIMARY KEY,
+    id_menu INT REFERENCES menus_generales(id),  -- Relacionado con un menú general
+    url_publica VARCHAR(255) NOT NULL,           -- URL pública que se puede acceder sin autenticación
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado BOOLEAN DEFAULT TRUE
+);
+
 
 -- Tabla: configuracion_empresa
 CREATE TABLE configuracion_empresa (
@@ -128,7 +200,7 @@ CREATE TABLE configuracion_empresa (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (empresa_id, clave),
-    FOREIGN KEY (empresa_id) REFERENCES empresa(id)
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id)
 );
 
 -- Tabla: auditoria
@@ -143,8 +215,8 @@ CREATE TABLE auditoria (
     datos_antes TEXT NULL,
     datos_despues TEXT NULL,
     direccion_ip VARCHAR(45) NULL,
-    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-    FOREIGN KEY (empresa_id) REFERENCES empresa(id)
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id)
 );
 
 -- Tabla: parametro_sistema
@@ -168,8 +240,8 @@ CREATE TABLE acceso (
     token VARCHAR(255) NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-    FOREIGN KEY (empresa_id) REFERENCES empresa(id)
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id)
 );
 
 -- Asegurar que el token sea único, si es necesario
@@ -177,57 +249,81 @@ CREATE UNIQUE INDEX idx_token ON acceso(token);
 
 
 -- Insertar un usuario
-INSERT INTO usuario (nombre_usuario, email, contrasena)
-VALUES 
-('admin', 'fbirrer@gmail.com', 'cambiar'),
-('rbirrer', 'rbirrerd@gmail.com', 'cambiar'),
-('fbirrer', 'panchobirrerd@gmail.com', 'cambiar');
-
-
-INSERT INTO public.menu
-(id, empresa_id, nombre, tipo, url, icono, orden, padre_id)
+INSERT INTO usuarios (username, nombres, apellidos, email, "password")
 VALUES
-('Dashboard', 'url', 'dashboard_content.html', 'home', 1, NULL),
-('Gestión', 'padre', '#', 'folder', 2, NULL),
-('Informes', 'padre', '#', 'chart-line', 3, NULL),
-('Farmacia', 'padre', '#', 'chart-line', 4, NULL),
-('Links de Interés', 'padre', '#', 'link', 5, NULL)
-('Ayuda', 'padre', '#', 'help', 6, NULL),
-('Tablas', 'padre', '#', 'fas fa-chart-line', 1, 2),
-('Usuarios', 'url', 'usuarios.html', 'users', 1, 7),
-('Empresas', 'url', 'empresas.html', 'building', 2, 7),
-('Menú', 'url', 'menu.html', 'bars', 3, 7),
-('Accesos', 'url', 'accesos.html', 'lock', 1, 8),
-('Consulta de remedios', 'padre', '#', 'chart-line', 1, 4),
-('Consulta de precios', 'padre', '#', 'chart-line', 2, 4),
-('Vademecum', 'padre', '#', 'chart-line', 3, 4),
-('Emol', 'url', 'http://www.emol.com', 'users', 1, 5),
-('Lun', 'url', 'http://www.lun.cl', 'building', 2, 5),
-('La Tercera', 'url', 'http://www.latercera.cl', 'building', 3, 5);
+('admin', 'Francisco', 'Birrer Donoso', 'fbirrer@gmail.com', 'cambiar'),
+('mfernandez', 'María', 'Fernández Soto', 'mfernandez@example.com', 'cambiar'),
+('clagos', 'Carlos', 'Lagos Torres', 'clagos@example.com', 'cambiar'),
+('anamunoz', 'Ana', 'Muñoz Díaz', 'anamunoz@example.com', 'cambiar'),
+('pedrosilva', 'Pedro', 'Silva Reyes', 'pedrosilva@example.com', 'cambiar');
+
+-- Insertar Empresas
+INSERT INTO empresas (nombre, tipo_empresa, estado) VALUES
+('Farmacia ABC', 'Farmacia', TRUE),
+('Librería XYZ', 'Librería', TRUE),
+('Negocios Internacionales', 'Negocios', TRUE),
+('Inventarios Global', 'Inventario', TRUE);
+
+-- Insertar Roles
+INSERT INTO roles (nombre, estado) VALUES
+('Administrador', TRUE),
+('Usuario', TRUE),
+('Auditor', TRUE),
+('Informe', TRUE);
+
+-- INSERT INTO menu
+-- (id, empresa_id, nombre, tipo, url, icono, orden, padre_id)
+-- VALUES
+-- ('Dashboard', 'url', 'dashboard_content.html', 'home', 1, NULL),
+-- ('Gestión', 'padre', '#', 'folder', 2, NULL),
+-- ('Informes', 'padre', '#', 'chart-line', 3, NULL),
+-- ('Farmacia', 'padre', '#', 'chart-line', 4, NULL),
+-- ('Links de Interés', 'padre', '#', 'link', 5, NULL)
+-- ('Ayuda', 'padre', '#', 'help', 6, NULL),
+-- ('Tablas', 'padre', '#', 'fas fa-chart-line', 1, 2),
+-- ('Usuarios', 'url', 'usuarios.html', 'users', 1, 7),
+-- ('Empresas', 'url', 'empresas.html', 'building', 2, 7),
+-- ('Menú', 'url', 'menu.html', 'bars', 3, 7),
+-- ('Accesos', 'url', 'accesos.html', 'lock', 1, 8),
+-- ('Consulta de remedios', 'padre', '#', 'chart-line', 1, 4),
+-- ('Consulta de precios', 'padre', '#', 'chart-line', 2, 4),
+-- ('Vademecum', 'padre', '#', 'chart-line', 3, 4),
+-- ('Emol', 'url', 'http://www.emol.com', 'users', 1, 5),
+-- ('Lun', 'url', 'http://www.lun.cl', 'building', 2, 5),
+-- ('La Tercera', 'url', 'http://www.latercera.cl', 'building', 3, 5);
 
 
-INSERT INTO empresa (nombre) 
-VALUES 
-('Bookstore'),
-('Soprole'),
-('Banco de Chile'),
-('Farmacia de la calle');
 
-INSERT INTO usuario_empresa (usuario_id, empresa_id, fecha_inicio)
-VALUES 
-(2, 1, CURRENT_DATE),
-(3, 2, CURRENT_DATE),
-(3, 3, CURRENT_DATE);
 
-INSERT INTO rol (nombre, descripcion) VALUES 
-('soberano', 'Rol con todos los privilegios del sistema'),
-('administrador', 'Administrador del sistema con permisos avanzados'),
-('informes', 'Acceso solo a generación y visualización de informes'),
-('bookstore', 'Rol específico para usuarios de la empresa de Bookstore'),
-('farmacia', 'Rol específico para usuarios de farmacia');
+INSERT INTO usuario_empresa_rol (id_usuario, id_empresa, id_rol, estado) VALUES
+(1, 1, 1, TRUE),  -- Juan Pérez es Administrador de la Farmacia ABC
+(2, 2, 2, TRUE),  -- Ana Gómez es Usuario en la Librería XYZ
+(3, 3, 3, TRUE);  -- Carlos Díaz es Auditor en Negocios Internacionales
 
-INSERT INTO usuario_rol (usuario_id, rol_id) VALUES
-(2, 2),  -- Usuario 1 => Rol soberano
-(2, 4),  -- Usuario 2 => Rol administrador
-(1, 1);   -- Usuario 3 => Rol informes
+-- Insertar Menús Generales
+INSERT INTO menus_generales (nombre, icono, ruta, es_publico, estado) VALUES
+('Dashboard', 'icon-dashboard', '/dashboard', FALSE, TRUE),
+('Informes', 'icon-reports', '/informes', FALSE, TRUE),
+('Ayuda', 'icon-help', '/ayuda', TRUE, TRUE);  -- Menú Público
 
+-- Insertar Menú General-Rol
+INSERT INTO menu_general_rol (id_menu, id_rol, estado) VALUES
+(1, 1, TRUE),  -- Dashboard solo visible para Administrador
+(2, 3, TRUE),  -- Informes solo visible para Auditor
+(3, 1, TRUE);  -- Ayuda visible para todos los roles (público)
+
+-- Insertar Menús Específicos
+INSERT INTO menus_especificos (nombre, icono, ruta, es_publico, tipo_ventana, estado) VALUES
+('Inventario Farmacia', 'icon-inventory', '/inventario/farmacia', FALSE, 'iframe', TRUE),
+('Inventario Librería', 'icon-inventory', '/inventario/libreria', FALSE, 'popup', TRUE),
+('Formulario Pedido', 'icon-order', '/pedido/formulario', TRUE, 'pagina', TRUE);  -- Menú Público
+
+-- Insertar Menú Específico-Tipo Empresa
+INSERT INTO menu_especifico_tipo_empresa (id_menu, tipo_empresa, estado) VALUES
+(1, 'Farmacia', TRUE),  -- Inventario Farmacia solo visible para empresas del tipo Farmacia
+(2, 'Librería', TRUE),  -- Inventario Librería solo visible para empresas del tipo Librería
+(3, 'Negocios', TRUE);  -- Formulario Pedido visible para todas las empresas
+
+-- Insertar Menús Públicos
+INSERT INTO menus_publicos (id_menu, url_publica, estado) VALUES
+(3, '/pedido/formulario', TRUE);  -- URL pública de "Formulario Pedido"
