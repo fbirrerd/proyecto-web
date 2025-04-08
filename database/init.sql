@@ -184,33 +184,26 @@ VALUES
 ('fbirrer', 'panchobirrerd@gmail.com', 'cambiar');
 
 
--- Nivel 1: Mi cuenta, Gestión, Informes
--- Insertamos los elementos de nivel 1
-INSERT INTO menu (empresa_id, nombre, tipo, url, icono, orden) 
-VALUES 
-(NULL, 'Dashboard', 'url', '#', 'home', 2),
-(NULL, 'Gestión', 'padre', '#', 'fas fa-cogs', 2),
-(NULL, 'Informes', 'padre', '#', 'fas fa-chart-line', 3),
-(NULL, 'Auditoria', 'padre', '#', 'chart-line', 4),
-(NULL, 'Farmacia', 'padre', '#', 'chart-line', 4),
-(NULL, 'Ayuda', 'padre', '#', 'help', 4);
-
--- Nivel 2: Bajo 'Gestión'
--- Insertamos los elementosmenu de nivel 2 bajo 'Gestión'
-INSERT INTO menu (empresa_id, nombre, tipo, url, icono, orden, padre_id) 
-VALUES 
-(NULL, 'Usuarios', 'url', 'usuarios.html', 'users', 1, 2) , -- 'padre_id' es 2, que corresponde a 'Gestión'
-(NULL, 'Empresas', 'url', 'empresas.html', 'building', 2, 2),
-(NULL, 'Accesos', 'url', 'accesos.html', 'lock', 3, 2),
-(NULL, 'Menú', 'url', 'menu.html', 'bars', 4, 2);
-
--- Nivel 2: Bajo 'Gestión'
--- Insertamos los elementosmenu de nivel 2 bajo 'Gestión'
-INSERT INTO menu (empresa_id, nombre, tipo, url, icono, orden, padre_id) 
-VALUES 
-(NULL, 'Informe de accesos', 'url', 'http://www.emol.com', 'users', 1, 3) , -- 'padre_id' es 2, que corresponde a 'Gestión'
-(NULL, 'Informe de empresas', 'url', 'http://www.lun.cl', 'building', 2,3),
-(NULL, 'Informe de usuarios', 'url', 'http://www.latercera.cl', 'building', 3,3);
+INSERT INTO public.menu
+(id, empresa_id, nombre, tipo, url, icono, orden, padre_id)
+VALUES
+('Dashboard', 'url', 'dashboard_content.html', 'home', 1, NULL),
+('Gestión', 'padre', '#', 'folder', 2, NULL),
+('Informes', 'padre', '#', 'chart-line', 3, NULL),
+('Farmacia', 'padre', '#', 'chart-line', 4, NULL),
+('Links de Interés', 'padre', '#', 'link', 5, NULL)
+('Ayuda', 'padre', '#', 'help', 6, NULL),
+('Tablas', 'padre', '#', 'fas fa-chart-line', 1, 2),
+('Usuarios', 'url', 'usuarios.html', 'users', 1, 7),
+('Empresas', 'url', 'empresas.html', 'building', 2, 7),
+('Menú', 'url', 'menu.html', 'bars', 3, 7),
+('Accesos', 'url', 'accesos.html', 'lock', 1, 8),
+('Consulta de remedios', 'padre', '#', 'chart-line', 1, 4),
+('Consulta de precios', 'padre', '#', 'chart-line', 2, 4),
+('Vademecum', 'padre', '#', 'chart-line', 3, 4),
+('Emol', 'url', 'http://www.emol.com', 'users', 1, 5),
+('Lun', 'url', 'http://www.lun.cl', 'building', 2, 5),
+('La Tercera', 'url', 'http://www.latercera.cl', 'building', 3, 5);
 
 
 INSERT INTO empresa (nombre) 
