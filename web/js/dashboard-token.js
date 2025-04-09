@@ -55,52 +55,48 @@ function cargarNombreEmpresa(empresaNombre){
 
 function IniciarMenu(tokenData){
     LoadMenu(tokenData.menusGenerales, "leftMenuGeneralContainer")
-    LoadMenu(tokenData.menusEspecificos, "leftMenuEspecificoContainer")
+    // LoadMenu(tokenData.menusEspecificos, "leftMenuEspecificoContainer")
 }
 function LoadMenu(menuJson, idContainer) {
+    console.log("loadMenu")    
     let datos = getHijosOrdenados(menuJson, null);
+
+    console.log("datos Filtrados y Ordenados", datos);
+
     let menuHTML = `<ul class="list-unstyled components mb-5">`;
     let strPadre = "";
-    datos.forEach(padre => {
-        console.log("padre", padre);
-        let linkPadre = null;
-        let strHijo = "";
-        let strNieto = "";
-        let strTataraNieto = "";
+    datos.forEach(nodo => {
         let identificadorMenuHijo = "";
-        let sTarget = `target="main-iframe"`;
-        let sCaption = `<i class="fas fa-${padre.icono} fa-fw me-2"></i>\n ${padre.nombre}`
-        if (padre.tipo == "link") {
-            menuHTML += `<li><a href="${padre.ruta}" ${sTarget} class="menu-link">${sCaption}</a></li>\n`
+        let sTarget = ``;
+        let link = `href="${nodo.ruta}" target="main-iframe" class="menu-link"`
+        let sCaption = `<i class="${nodo.icono}"></i>\n ${nodo.nombre}`
+        if (nodo.tipo == "link") {
+            menuHTML += `<li><a ${link}>${sCaption}</a></li>\n`
         } else {
-            identificadorMenuHijo = `menu-${padre.id}`
+            identificadorMenuHijo = `menu_${nodo.id}`
             menuHTML += `<li>
-                        <a href="#${identificadorMenuHijo}" 
-                            lidata-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <a href="#${identificadorMenuHijo}" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             ${sCaption}
                         </a>\n`
-            menuHTML += armarSegundo(menuJson, padre.id, padre.tipo, identificadorMenuHijo)
+            menuHTML += armarSegundo(menuJson, nodo.id, nodo.tipo, identificadorMenuHijo)
             menuHTML += `</li>\n`
         }
 
     });
     menuHTML += `</ul>`;
-    console.log(menuHTML);
+    console.log("html----",menuHTML);
     document.getElementById(idContainer).innerHTML = menuHTML;
 }
 
 function armarSegundo(menuJson, padreId, TipoPadre, identificadorMenuHijo) {
 
+    console.log("armarSegundo")
     let datos = getHijosOrdenados(menuJson, padreId)
     let str = ""
-    if (TipoPadre == "menu") {
-
-    }
 
     str += `<ul class="collapse list-unstyled" id="${identificadorMenuHijo}">`
 
     datos.forEach(padre => {
-        console.log("padre", padre);
         let sTarget = `target="main-iframe"`;
         let sCaption = `<i class="fas fa-${padre.icono} fa-fw me-2"></i>\n ${padre.nombre}`
         if (padre.tipo == "link") {
@@ -112,8 +108,9 @@ function armarSegundo(menuJson, padreId, TipoPadre, identificadorMenuHijo) {
                         data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                         ${sCaption}
                     </a>\n`
-            str += armarSegundo(menuJson, padre.id, padre.tipo, identificadorMenuHijo)
+            str += armarTercero(menuJson, padre.id, padre.tipo, identificadorMenuHijo)
             str += `</li>\n`
+            console.log(str);
         }
 
     });
@@ -122,12 +119,13 @@ function armarSegundo(menuJson, padreId, TipoPadre, identificadorMenuHijo) {
 }
 
 function armarTercero(menuJson, padreId, TipoPadre, identificadorMenuHijo) {
-
+    console.log("armarTercero")
     let datos = getHijosOrdenados(menuJson, padreId)
     let str = "<li>"
     datos.forEach(padre => {
+        console.log("padre", padre);
         let sCaption = `<i class="fas fa-${padre.icono} fa-fw me-2"></i> ${padre.nombre}</a></li>`
-        if (padre.tipo == "url") {
+        if (padre.tipo == "link") {
             str += `<li><a href="${padre.ruta}" data-bs-toggle="collapse" target="main-iframe" class="menu-link">${sCaption}\n`
         }
         if (padre.tipo == "padre") {

@@ -106,7 +106,6 @@ class MenuGeneral(Base):
     nombre = Column(String(100), nullable=False)
     icono = Column(String(50))
     ruta = Column(String(255))
-    
     id_padre = Column(Integer, ForeignKey("menus_generales.id", ondelete="SET NULL"), nullable=True)
     es_publico = Column(Boolean, default=False)
     fecha_creacion = Column(TIMESTAMP, server_default=func.now())
@@ -117,7 +116,6 @@ class MenuGeneral(Base):
 
     # Relación recursiva para manejar submenús
     padre = relationship("MenuGeneral", remote_side=[id], backref="submenus")
-
     def __repr__(self):
         return f"<MenuGeneral(id={self.id}, nombre='{self.nombre}')>"
 

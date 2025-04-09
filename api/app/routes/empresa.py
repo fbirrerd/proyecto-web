@@ -15,4 +15,4 @@ def get_db():
 
 @router.post("/", response_model=EmpresaOut)
 def crear(empresa: EmpresaCreate, db: Session = Depends(get_db)):
-    return crear_empresa(db, empresa)
+    return crear_empresa(db, empresa) 

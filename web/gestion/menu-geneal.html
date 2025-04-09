@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menús Generales</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body class="container py-4">
+    <h2>Menús Generales</h2>
+    <table class="table table-bordered" id="menuTable">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Icono</th>
+                <th>Ruta</th>
+                <th>Tipo</th>
+                <th>Orden</th>
+                <th>Estado</th>
+                <th>Editar</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+
+    <!-- Modal de edición -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form class="modal-content" id="editForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Menú</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id">
+                    <div class="mb-2">
+                        <label>Nombre:</label>
+                        <input type="text" class="form-control" name="nombre">
+                    </div>
+                    <div class="mb-2">
+                        <label>Ruta:</label>
+                        <input type="text" class="form-control" name="ruta">
+                    </div>
+                    <div class="mb-2">
+                        <label>Tipo:</label>
+                        <input type="text" class="form-control" name="tipo">
+                    </div>
+                    <div class="mb-2">
+                        <label>Orden:</label>
+                        <input type="number" class="form-control" name="orden">
+                    </div>
+                    <div class="mb-2">
+                        <label>Estado:</label>
+                        <select name="estado" class="form-select">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/scripts.js"></script>
+</body>
+</html>

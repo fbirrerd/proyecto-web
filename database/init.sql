@@ -309,36 +309,47 @@ INSERT INTO usuario_empresa_rol (id_usuario, id_empresa, id_rol, estado) VALUES
 (2, 2, 2, TRUE),  -- Ana Gómez es Usuario en la Librería XYZ
 (3, 3, 3, TRUE);  -- Carlos Díaz es Auditor en Negocios Internacionales
 
-INSERT INTO public.menus_generales
-(nombre, icono, ruta, id_padre, es_publico, tipo, orden, estado)
-VALUES
-('Dashboard', 'dashboard', '/dashboard', NULL, false, 'link', 1, true),
-('Gestión', 'gestion', NULL, NULL, false, 'padre', 2, true),
-('Informes', 'informes', NULL, NULL, false, 'padre', 3, true),
-('Estadística', 'estadistica', NULL, NULL, false, 'link', 4, true),
-('Configuración', 'configuracion', NULL, NULL, false, 'link', 5, true),
-('Tablas', 'tabla', NULL, 2, false, 'link', 1, true),
-('Informes Gestión', 'informe', NULL, 2, false, 'link', 1, true),
-('Gráfico 1', 'grafico1', '/estadistica/grafico1', 4, false, 'link', 1, true),
-('Gráfico 2', 'grafico2', '/estadistica/grafico2', 4, false, 'link', 1, true),
-('Gráfico 3', 'grafico3', '/estadistica/grafico3', 4, false, 'link', 1, true),
-('Empresa', 'empresa', '/configuracion/empresa', 5, false, 'link', 1, true),
-('Ayuda', 'ayuda', '/configuracion/ayuda', 5, true, 'link', 1, true),
-('Resumen General', 'resumen', '/informes/resumen', 3, false, 'link', 1, true),
-('Reporte Financiero', 'financiero', '/informes/financiero', 3, false, 'link', 1, true),
-('Usuarios', 'user', '/gestion/usuarios', 6, false, 'link', 1, true),
-('Roles', 'roles', '/gestion/roles', 6, false, 'link', 1, true),
-('Empresas', 'empresas', '/gestion/empresas', 6, false, 'link', 1, true),
-('Menús', 'menus', '/gestion/menus', 6, false, 'link', 1, true),
-('Informe de Ingreso', 'informe_ingreso', '/gestion/informes/ingreso', 7, false, 'link', 1, true),
-('Guía de Usuario', 'guia', '/configuracion/ayuda/guia', 12, true, 'link', 1, true);
 
 
--- Insertar Menú General-Rol
-INSERT INTO menu_general_rol (id_menu, id_rol, estado) VALUES
-(1, 1, TRUE),  -- Dashboard solo visible para Administrador
-(2, 3, TRUE),  -- Informes solo visible para Auditor
-(3, 1, TRUE);  -- Ayuda visible para todos los roles (público)
+INSERT INTO menus_generales (nombre, icono, ruta, id_padre, es_publico, tipo, orden, estado)
+VALUES ('Dashboard', 'fas fa-home fa-fw me-2', '/dashboard', NULL, false, 'link', 1, true),
+       ('Gestión', 'fas fa-folder fa-fw me-2', NULL, NULL, false, 'padre', 2, true),
+       ('Informes', 'fas fa-chart-bar fa-fw me-2', NULL, NULL, false, 'padre', 3, true),
+       ('Estadistica', 'estadistica', NULL, NULL, false, 'padre', 4, true),
+       ('Configuración', 'fas fa-wrench fa-fw me-2', NULL, NULL, false, 'padre', 5, true),
+       ('Tablas', 'tabla', NULL, 2, false, 'link', 1, true),
+       ('Informes Gestión', 'informe', NULL, 2, false, 'link', 1, true),
+       ('Gráfico 1', 'grafico1', '/estadistica/grafico1', 4, false, 'link', 1, true),
+       ('Gráfico 2', 'grafico2', '/estadistica/grafico2', 4, false, 'link', 1, true),
+       ('Gráfico 3', 'grafico3', '/estadistica/grafico3', 4, false, 'link', 1, true),
+       ('Empresa', 'empresa', '/configuracion/empresa', 5, false, 'link', 1, true),
+       ('Ayuda', 'ayuda', '/configuracion/ayuda', 5, true, 'link', 1, true),
+       ('Resumen General', 'resumen', '/informes/resumen', 3, false, 'link', 1, true),
+       ('Reporte Financiero', 'financiero', '/informes/financiero', 3, false, 'link', 1, true),
+       ('Usuarios', 'user', '/gestion/usuarios', 2, false, 'link', 1, true),
+       ('Roles', 'roles', '/gestion/roles', 2, false, 'link', 1, true),
+       ('Empresas', 'empresas', '/gestion/empresas', 2, false, 'link', 1, true),
+       ('Menús', 'menus', 'gestion/menu.html', 2, false, 'link', 1, true),
+       ('Informe de Ingreso', 'informe_ingreso', '/gestion/informes/ingreso', 7, false, 'link', 1, true),
+       ('Guía de Usuario', 'guia', '/configuracion/ayuda/guia', 12, true, 'link', 1, true);
+
+INSERT INTO public.menu_general_rol (id_menu, id_rol, estado) VALUES (1, 1, true),
+(2, 1, true),
+(3, 1, true),
+(6, 1, true),
+(14, 1, true),
+(15, 1, true),
+(16, 1, true),
+(17, 1, true),
+(18, 1, true),
+(2, 2, true),
+(3, 2, true),
+(2, 3, true),
+(3, 3, true),
+(4, 1, true),
+(5, 1, true);
+
+
 
 -- Insertar Menús Específicos
 INSERT INTO menus_especificos (nombre, icono, ruta, es_publico, tipo_ventana, estado, orden) VALUES
