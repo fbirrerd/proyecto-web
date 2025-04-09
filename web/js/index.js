@@ -1,8 +1,10 @@
-// js/login.js
-
 $(document).ready(function() {
-    // Cuando el formulario se envíe
-    
+    $('#togglePassword').on('click', function () {
+        const passwordField = $('#password');
+        const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+        passwordField.attr('type', type);
+        $(this).toggleClass('fa-eye fa-eye-slash');
+    });
     $('#btnCambiarClave').click(function(event) {
         window.location.href = 'cambiar_clave.html'; // Redirige a la página para cambiar la clave
     });    
@@ -22,12 +24,12 @@ $(document).ready(function() {
 
         // Parámetros para la API
         const params = {
-            userName: username,
+            username: username,
             password: password
         };
 
         // Llamada a la API para autenticar al usuario con Basic Auth
-        callApi('POST', 'usuario/login', params)
+        callApi('POST', 'auth/', params)
             .done(function(response) {
                 if (response.respuesta) {
                     // Si la respuesta es exitosa y 'cambioClave' es true, muestra un mensaje adecuado

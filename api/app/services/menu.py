@@ -1,32 +1,41 @@
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
-from app.models.menu import Menu
-from app.schemas.menu import MenuSchema
+from app.schemas.menugeneral import MenuGeneralAcceso
+from app.models.models import MenuGeneral, MenuGeneralRol, Rol, UsuarioEmpresaRol
 
-def obtener_menus_por_usuario(db: Session, usuario_id: int):
 
-    menu_items = db.query(Menu).filter(Menu.estado == 0).all()  # ejemplo
-    menus = [MenuSchema.from_orm(item) for item in menu_items]        
+def getDatosMenuGenerales(db: Session, UsuarioId: int, EmpresaId: int):
+    userEmpRolList = db.query(UsuarioEmpresaRol).filter(
+        and_(UsuarioEmpresaRol.id_usuario == UsuarioId, 
+             UsuarioEmpresaRol.id_empresa == EmpresaId,
+             UsuarioEmpresaRol.estado == True)
+    ).all()
+    if not userEmpRolList:
+        raise Exception("Registro UsuarioRolEmpresa no encontrada ")
 
-    return menus            
+    roles_ids = [item.id_rol for item in userEmpRolList]
     
+    MenuGeneralRolList = db.query(MenuGeneralRol).filter(
+        and_(MenuGeneralRol.id_rol.in_(roles_ids),
+             MenuGeneralRol.estado == True)
+    ).all()
+
+    menus_ids = [item.id_menu for item in MenuGeneralRolList]
     
-    # else:
-    # Realizamos la consulta con las condiciones que mencionaste
-        # result1 = db.query(UsuarioEmpresa.usuario_id).filter(
-        #     and_(
-        #         UsuarioEmpresa.usuario_id == usuario_id,
-        #         Empresa.estado == 0
-        #     )
-        # ).all()
+    MenuGeneralList = db.query(MenuGeneral).filter(
+        and_(MenuGeneral.id.in_(menus_ids),
+             MenuGeneral.estado == True)).all()
 
-        # # Extraer los ids de empresas de result1
-        # empresa_ids = [r.empresa_id for r in result1]
 
-        # # Filtrar result2 usando los ids de empresa extraídos de result1
-        # result2 = db.query(Empresa.id, Empresa.nombre).filter(
-        #     and_(
-        #         Empresa.id.in_(empresa_ids),  # Filtrar por los ids de empresas
-        #         Empresa.estado==0
-        #     )
-        # ).all()
-        # return result2        
+    if not MenuGeneralList:
+        raise Exception("Registro UsuarioRolEmpresa no encontrada ")
+    
+    # Si hay empresas, las convertimos a Pydantic
+    menu_pydantic_list = [MenuGeneralAcceso.from_orm(menugeneral) for menugeneral in MenuGeneralList]
+
+    # Si necesitas devolver solo una empresa (por ejemplo, la primera), puedes hacer esto:
+    if menu_pydantic_list:
+        return menu_pydantic_list  # O devolver la lista completa si es necesario
+    else:
+        return None
+  

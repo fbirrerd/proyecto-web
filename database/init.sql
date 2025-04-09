@@ -1,24 +1,22 @@
 
 
+
+CREATE USER superuser WITH PASSWORD 'claveapp';
+ALTER USER superuser WITH SUPERUSER;
 CREATE ROLE postgres WITH LOGIN PASSWORD 'PasswordPostgres';
 ALTER ROLE postgres CREATEDB;
 
 
-
 -- -----------------------------------------------
--- 1. Crear Tablas GIS
+-- 1. Crear Tablas GIS sin PostGIS
 -- -----------------------------------------------
 
 -- Tabla de regiones
--- Activar extensión
-CREATE EXTENSION IF NOT EXISTS postgis;
-
--- Crear tabla
 CREATE TABLE regiones (
     id SERIAL PRIMARY KEY,
     codigo VARCHAR(5) NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
-    geom GEOMETRY(MULTIPOLYGON, 4326),
+    geom_wkt TEXT,  -- Ejemplo: 'MULTIPOLYGON(((...)))'
     area_km2 DOUBLE PRECISION,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -31,7 +29,7 @@ CREATE TABLE provincias (
     codigo VARCHAR(5) NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
     region_id INTEGER REFERENCES regiones(id),
-    geom GEOMETRY(MULTIPOLYGON, 4326),
+    geom_wkt TEXT,  -- Ejemplo: 'MULTIPOLYGON(((...)))'
     area_km2 DOUBLE PRECISION,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -45,13 +43,14 @@ CREATE TABLE comunas (
     nombre VARCHAR(100) NOT NULL,
     provincia_id INTEGER REFERENCES provincias(id),
     region_id INTEGER REFERENCES regiones(id),
-    geom GEOMETRY(MULTIPOLYGON, 4326),
+    geom_wkt TEXT,  -- Ejemplo: 'MULTIPOLYGON(((...)))'
     area_km2 DOUBLE PRECISION,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     estado BOOLEAN DEFAULT TRUE
 );
 
+-- Tabla de direcciones
 CREATE TABLE direcciones (
     id SERIAL PRIMARY KEY,
     calle VARCHAR(150) NOT NULL,
@@ -67,6 +66,7 @@ CREATE TABLE direcciones (
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     estado BOOLEAN DEFAULT TRUE
 );
+
 
 -- -----------------------------------------------
 -- 1. Crear Tabla de Empresas
@@ -135,6 +135,8 @@ CREATE TABLE menus_generales (
     es_publico BOOLEAN DEFAULT FALSE,  -- Indica si el menú es público
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tipo VARCHAR(20)  NULL,
+    orden int,
     estado BOOLEAN DEFAULT TRUE
 );
 
@@ -163,6 +165,8 @@ CREATE TABLE menus_especificos (
     tipo_ventana VARCHAR(50),  -- 'popup', 'iframe', 'pagina'
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tipo VARCHAR(20)  NULL,
+    orden int,
     estado BOOLEAN DEFAULT TRUE
 );
 
@@ -269,7 +273,8 @@ INSERT INTO roles (nombre, estado) VALUES
 ('Administrador', TRUE),
 ('Usuario', TRUE),
 ('Auditor', TRUE),
-('Informe', TRUE);
+('Informe', TRUE),
+('Farmaceutico', TRUE);
 
 -- INSERT INTO menu
 -- (id, empresa_id, nombre, tipo, url, icono, orden, padre_id)
@@ -297,14 +302,37 @@ INSERT INTO roles (nombre, estado) VALUES
 
 INSERT INTO usuario_empresa_rol (id_usuario, id_empresa, id_rol, estado) VALUES
 (1, 1, 1, TRUE),  -- Juan Pérez es Administrador de la Farmacia ABC
+(1, 2, 1, TRUE),  -- Juan Pérez es Administrador de la Farmacia ABC
+(1, 3, 2, TRUE),  -- Juan Pérez es Administrador de la Farmacia ABC
+(1, 3, 3, TRUE),  -- Juan Pérez es Administrador de la Farmacia ABC
+(1, 3, 4, TRUE),  -- Juan Pérez es Administrador de la Farmacia ABC
 (2, 2, 2, TRUE),  -- Ana Gómez es Usuario en la Librería XYZ
 (3, 3, 3, TRUE);  -- Carlos Díaz es Auditor en Negocios Internacionales
 
--- Insertar Menús Generales
-INSERT INTO menus_generales (nombre, icono, ruta, es_publico, estado) VALUES
-('Dashboard', 'icon-dashboard', '/dashboard', FALSE, TRUE),
-('Informes', 'icon-reports', '/informes', FALSE, TRUE),
-('Ayuda', 'icon-help', '/ayuda', TRUE, TRUE);  -- Menú Público
+INSERT INTO public.menus_generales
+(nombre, icono, ruta, id_padre, es_publico, tipo, orden, estado)
+VALUES
+('Dashboard', 'dashboard', '/dashboard', NULL, false, 'link', 1, true),
+('Gestión', 'gestion', NULL, NULL, false, 'padre', 2, true),
+('Informes', 'informes', NULL, NULL, false, 'padre', 3, true),
+('Estadística', 'estadistica', NULL, NULL, false, 'link', 4, true),
+('Configuración', 'configuracion', NULL, NULL, false, 'link', 5, true),
+('Tablas', 'tabla', NULL, 2, false, 'link', 1, true),
+('Informes Gestión', 'informe', NULL, 2, false, 'link', 1, true),
+('Gráfico 1', 'grafico1', '/estadistica/grafico1', 4, false, 'link', 1, true),
+('Gráfico 2', 'grafico2', '/estadistica/grafico2', 4, false, 'link', 1, true),
+('Gráfico 3', 'grafico3', '/estadistica/grafico3', 4, false, 'link', 1, true),
+('Empresa', 'empresa', '/configuracion/empresa', 5, false, 'link', 1, true),
+('Ayuda', 'ayuda', '/configuracion/ayuda', 5, true, 'link', 1, true),
+('Resumen General', 'resumen', '/informes/resumen', 3, false, 'link', 1, true),
+('Reporte Financiero', 'financiero', '/informes/financiero', 3, false, 'link', 1, true),
+('Usuarios', 'user', '/gestion/usuarios', 6, false, 'link', 1, true),
+('Roles', 'roles', '/gestion/roles', 6, false, 'link', 1, true),
+('Empresas', 'empresas', '/gestion/empresas', 6, false, 'link', 1, true),
+('Menús', 'menus', '/gestion/menus', 6, false, 'link', 1, true),
+('Informe de Ingreso', 'informe_ingreso', '/gestion/informes/ingreso', 7, false, 'link', 1, true),
+('Guía de Usuario', 'guia', '/configuracion/ayuda/guia', 12, true, 'link', 1, true);
+
 
 -- Insertar Menú General-Rol
 INSERT INTO menu_general_rol (id_menu, id_rol, estado) VALUES
@@ -313,10 +341,10 @@ INSERT INTO menu_general_rol (id_menu, id_rol, estado) VALUES
 (3, 1, TRUE);  -- Ayuda visible para todos los roles (público)
 
 -- Insertar Menús Específicos
-INSERT INTO menus_especificos (nombre, icono, ruta, es_publico, tipo_ventana, estado) VALUES
-('Inventario Farmacia', 'icon-inventory', '/inventario/farmacia', FALSE, 'iframe', TRUE),
-('Inventario Librería', 'icon-inventory', '/inventario/libreria', FALSE, 'popup', TRUE),
-('Formulario Pedido', 'icon-order', '/pedido/formulario', TRUE, 'pagina', TRUE);  -- Menú Público
+INSERT INTO menus_especificos (nombre, icono, ruta, es_publico, tipo_ventana, estado, orden) VALUES
+('Inventario Farmacia', 'icon-inventory', '/inventario/farmacia', FALSE, 'iframe', TRUE, 1),
+('Inventario Librería', 'icon-inventory', '/inventario/libreria', FALSE, 'popup', TRUE, 2),
+('Formulario Pedido', 'icon-order', '/pedido/formulario', TRUE, 'pagina', TRUE, 3);  -- Menú Público
 
 -- Insertar Menú Específico-Tipo Empresa
 INSERT INTO menu_especifico_tipo_empresa (id_menu, tipo_empresa, estado) VALUES

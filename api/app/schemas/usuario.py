@@ -10,6 +10,9 @@ class UsuarioBase(BaseModel):
     direccion_id: Optional[int] = None
     duracion: Optional[int] = 20
 
+    class Config:
+        orm_mode = True    
+
 class UsuarioCreate(UsuarioBase):
     password: str
 
@@ -25,15 +28,13 @@ class UsuarioOut(UsuarioBase):
     class Config:
         orm_mode = True
 
+class UsuarioAcceso(UsuarioBase):
+    id: int
+    username: str
+    nombres: str
+    apellidos: str
+    email: str
+    direccion_id: Optional[int] = None
+    class Config:
+        orm_mode = True      
 
-
-# Modelos Pydantic (con descripciones)
-class UsuarioLogin(BaseModel):
-    userName: str = Field(None, description="Nombre de usuario para el login.", example="admin")
-    password: str = Field(None, description="Contraseña del usuario.", example="supersecret")
-
-
-class UsuarioCambioPassword(BaseModel):
-    userName: str = Field(None, description="Nombre de usuario para el login.", example="admin")
-    email: str = Field(None, description="Correo asociado al login.", example="admin@admin.com")
-    password: str = Field(None, description="Nueva password que se desea ingresar.", example="nuevaPassword")

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menús Generales</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body class="p-4 bg-light">
+
+<div class="container bg-white p-4 rounded shadow">
+  <h3 class="mb-4">Formulario Menú General</h3>
+
+  <form id="menuForm">
+    <input type="hidden" id="menuId">
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="nombre" required>
+      </div>
+      <div class="col-md-6">
+        <label for="icono" class="form-label">Ícono</label>
+        <input type="text" class="form-control" id="icono">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="ruta" class="form-label">Ruta</label>
+      <input type="text" class="form-control" id="ruta">
+    </div>
+
+    <div class="mb-3">
+      <label for="id_padre" class="form-label">Menú Padre</label>
+      <select class="form-select" id="id_padre">
+        <option value="">-- Sin padre --</option>
+      </select>
+    </div>
+
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" id="es_publico">
+      <label class="form-check-label" for="es_publico">Es público</label>
+    </div>
+
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" id="estado" checked>
+      <label class="form-check-label" for="estado">Activo</label>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      <button type="reset" class="btn btn-secondary" id="limpiarBtn">Limpiar</button>
+    </div>
+  </form>
+
+  <hr class="my-4">
+
+  <h5>Lista de Menús</h5>
+  <table class="table table-bordered mt-3" id="tablaMenus">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Ruta</th>
+        <th>Padre</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Contenido dinámico -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+  let menus = [];
+
+  function renderizarTabla() {
+    let $tbody = $("#tablaMenus tbody");
+    $tbody.empty();
+
+    // Limpiar y reconstruir select de padre
+    $("#id_padre").html('<option value="">-- Sin padre --</option>');
+    menus.forEach((menu, idx) => {
+      $("#id_padre").append(`<option value="${idx}">${menu.nombre}</option>`);
+    });
+
+    menus.forEach((menu, idx) => {
+      let padre = menu.id_padre !== null ? menus[menu.id_padre]?.nombre || 'Desconocido' : '';
+      let tr = `
+        <tr>
+          <td>${idx}</td>
+          <td>${menu.nombre}</td>
+          <td>${menu.ruta || ''}</td>
+          <td>${padre}</td>
+          <td>
+            <button class="btn btn-sm btn-warning editar-btn" data-id="${idx}">Editar</button>
+          </td>
+        </tr>
+      `;
+      $tbody.append(tr);
+    });
+  }
+
+  function limpiarFormulario() {
+    $('#menuId').val('');
+    $('#menuForm')[0].reset();
+  }
+
+  $(document).ready(function() {
+    // Guardar menú
+    $('#menuForm').on('submit', function(e) {
+      e.preventDefault();
+
+      const nuevoMenu = {
+        nombre: $('#nombre').val(),
+        icono: $('#icono').val(),
+        ruta: $('#ruta').val(),
+        id_padre: $('#id_padre').val() !== "" ? parseInt($('#id_padre').val()) : null,
+        es_publico: $('#es_publico').is(':checked'),
+        estado: $('#estado').is(':checked')
+      };
+
+      const id = $('#menuId').val();
+      if (id) {
+        menus[parseInt(id)] = nuevoMenu;
+      } else {
+        menus.push(nuevoMenu);
+      }
+
+      limpiarFormulario();
+      renderizarTabla();
+    });
+
+    // Botón editar
+    $('#tablaMenus').on('click', '.editar-btn', function() {
+      const id = $(this).data('id');
+      const menu = menus[id];
+      $('#menuId').val(id);
+      $('#nombre').val(menu.nombre);
+      $('#icono').val(menu.icono);
+      $('#ruta').val(menu.ruta);
+      $('#id_padre').val(menu.id_padre);
+      $('#es_publico').prop('checked', menu.es_publico);
+      $('#estado').prop('checked', menu.estado);
+    });
+
+    // Botón limpiar
+    $('#limpiarBtn').on('click', function() {
+      limpiarFormulario();
+    });
+
+    renderizarTabla();
+  });
+</script>
+
+</body>
+</html>

@@ -15,8 +15,6 @@ $(document).ready(function() {
     // Función para alternar el estado del sidebar y guardarlo en localStorage
     $('#sidebarCollapse').on('click', function() {
         $('#sidebar').toggleClass('active');
-
-        // Guardar el estado en localStorage
         if ($('#sidebar').hasClass('active')) {
             localStorage.setItem('sidebarState', 'hidden');
         } else {
@@ -29,8 +27,6 @@ $(document).ready(function() {
         $('#theme-stylesheet').attr('href', 'css/desktop-style/' + theme + '.css');
     });
     
-    
-    // Manejar enlaces del menú para iframe o enlaces externos
     $('#sidebar .menu-link').on('click', function (event) {
         const target = $(this).attr('target');
         const href = $(this).attr('href');
@@ -61,9 +57,39 @@ $(document).ready(function() {
             $('body').css('flex-direction', 'flex');
         }
     }
-
     checkIframeOnly();
 
+    $(document).on("click", ".empresa-opcion", function (e) {
+        e.preventDefault();
+        const empresaId = $(this).data("id");
+        const empresaNombre = $(this).text();
 
-    
+        // Actualizar el texto del botón
+        cargarNombreEmpresa(empresaNombre);
+
+        const params = {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoxLCJleHAiOjE3NDQxNTUxNDB9.N1TzL_ANjaoCRtJCRTOwoo6RbhWRToPdB9wLTJVzKXU",
+            "empresaid": empresaId
+        };        
+        
+        // Llamar a la API con la empresa seleccionada
+        callApi('POST', 'auth/reload', params)
+            .done(function(response) {
+                console.log(response);
+                if (response.respuesta) {
+
+                    
+                } else {
+
+                }
+            })
+            .fail(function() {
+                // En caso de que falle la solicitud
+                $('#error-message').text('Hubo un error al conectar con el servidor. Intenta de nuevo.').removeClass('d-none');
+            });
+
+    });    
+
 });
+
+console.log("dashboard.js cargado (versión con jQuery para UI).");

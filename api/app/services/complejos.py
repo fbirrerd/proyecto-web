@@ -1,67 +1,82 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
-from app.services.menu import obtener_menus_por_usuario
-from app.services.usuario_empresa import obtener_empresas_por_usuario
-from app.models.empresa import Empresa
+from app.services.menu import getDatosMenuGenerales
+from app.services.acceso import crear_acceso
+from app.services.rol import getDatosRol
+from app.services.empresa import getDatosEmpresa
+from app.services.usuario import getDatosUsuarioXID
+from app.schemas.auth import UsuarioLogin
+from app.models.models import Acceso, Usuario
+
+
 from app.utils.security import generar_jwt
-from app.services.acceso import create_acceso
-from app.models.usuario import Usuario
-from app.schemas.usuario import UsuarioLogin
+
+
+
 from app.schemas.complejos import AccesoDuracion, DatosAcceso
-from app.models.acceso import Acceso  # Corregir la importación
 
-def get_objeto_acceso(db: Session, user: UsuarioLogin) -> DatosAcceso:
-    #traer la informacion del usuario
-    # Buscar el usuario con el nombre de usuario proporcionado
 
-    userObj = db.query(Usuario).filter(
-        or_(Usuario.nombre_usuario == user.userName, 
-            Usuario.email == user.userName)
-        ).first()
-    if not userObj:
-        raise Exception("Usuario no encontrado")
+def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , token: Optional[str] = None ) -> DatosAcceso:
     
-    idUsuario = userObj.id
-    minutosAcceso = userObj.duracion
+    oUsuario = getDatosUsuarioXID(db, userid);
+    if not oUsuario:
+        raise Exception("Usuario no encontrado ${userid}`")
 
+    idUsuario = oUsuario.id
+    minutosAcceso = oUsuario.duracion
+    
+    lEmpresas = getDatosEmpresa(db, idUsuario);
+    if not lEmpresas:
+        raise Exception("Empresas no encontrada")
+    
+    if(empresaid==None):
+        idEmpresaSeleccionada = lEmpresas[0].id;
+    else:
+        idEmpresaSeleccionada = empresaid;
+
+    lRoles = getDatosRol(db, idUsuario, idEmpresaSeleccionada);
+    if not lEmpresas:
+        raise Exception("Empresas no encontrada")
+    
+    lMenusGenerales = getDatosMenuGenerales(db, idUsuario, idEmpresaSeleccionada)
+
+    
+    
     # Se genera el Token
-    newToken = generar_jwt(idUsuario, minutosAcceso)
-        
-    # Crear el acceso
-    db_acceso = Acceso(
-        usuario_id=idUsuario,
-        empresa_id=None,
-        token=newToken,
-        fecha_ingreso=datetime.now(),
-        fecha_creacion=datetime.now(),
-        fecha_vencimiento=datetime.now() + timedelta(minutes=minutosAcceso),
-    )
-    # retornar el token
-    objAcceso = create_acceso(db, db_acceso)
-    #retornar los roles
-    #crear el super objeto
+    if token == None:
+        newToken = generar_jwt(idUsuario, minutosAcceso)
+        db_acceso = Acceso(
+            usuario_id=idUsuario,
+            empresa_id=None,
+            token=newToken,
+            fecha_ingreso=datetime.now(),
+            fecha_creacion=datetime.now(),
+            fecha_vencimiento=datetime.now() + timedelta(minutes=minutosAcceso),
+        )   
+        crear_acceso(db, db_acceso)             
+    else:
+        newToken = token
 
-    empresaList = obtener_empresas_por_usuario(db, idUsuario)
-    menuList = obtener_menus_por_usuario(db, idUsuario)
-    
+
     duracion = AccesoDuracion(
         inicio = datetime.now(),
         termino = datetime.now()+ timedelta(minutes=minutosAcceso),
         minutos = minutosAcceso
     )
     
-    
-    
+
     return DatosAcceso(
-        nombre_usuario = userObj.nombre_usuario,
-        email = userObj.email,
-        token = objAcceso.token,
+        username = oUsuario.username,
+        email = oUsuario.email,
+        token = newToken,
         duracionAcceso = duracion, 
-        empresas = empresaList,  # Lista de empresas
-        empresaSeleccionada= empresaList[0].id,
-        menus = menuList
+        usuario = oUsuario,
+        empresas = lEmpresas,
+        empresaSeleccionada= idEmpresaSeleccionada,
+        roles = lRoles,
+        menusGenerales = lMenusGenerales
     )
 
     

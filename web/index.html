@@ -13,7 +13,7 @@
     <link href="css/style-login.css" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Carga jQuery desde CDN -->
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/api.js"></script>
     <script src="js/index.js"></script>   
 </head> 
@@ -31,12 +31,14 @@
                 <label for="username" class="form-label">Usuario o Email</label>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <label for="password" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="password" name="password" required>
+                <i class="far fa-eye position-absolute top-50 end-0 me-3" id="togglePassword" style="cursor:pointer;"></i>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-            <button type="button" id="btnCambiarClave" class="btn btn-secondary w-100">Cmabiar clave</button>
+            
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+            <button type="button" id="btnCambiarClave" class="btn btn-secondary">Cambiar clave</button>
         </form>
         <div id="error-info" class="alert alert-info d-none" role="info"></div>
     </div>

@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -11,5 +12,14 @@ class EmpresaOut(EmpresaBase):
     id: int
     fecha_creacion: datetime
     estado: int
+
+
+
+class EmpresaAcceso(EmpresaBase):
+    id: int    
+    nombre: str
+    tipo_empresa: str
+    direccion_id: Optional[int] = None    
+
     class Config:
-        from_attributes = True
+        orm_mode = True

@@ -2,17 +2,22 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
-from app.schemas.menu import MenuSchema
+from app.schemas.menugeneral import MenuGeneralAcceso
+from app.schemas.rol import RolAcceso
+from app.schemas.empresa import EmpresaAcceso
+from app.schemas.usuario import UsuarioAcceso
+
 
 # Clase que representa los datos de acceso del usuario
 class DatosAcceso(BaseModel):
-    nombre_usuario: str
+    username: str
     email: str
     token: str
-    empresas: Optional[List['AccesoEmpresas']]  # Lista de empresas, usamos Forward Reference
-    empresaSeleccionada: int
-    # roles: List['AccesoRoles']
-    menus: List['MenuSchema']
+    usuario: UsuarioAcceso
+    menusGenerales: List['MenuGeneralAcceso']
+    empresas: List['EmpresaAcceso']
+    empresaSeleccionada: Optional[int] 
+    roles: List['RolAcceso']
 
     class Config:
         orm_mode = True

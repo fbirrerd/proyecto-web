@@ -25,13 +25,13 @@ $(document).ready(function() {
 
         // Parámetros para la API
         const params = {
-            userName: username,
+            username: username,
             email: email,
             password: pass1
         };
 
         // Llamada a la API para autenticar al usuario con Basic Auth
-        callApi('PUT', 'usuario/password', params)
+        callApi('PUT', 'auth/', params)
             .done(function(response) {
                 if (response.respuesta) {
                     // Si la respuesta es exitosa y 'cambioClave' es true, muestra un mensaje adecuado
