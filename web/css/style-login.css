@@ -41,3 +41,25 @@ body {
     margin-right: 1rem !important;
     margin-top: 8px;
 }
+
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .password-input {
+    width: 100%;
+    padding-right: 2.5rem; /* espacio para el ícono */
+    box-sizing: border-box;
+  }
+
+  .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    margin-top: 18px;
+    display: none; /* oculto al inicio */
+  }
