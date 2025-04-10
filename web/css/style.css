@@ -93,3 +93,13 @@ body {
      text-align: center;
      margin-right: 5px;
 }
+.small-input {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.75rem;
+    height: auto;
+}
+
+.small-btn {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.7rem;
+}

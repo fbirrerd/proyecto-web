@@ -14,7 +14,8 @@ class DatosAcceso(BaseModel):
     email: str
     token: str
     usuario: UsuarioAcceso
-    menusGenerales: List['MenuGeneralAcceso']
+    menusGenerales: List
+    # menusEspecificos: List
     empresas: List['EmpresaAcceso']
     empresaSeleccionada: Optional[int] 
     roles: List['RolAcceso']

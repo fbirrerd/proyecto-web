@@ -24,7 +24,5 @@ class Rol(RolBase):
 class RolAcceso(RolBase):
     id: int    
     nombre: str
-
-
     class Config:
         orm_mode = True

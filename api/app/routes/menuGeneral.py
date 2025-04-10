@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.schemas.respond import objRespuesta
-from app.schemas.menuGeneral import MenuGeneralAcceso, MenuUpdate
-from app.services.menuGenerales import actualizar_menu_general, get_lista_menu, getListMenuGenerales
+from app.schemas.menuGeneral import  MenuUpdate
+from app.services.menuGenerales import actualizar_menu_general, get_lista_menu, getListMenuOrdenada
 from app.database import SessionLocal
 
 
@@ -17,13 +17,12 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/generales/all", response_model=objRespuesta)
-def getGenerales(db: Session = Depends(get_db)):
-    return getListMenuGenerales(db)
-
 @router.get("/generales", response_model=objRespuesta)
-def getGenerales(db: Session = Depends(get_db)):    
-    return get_lista_menu(db)
+def getGenerales(db: Session = Depends(get_db)):  
+    return objRespuesta(
+        respuesta=True,
+        data=getListMenuOrdenada(db, None, None)
+    )
 
 @router.put("/generales", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def putGenerales(menu: MenuUpdate, db: Session = Depends(get_db)):
@@ -35,6 +34,10 @@ def putGenerales(menu: MenuUpdate, db: Session = Depends(get_db)):
         respuesta=False,
         data={"numero":401, "mensaje":"Problema al actualizar la clave"}
     ) 
+
+# @router.get("/generales/tree", response_model=objRespuesta)
+# def getGeneralesTree(db: Session = Depends(get_db)):
+#     return getListMenuOrdenada(db)
 
 
 # @router.get("/especificos/all", response_model=MenuGeneral)

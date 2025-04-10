@@ -274,29 +274,8 @@ INSERT INTO roles (nombre, estado) VALUES
 ('Usuario', TRUE),
 ('Auditor', TRUE),
 ('Informe', TRUE),
-('Farmaceutico', TRUE);
-
--- INSERT INTO menu
--- (id, empresa_id, nombre, tipo, url, icono, orden, padre_id)
--- VALUES
--- ('Dashboard', 'url', 'dashboard_content.html', 'home', 1, NULL),
--- ('Gestión', 'padre', '#', 'folder', 2, NULL),
--- ('Informes', 'padre', '#', 'chart-line', 3, NULL),
--- ('Farmacia', 'padre', '#', 'chart-line', 4, NULL),
--- ('Links de Interés', 'padre', '#', 'link', 5, NULL)
--- ('Ayuda', 'padre', '#', 'help', 6, NULL),
--- ('Tablas', 'padre', '#', 'fas fa-chart-line', 1, 2),
--- ('Usuarios', 'url', 'usuarios.html', 'users', 1, 7),
--- ('Empresas', 'url', 'empresas.html', 'building', 2, 7),
--- ('Menú', 'url', 'menu.html', 'bars', 3, 7),
--- ('Accesos', 'url', 'accesos.html', 'lock', 1, 8),
--- ('Consulta de remedios', 'padre', '#', 'chart-line', 1, 4),
--- ('Consulta de precios', 'padre', '#', 'chart-line', 2, 4),
--- ('Vademecum', 'padre', '#', 'chart-line', 3, 4),
--- ('Emol', 'url', 'http://www.emol.com', 'users', 1, 5),
--- ('Lun', 'url', 'http://www.lun.cl', 'building', 2, 5),
--- ('La Tercera', 'url', 'http://www.latercera.cl', 'building', 3, 5);
-
+('Farmaceutico', TRUE),
+('Soporte', TRUE);
 
 
 
@@ -311,15 +290,16 @@ INSERT INTO usuario_empresa_rol (id_usuario, id_empresa, id_rol, estado) VALUES
 
 
 
-INSERT INTO menus_generales (nombre, icono, ruta, id_padre, es_publico, tipo, orden)
-VALUES
-('Dashboard', 'dashboard', '/dashboard', NULL, false, 'link', 1),
-('Gestión', 'gestion', NULL, NULL, false, 'padre', 2),
+INSERT INTO menus_generales
+(nombre, icono, ruta, id_padre, es_publico, tipo, orden)
+VALUES 
+('Dashboard', 'fa-compass', 'http://www.iacc.cl', NULL, false, 'link', 1),
+('Gestión', 'fa-folder', NULL, NULL, false, 'padre', 2),
 ('Informes', 'informes', NULL, NULL, false, 'padre', 3),
-('Estadística', 'estadistica', NULL, NULL, false, 'link', 4),
-('Configuración', 'folder', NULL, NULL, false, 'link', 5),
+('Estadística', 'fa-chart-pie', NULL, NULL, false, 'link', 4),
+('Configuración', 'fa-cog', NULL, NULL, false, 'link', 5),
 ('Mantenedores de tablas', 'fas fa-database fa-fw me-2', 'http://www.latercera.cl', 2, false, 'link', 1),
-('Informes Gestión', 'informe', NULL, 2, false, 'link', 1),
+('Informes Gestión', 'fa-arrow-right', NULL, 2, false, 'link', 1),
 ('Gráfico 1', 'grafico1', '/estadistica/grafico1', 4, false, 'link', 1),
 ('Gráfico 2', 'grafico2', '/estadistica/grafico2', 4, false, 'link', 1),
 ('Gráfico 3', 'grafico3', '/estadistica/grafico3', 4, false, 'link', 1),
@@ -327,12 +307,13 @@ VALUES
 ('Ayuda', 'ayuda', '/configuracion/ayuda', 5, true, 'link', 1),
 ('Resumen General', 'resumen', '/informes/resumen', 3, false, 'link', 1),
 ('Reporte Financiero', 'financiero', '/informes/financiero', 3, false, 'link', 1),
-('Usuarios', 'users', '/gestion/usuarios', 6, false, 'link', 1),
+('Usuarios', 'fa-user-friends', '/gestion/usuarios', 6, false, 'link', 1),
 ('Roles', 'fas fa-file-alt fa-fw me-2', '/gestion/roles', 6, false, 'link', 1),
 ('Empresas', 'fas fa-file-alt fa-fw me-2', '/gestion/empresas', 6, false, 'link', 1),
 ('Menús', 'fas fa-database fa-fw me-2', 'gestion/menu.html', 6, false, 'padre', 1),
-('Menu General', 'fas fa-file-alt fa-fw me-2', '/gestion/menu-general.html', 18, false, 'link', 1),
-('Menu Especifico', 'fas fa-file-alt fa-fw me-2', '/gestion/menu-especifico.html', 18, false, 'link', 2);
+('Menu General', 'fas fa-file-alt fa-fw me-2', 'gestion/menu-general.html', 18, false, 'link', 1),
+('Menu Especifico', 'fas fa-file-alt fa-fw me-2', 'gestion/menu-especifico.html', 18, false, 'link', 2);
+
 
 INSERT INTO menu_general_rol (id_menu, id_rol)
 VALUES

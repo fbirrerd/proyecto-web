@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
-from app.services.menuGenerales import getDatosMenuGenerales
+from app.services.menuGenerales import getListMenuOrdenada
 from app.services.acceso import crear_acceso
 from app.services.rol import getDatosRol
 from app.services.empresa import getDatosEmpresa
@@ -40,7 +40,7 @@ def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , t
     if not lEmpresas:
         raise Exception("Empresas no encontrada")
     
-    lMenusGenerales = getDatosMenuGenerales(db, idUsuario, idEmpresaSeleccionada)
+    lMenusGenerales = getListMenuOrdenada(db, idUsuario, idEmpresaSeleccionada)
 
     
     

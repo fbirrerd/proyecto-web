@@ -1,7 +1,6 @@
 
-from app.schemas.rol import RolAcceso
+from app.schemas.rol import RolAcceso, RolCreate, RolUpdate
 from app.models.models import Rol, UsuarioEmpresaRol
-from app.utils.password import get_password_hash, verify_password
 from sqlalchemy.orm import Session
 
 
@@ -35,3 +34,24 @@ def getDatosRol(db: Session, UsuarioId: int, EmpresaId: int):
     else:
         return None
   
+def get_role(db: Session, role_id: int)  -> objRespuesta:
+    return db.query(Rol).filter(Rol.id == role_id).first()
+
+def get_roles(db: Session, skip: int = 0, limit: int = 100)  -> objRespuesta:
+    return db.query(Rol).offset(skip).limit(limit).all()
+
+def create_role(db: Session, role: RolCreate)  -> objRespuesta:
+    db_role = Rol(nombre=Rol.nombre, estado=role.estado)
+    db.add(db_role)
+    db.commit()
+    db.refresh(db_role)
+    return db_role
+
+def update_role(db: Session, role_id: int, role: RolUpdate)  -> objRespuesta:
+    db_role = db.query(Rol).filter(Rol.id == role_id).first()
+    if db_role:
+        db_role.nombre = role.nombre
+        db_role.estado = role.estado
+        db.commit()
+        db.refresh(db_role)
+    return db_role

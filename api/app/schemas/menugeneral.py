@@ -25,9 +25,9 @@ class MenuUpdate(MenuGeneralBase):
 
 class MenuOut(MenuGeneralBase):
     id: int
-    fecha_creacion: Optional[datetime]
-    fecha_modificacion: Optional[datetime]
-
+    id_padre: Optional[int] = None
+    hijos: Optional[bool] 
+    nivel: Optional[bool] = 0
     class Config:
         orm_mode = True
 
@@ -35,7 +35,7 @@ class MenuGeneralAcceso(MenuGeneralBase):
     id: Optional[int] = None
     tipo: Optional[str] = None
     orden: Optional[int] = None 
-    hijos: Optional[bool] 
+
   
     class Config:
         orm_mode = True

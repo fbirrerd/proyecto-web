@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
- 
+
 from app.database import Base, engine
-from app.routes import empresa, usuario, auth,menuEspecifico, menuGeneral
+from app.routes import empresa, usuario, auth,menuEspecifico, menuGeneral,rol
 
 Base.metadata.create_all(bind=engine)
 
@@ -21,4 +21,6 @@ app.include_router(empresa.router,prefix="/api/v1/empresa")
 app.include_router(usuario.router,prefix="/api/v1/usuario")
 app.include_router(menuGeneral.router,prefix="/api/v1/menu")
 app.include_router(menuEspecifico.router,prefix="/api/v1/menu")
+app.include_router(rol.router,prefix="/api/v1/rol")
+
 # app.include_router(menuEspecifico.router,prefix="/api/v1/menue")
