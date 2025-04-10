@@ -2,7 +2,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from app.utils.tree import construir_arbol_ordenado
 from app.schemas.respond import objRespuesta
-from app.schemas.menugeneral import MenuGeneralAcceso
+from app.schemas.menuGeneral import MenuGeneralAcceso, MenuUpdate
 from app.models.models import MenuGeneral, MenuGeneralRol, UsuarioEmpresaRol
 
 
@@ -27,7 +27,12 @@ def getDatosMenuGenerales(db: Session, UsuarioId: int, EmpresaId: int):
              MenuGeneral.estado == True)).all()
     if not MenuGeneralList:
         raise Exception("Registro MenuGeneral no encontrada ")
-    
+    for menu in MenuGeneralList:
+        # Verificar si el menú tiene hijos
+        has_children = db.query(MenuGeneral).filter(MenuGeneral.id_padre == menu.id).count() > 0
+        # Agregar el campo 'tiene_hijos' al menú
+        menu.hijos = has_children
+            
     # Si hay empresas, las convertimos a Pydantic
     menu_pydantic_list = [MenuGeneralAcceso.from_orm(menugeneral) for menugeneral in MenuGeneralList]
     if menu_pydantic_list:
@@ -57,3 +62,78 @@ def getListMenuGenerales(db: Session)  -> objRespuesta:
             respuesta=False,
             data={"error": str(e)}
         )
+    
+def get_lista_menu(db: Session)  -> objRespuesta:
+    try:
+        MenuGeneralList = db.query(MenuGeneral).all()
+        if not MenuGeneralList:
+            raise Exception("Registro MenuGeneral no encontrada ")
+        for menu in MenuGeneralList:
+            # Verificar si el menú tiene hijos
+            has_children = db.query(MenuGeneral).filter(MenuGeneral.id_padre == menu.id).count() > 0
+            # Agregar el campo 'tiene_hijos' al menú
+            menu.hijos = has_children
+                
+        # Si hay empresas, las convertimos a Pydantic
+        menu_pydantic_list = [MenuGeneralAcceso.from_orm(menugeneral) for menugeneral in MenuGeneralList]
+        
+        return objRespuesta(
+            respuesta=True,
+            data=menu_pydantic_list
+        )        
+        
+    except Exception as e:
+        # Captura de errores genéricos
+        return objRespuesta(
+            respuesta=False,
+            data={"error": str(e)}
+        ) 
+    
+def actualizar_menu_general(db: Session, menu: MenuUpdate)  -> objRespuesta:
+    try:
+
+        valor = editar_menu(db, menu.id, menu.nombre, menu.icono, menu.ruta, None,None,menu.tipo, menu.orden, menu.estado)
+        if valor:
+           return getListMenuGenerales(db)             
+    except Exception as e:
+        # Captura de errores genéricos
+        return objRespuesta(
+            respuesta=False,
+            data={"error": str(e)}
+        )         
+        
+        
+def editar_menu(db, id_menu, nombre=None, icono=None, ruta=None, id_padre=None, es_publico=None, tipo=None, orden=None, estado=None):
+    try:
+        # Buscar el menú en la base de datos
+        menu = db.query(MenuGeneral).filter(MenuGeneral.id == id_menu).one()
+
+        # Actualizar los campos proporcionados
+        if nombre:
+            menu.nombre = nombre
+        if icono:
+            menu.icono = icono
+        if ruta:
+            menu.ruta = ruta
+        if id_padre is not None:  # Para manejar la asignación de null correctamente
+            menu.id_padre = id_padre
+        if es_publico is not None:
+            menu.es_publico = es_publico
+        if tipo:
+            menu.tipo = tipo
+        if orden is not None:
+            menu.orden = orden
+        if estado is not None:
+            menu.estado = estado
+
+        # La fecha de modificación se actualiza automáticamente con onupdate
+        # Si no es automático, se puede actualizar manualmente:
+        # menu.fecha_modificacion = func.now()
+
+        # Guardar los cambios en la base de datos
+        db.commit()
+
+        return True  # Retorna el menú actualizado
+    except Exception as e:
+        print(f"Error al editar el menú: {e}")
+        return False

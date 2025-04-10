@@ -15,7 +15,7 @@ $(document).ready(function () {
         let empresas = tokenData.empresas;
         LoadEmpresas(empresas)
         IniciarMenu(tokenData);
-      
+
     } else {
         console.log('No token found in localStorage');
     }
@@ -26,16 +26,16 @@ $(document).ready(function () {
 
     function LoadEmpresas(empresasJSON) {
         const dropdownMenu = document.querySelector('.dropdown-menu');
-    
+
         // Limpiar el contenido inicial del dropdown (opcional)
         dropdownMenu.innerHTML = '';
-   
+
         if (empresasJSON.length > 0) {
             cargarNombreEmpresa(empresasJSON[0].nombre);
         } else {
             console.log("No hay empresas en el JSON.");
         }
-    
+
         // Cargar empresas en el dropdown
         const companyList = $("#companyList");
         empresasJSON.forEach(emp => {
@@ -45,48 +45,103 @@ $(document).ready(function () {
         });
 
     }
-    
+
 
 })
 
-function cargarNombreEmpresa(empresaNombre){
+function cargarNombreEmpresa(empresaNombre) {
     $("#companyDropdown").html(`<i class="fas fa-building fa-fw me-1"></i> ${empresaNombre}`);
 }
 
-function IniciarMenu(tokenData){
-    LoadMenu(tokenData.menusGenerales, "leftMenuGeneralContainer")
-    // LoadMenu(tokenData.menusEspecificos, "leftMenuEspecificoContainer")
+function IniciarMenu(tokenData) {
+    LoadMenu(tokenData.menusGenerales, null, "leftMenuGeneralContainer")
+    LoadMenu(tokenData.menusEspecificos, "leftMenuEspecificoContainer")
 }
-function LoadMenu(menuJson, idContainer) {
-    console.log("loadMenu")    
-    let datos = getHijosOrdenados(menuJson, null);
-
-    console.log("datos Filtrados y Ordenados", datos);
+function LoadMenu(menuJson, idPadre, idContainer) {
+    if(menuJson==null){
+        return
+    }
+    let datos = getHijosOrdenados(menuJson, idPadre);
 
     let menuHTML = `<ul class="list-unstyled components mb-5">`;
-    let strPadre = "";
     datos.forEach(nodo => {
-        let identificadorMenuHijo = "";
-        let sTarget = ``;
-        let link = `href="${nodo.ruta}" target="main-iframe" class="menu-link"`
-        let sCaption = `<i class="${nodo.icono}"></i>\n ${nodo.nombre}`
-        if (nodo.tipo == "link") {
-            menuHTML += `<li><a ${link}>${sCaption}</a></li>\n`
-        } else {
-            identificadorMenuHijo = `menu_${nodo.id}`
-            menuHTML += `<li>
-                        <a href="#${identificadorMenuHijo}" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                            ${sCaption}
-                        </a>\n`
-            menuHTML += armarSegundo(menuJson, nodo.id, nodo.tipo, identificadorMenuHijo)
-            menuHTML += `</li>\n`
-        }
+        let identificadorMenuHijo = `submenu-${nodo.id}`;
+        if(nodo.tipo=="padre")
+            nodo.hijos=true;
 
+        if (nodo.hijos) {
+            menuHTML += `<li>
+            <a href="#${identificadorMenuHijo}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+            <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+            </a>` 
+            menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);  
+        }else {
+            switch (nodo.tipo) {
+                case "link":
+                    menuHTML += `<li>
+                        <a href="${nodo.ruta}" target="main-iframe" class="menu-link">
+                        <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+                        </a>`
+                        break;
+                case "blank":
+                    menuHTML += `<li>
+                        <a href="${nodo.ruta}" target="_blank" class="menu-link">
+                        <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+                        </a>`
+                        break;
+            }
+
+        }
     });
     menuHTML += `</ul>`;
-    console.log("html----",menuHTML);
+    console.log("html----", menuHTML);
     document.getElementById(idContainer).innerHTML = menuHTML;
 }
+
+function loadSubMenu(menuJson, idPadre, identificadorMenuHijo) {
+
+    let datos = getHijosOrdenados(menuJson, idPadre);
+
+    console.log("datos", identificadorMenuHijo, datos);
+    let menuHTML = `<ul class="collapse list-unstyled" id="${identificadorMenuHijo}">`
+
+
+    let strPadre = "";
+    datos.forEach(nodo => {
+        let identificadorMenuHijo = `submenu-${nodo.id}`;
+        if(nodo.tipo=="padre")
+            nodo.hijos=true;
+
+        if (nodo.hijos) {
+            menuHTML += `<li>
+            <a href="#${identificadorMenuHijo}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+            <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+            </a>` 
+            menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);  
+        }else {
+            switch (nodo.tipo) {
+                case "link":
+                    menuHTML += `<li>
+                        <a href="${nodo.ruta}" target="main-iframe" class="menu-link">
+                        <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+                        </a>`
+                        break;
+                case "blank":
+                    menuHTML += `<li>
+                        <a href="${nodo.ruta}" target="_blank" class="menu-link">
+                        <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+                        </a>`
+                        break;
+            }
+
+        }
+    });
+    menuHTML += `</ul>`;
+    // console.log("html----", str);
+    return menuHTML;
+}
+
+
 
 function armarSegundo(menuJson, padreId, TipoPadre, identificadorMenuHijo) {
 
@@ -108,13 +163,14 @@ function armarSegundo(menuJson, padreId, TipoPadre, identificadorMenuHijo) {
                         data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                         ${sCaption}
                     </a>\n`
-            str += armarTercero(menuJson, padre.id, padre.tipo, identificadorMenuHijo)
+            str += armarSegundo(menuJson, padre.id, padre.tipo, identificadorMenuHijo)
             str += `</li>\n`
-            console.log(str);
+
         }
 
     });
     str += `</ul>`
+    console.log(str);
     return str;
 }
 

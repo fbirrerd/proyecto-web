@@ -18,7 +18,9 @@ class MenuCreate(MenuGeneralBase):
 
 
 class MenuUpdate(MenuGeneralBase):
-    pass
+    id: int
+    tipo: str
+    orden: int
 
 
 class MenuOut(MenuGeneralBase):
@@ -33,7 +35,8 @@ class MenuGeneralAcceso(MenuGeneralBase):
     id: Optional[int] = None
     tipo: Optional[str] = None
     orden: Optional[int] = None 
- 
+    hijos: Optional[bool] 
+  
     class Config:
         orm_mode = True
         

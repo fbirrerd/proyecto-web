@@ -102,14 +102,41 @@ a[data-bs-toggle="collapse"] {
     transform: translateY(-50%);
 }
 
+/* Primer nivel del submenú (menú principal) */
 #sidebar ul ul a {
     font-size: 0.9em !important;
-    padding-left: 30px !important;
-    background: #343a40;
+    padding-left: 20px !important;
+    background: #212121; /* Gris oscuro */
+    color: #fff; /* Texto blanco */
 }
 
+/* Segundo nivel del submenú */
 #sidebar ul ul ul a {
-    padding-left: 50px !important;
+    padding-left: 40px !important;
+    background: #424242; /* Gris más claro */
+    color: #fff; /* Texto blanco */
+}
+
+/* Tercer nivel del submenú */
+#sidebar ul ul ul ul a {
+    padding-left: 60px !important;
+    background: #616161; /* Gris intermedio */
+    color: #fff; /* Texto blanco */
+}
+
+/* Cuarto nivel del submenú */
+#sidebar ul ul ul ul ul a {
+    padding-left: 80px !important;
+    background: #757575; /* Gris claro */
+    color: #fff; /* Texto blanco */
+} 
+
+/* Efectos en el hover de los enlaces */
+#sidebar ul ul a:hover,
+#sidebar ul ul ul a:hover,
+#sidebar ul ul ul ul a:hover,
+#sidebar ul ul ul ul ul a:hover {
+    background-color: #999999; /* Gris muy claro cuando se pasa el ratón */
 }
 
 #content {

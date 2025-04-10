@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
-from app.schemas.menugeneral import MenuGeneralAcceso
+from app.schemas.menuGeneral import MenuGeneralAcceso
 from app.schemas.rol import RolAcceso
 from app.schemas.empresa import EmpresaAcceso
 from app.schemas.usuario import UsuarioAcceso
