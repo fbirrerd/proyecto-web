@@ -14,9 +14,10 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Carga jQuery desde CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/alerts-messages.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/common.js"></script>
     <script src="js/index.js"></script>   
+    <script src="js/common.js"></script>
 </head> 
 <body>
     <div id="overlay" class="overlay">
@@ -26,7 +27,6 @@
     </div>    
     <div class="login-container">
         <h2 class="text-center mb-4">Iniciar Sesión</h2>
-        <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
         <form id="login-form">
             <div class="mb-3">
                 <label for="username" class="form-label">Usuario o Email</label>
@@ -37,8 +37,6 @@
                 <input type="password" class="form-control password-input" id="password" name="password" required>
                 <i class="far fa-eye toggle-password" id="togglePassword"></i>
               </div>
-            
-            
             <button type="submit" class="btn btn-primary">Ingresar</button>
             <button type="button" id="btnCambiarClave" class="btn btn-secondary">Cambiar clave</button>
         </form>

@@ -22,7 +22,7 @@ function fetchRoles() {
         }
     })
     .fail(function() {
-        $('#error-message').text('Hubo un error al conectar con el servidor. Intenta de nuevo.').removeClass('d-none');
+        showDanger("No se puede conectar con el servidor"); 
     });
 }
 
@@ -125,7 +125,7 @@ function fetchMenus() {
         }
     })
     .fail(function() {
-        $('#error-message').text('Hubo un error al conectar con el servidor. Intenta de nuevo.').removeClass('d-none');
+        showDanger("No se puede conectar con el servidor"); 
     });
 }
 

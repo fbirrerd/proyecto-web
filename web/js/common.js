@@ -1,3 +1,8 @@
+
+
+
+
+
 function togglePasswordVisibility(passwordSelector, iconSelector) {
     const $passwordInput = $(passwordSelector);
     const $toggleIcon = $(iconSelector);

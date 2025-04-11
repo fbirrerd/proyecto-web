@@ -54,8 +54,7 @@ $(document).ready(function() {
                 }
             })
             .fail(function() {
-                // En caso de que falle la solicitud
-                $('#error-message').text('Hubo un error al conectar con el servidor. Intenta de nuevo.').removeClass('d-none');
+                showDanger("No se puede conectar con el servidor"); 
             });
     });
 });

@@ -21,8 +21,7 @@ function fetchMenus() {
         }
     })
     .fail(function() {
-        // En caso de que falle la solicitud
-        $('#error-message').text('Hubo un error al conectar con el servidor. Intenta de nuevo.').removeClass('d-none');
+        showDanger("No se puede conectar con el servidor"); 
     });
 
 }
@@ -156,11 +155,7 @@ $(document).on("click", ".estado-toggle", function () {
         }
     })
     .fail(function() {
-        mostrarAlerta({
-            mensaje: "Hubo un error al intentar conectar con el servidor",
-            tipo: "danger",
-            duracion: 5 // 5 segundos
-        });            
+        showDanger("No se puede conectar con el servidor");          
     });
 });
 
@@ -196,11 +191,7 @@ $(document).on("click", ".guardar-btn", function () {
         }
     })
     .fail(function() {
-        mostrarAlerta({
-            mensaje: "Hubo un error al intentar conectar con el servidor",
-            tipo: "danger",
-            duracion: 5 // 5 segundos
-        });            
+        showDanger("No se puede conectar con el servidor");          
     });
     
 });

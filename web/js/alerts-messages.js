@@ -1,3 +1,27 @@
+
+function showInfo($mensaje){
+mostrarAlerta({
+    mensaje: $mensaje,
+    tipo: "success",
+    duracion: 10
+});
+}
+function showWarning($mensaje){
+mostrarAlerta({
+    mensaje: $mensaje,
+    tipo: "warning",
+    duracion: 10
+});
+}
+function showDanger($mensaje){
+mostrarAlerta({
+    mensaje: $mensaje,
+    tipo: "danger",
+    duracion: 10
+});
+}
+
+
 function mostrarAlerta({
     mensaje = "Operación realizada",
     tipo = "success", // success, danger, warning, info
@@ -14,7 +38,7 @@ function mostrarAlerta({
         alerta.style = "display:none; position: fixed; top: 10px; right: 10px; z-index: 1050;";
         
         alerta.innerHTML = `
-            <strong id="mensaje-alerta">${mensaje}</strong>
+            <span id="mensaje-alerta">${mensaje}</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
         `;
         
