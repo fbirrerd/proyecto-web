@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.schemas.respond import objRespuesta
-from app.schemas.menuGeneral import  MenuUpdate
-from app.services.menuGenerales import actualizar_menu_general, get_lista_menu, getListMenuOrdenada
+from app.schemas.menuGeneral import  MenuEstadoUpdate, MenuUpdate
+from app.services.menuGenerales import actualizar_estado, actualizar_menu_general, get_lista_menu, getListMenuOrdenada
 from app.database import SessionLocal
 
 
@@ -32,8 +32,23 @@ def putGenerales(menu: MenuUpdate, db: Session = Depends(get_db)):
     # Si las credenciales no coinciden
     return objRespuesta(
         respuesta=False,
-        data={"numero":401, "mensaje":"Problema al actualizar la clave"}
+        data={"numero":401, "mensaje":"Problema al actualizar los datos del menu"}
+    )
+ 
+@router.put("/cambiar-estado", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
+def putGeneralesEstado(menu: MenuEstadoUpdate, db: Session = Depends(get_db)):
+    respuesta = actualizar_estado(db,menu.id, menu.estado)
+    if respuesta:
+        return objRespuesta(
+            respuesta=True,
+            data={"actualiza":respuesta}
+        )    
+    # Si las credenciales no coinciden
+    return objRespuesta(
+        respuesta=False,
+        data={"numero":401, "mensaje":"Problema al actualizar el estado"}
     ) 
+    
 
 # @router.get("/generales/tree", response_model=objRespuesta)
 # def getGeneralesTree(db: Session = Depends(get_db)):

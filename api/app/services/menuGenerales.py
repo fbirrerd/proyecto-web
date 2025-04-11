@@ -24,7 +24,8 @@ def filtrarEspecial(db: Session, UsuarioId: int, EmpresaId: int) -> List:
     menus_ids = [item.id_menu for item in MenuGeneralRolList]
     MenuGeneralList = db.query(MenuGeneral).filter(
         and_(MenuGeneral.id.in_(menus_ids),
-             MenuGeneral.estado == True)).all()    
+             MenuGeneral.estado == True)).all() 
+    return MenuGeneralList   
 
 # def getDatosMenuGenerales(db: Session, UsuarioId: int, EmpresaId: int):
 #     userEmpRolList = db.query(UsuarioEmpresaRol).filter(
@@ -68,10 +69,12 @@ def getListMenuOrdenada(db: Session,UsuarioId: int, EmpresaId: int)  -> objRespu
     try:
         # Obtener todos los registros de la tabla MenuGeneral
         
-        # if(EmpresaId and UsuarioId):
-        #     menu_general_list = filtrarEspecial(db, UsuarioId, EmpresaId)
-        # else:
-        menu_general_list = db.query(MenuGeneral).all()
+        print("pasa por aca")
+        
+        if(EmpresaId and UsuarioId):
+            menu_general_list = filtrarEspecial(db, UsuarioId, EmpresaId)
+        else:
+            menu_general_list = db.query(MenuGeneral).all()
 
         # Verificar si la lista está vacía
         if not menu_general_list:
@@ -81,10 +84,6 @@ def getListMenuOrdenada(db: Session,UsuarioId: int, EmpresaId: int)  -> objRespu
         menu_general_list = getArbolOrdenadoTabulado(menu_general_list)
 
         return menu_general_list
-        # return objRespuesta(
-        #     respuesta=True,
-        #     data=menu_general_list
-        # )
     except Exception as e:
         # Captura de errores genéricos
         return objRespuesta(
@@ -121,7 +120,7 @@ def get_lista_menu(db: Session)  -> objRespuesta:
 def actualizar_menu_general(db: Session, menu: MenuUpdate)  -> objRespuesta:
     try:
 
-        valor = editar_menu(db, menu.id, menu.nombre, menu.icono, menu.ruta, None,None,menu.tipo, menu.orden, menu.estado)
+        valor = editar_menu(db, menu.id, menu.nombre, menu.icono, menu.ruta, menu.id_padre,None,menu.tipo, None)
         if valor:
             return objRespuesta(
                 respuesta=True,
@@ -135,8 +134,31 @@ def actualizar_menu_general(db: Session, menu: MenuUpdate)  -> objRespuesta:
             data={"error": str(e)}
         )         
         
+ 
+def actualizar_estado(db: Session, id_menu: int, estado: bool):
+    try:
+        menu = db.query(MenuGeneral).filter(MenuGeneral.id == id_menu).first()
+
+        if menu is None:
+            print(f"No se encontró el menú con ID: {id_menu}")
+            return False
+
+        if estado is not None:
+            menu.estado = estado
+
+        db.commit()
+        return True
+    except Exception as e:
+        db.rollback()  # Revertir la transacción en caso de error
+        print(f"Error al editar el menú: {e}")
+        return False
+    finally:
+        db.close()  # Asegurar el cierre de la sesión
         
-def editar_menu(db, id_menu, nombre=None, icono=None, ruta=None, id_padre=None, es_publico=None, tipo=None, orden=None, estado=None):
+         
+ 
+        
+def editar_menu(db, id_menu, nombre=None, icono=None, ruta=None, id_padre=None, es_publico=None, tipo=None, estado=None):
     try:
         # Buscar el menú en la base de datos
         menu = db.query(MenuGeneral).filter(MenuGeneral.id == id_menu).one()
@@ -154,8 +176,6 @@ def editar_menu(db, id_menu, nombre=None, icono=None, ruta=None, id_padre=None, 
             menu.es_publico = es_publico
         if tipo:
             menu.tipo = tipo
-        if orden is not None:
-            menu.orden = orden
         if estado is not None:
             menu.estado = estado
 

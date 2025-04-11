@@ -11,6 +11,18 @@
 
     <!-- Font Awesome para íconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- ✅ Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- ✅ Select2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+
+<!-- ✅ jQuery (requerido por Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- ✅ Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+
 </head>
 
 <body class="bg-light py-4">
@@ -91,16 +103,17 @@
                             <label for="icono" class="form-label">Ícono:</label>
                         </div>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" name="icono" id="icono" required>
+                            <select class="form-select" id="icono-select" name="icono" style="width: 100%"></select>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-3">
-                            <label for="orden" class="form-label">Orden:</label>
+                            <label for="orden" class="form-label">Padre:</label>
                         </div>
                         <div class="col-md-9">
-                            <input type="number" class="form-control" name="orden" id="orden" required>
+                            <select class="form-select" id="padre-select" name="id_padre">
+                            </select>
                         </div>
                     </div>
 

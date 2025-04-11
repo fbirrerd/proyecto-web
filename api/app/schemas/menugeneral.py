@@ -17,11 +17,17 @@ class MenuCreate(MenuGeneralBase):
     pass
 
 
-class MenuUpdate(MenuGeneralBase):
+class MenuUpdate(BaseModel):
     id: int
+    nombre: str
+    icono: str
+    ruta: str
     tipo: str
-    orden: int
+    id_padre: Optional[int] = None
 
+class MenuEstadoUpdate(BaseModel):
+    id: int
+    estado: bool
 
 class MenuOut(MenuGeneralBase):
     id: int
