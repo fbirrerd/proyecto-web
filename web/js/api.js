@@ -13,10 +13,17 @@ let API_URL_VERSION = 'v1/';
  * @returns {Promise} - Retorna la promesa con la respuesta de la API.
  */
 function callApi(method, endpoint, params) {
+     // Crear el elemento del mensaje de carga
+    // Crear el elemento del icono de carga de Font Awesome
+    const loadingIcon = document.createElement('i');
+    loadingIcon.classList.add('fas', 'fa-spinner', 'fa-spin'); // Clases de Font Awesome para el icono de carga
+    loadingIcon.style.position = 'absolute';
+    loadingIcon.style.top = '10px';
+    loadingIcon.style.left = '10px';
+    loadingIcon.style.fontSize = '30px'; // Ajusta el tamaño del icono según sea necesario
+    document.body.appendChild(loadingIcon);
 
-    // Para mostrar el overlay
-    $('#overlay').fadeIn();
-    
+
     // Verificar si ya existen credenciales en localStorage
     let auth = getAuthFromLocalStorage();
     let headers = {};
@@ -26,7 +33,7 @@ function callApi(method, endpoint, params) {
     }
 
     let $url = `${API_URL}${API_URL_VERSION}${endpoint}`
-    logToConsole(`Llamando a: ${$url}`, `Metodo: ${method}, parametros: ${JSON.stringify(params)} `);
+    // logToConsole(`Llamando a: ${$url}`, `Metodo: ${method}, parametros: ${JSON.stringify(params)} `);
 
     // Configuración de la solicitud AJAX
     const config = {
@@ -37,23 +44,18 @@ function callApi(method, endpoint, params) {
         data: JSON.stringify(params),
         headers: headers,  // Añadimos los encabezados (incluyendo la autenticación)
         success: function(response) {
-            logToConsole('Solicitud exitosa', response);
+            document.body.removeChild(loadingIcon); // Elimina el mensaje de carga
+            
             return response;
         },
         error: function(xhr, status, error) {
-            const errorMessage = `Error al hacer la solicitud: ${error}`;
-            logToConsole('Error en la solicitud', errorMessage);
-            return { respuesta: false, error: errorMessage };
+            document.body.removeChild(loadingIcon); // Elimina el mensaje de carga
+            
+            logToConsole('Error en la solicitud', `Error al hacer la solicitud: ${error}`);
+            return { respuesta: false, error: `Error al hacer la solicitud: ${error}` };
         }
     };
-
-    // Para ocultar el overlay
-    $('#overlay').fadeOut();
-
-    // Realiza la solicitud AJAX
     let $resultado = $.ajax(config);
-    logToConsole(`Resultado: ${$url}`, `${JSON.stringify($resultado)} `);
-
     return $resultado;
 }
 
@@ -68,7 +70,7 @@ function logToConsole(title, message) {
         title: title,
         message: message
     };
-    console.log(log);
+    // console.log(log);
 }
 
 /**
