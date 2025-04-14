@@ -94,7 +94,7 @@ function LoadMenu(menuJson, idPadre, idContainer) {
         }
     });
     menuHTML += `</ul>`;
-    console.log("html----", menuHTML);
+    // console.log("html----", menuHTML);
     document.getElementById(idContainer).innerHTML = menuHTML;
 }
 

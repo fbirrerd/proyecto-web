@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy import Column, Integer, String, Float, Text, Boolean, TIMESTAMP, ForeignKey, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -13,7 +14,7 @@ class Region(Base):
     geom_wkt = Column(Text)
     area_km2 = Column(Float)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class Provincia(Base):
@@ -25,7 +26,7 @@ class Provincia(Base):
     geom_wkt = Column(Text)
     area_km2 = Column(Float)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class Comuna(Base):
@@ -38,7 +39,7 @@ class Comuna(Base):
     geom_wkt = Column(Text)
     area_km2 = Column(Float)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class Direccion(Base):
@@ -54,7 +55,7 @@ class Direccion(Base):
     latitud = Column(Float)
     longitud = Column(Float)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class Empresa(Base):
@@ -64,7 +65,7 @@ class Empresa(Base):
     tipo_empresa = Column(String(50), nullable=False)
     direccion_id = Column(Integer, ForeignKey('direcciones.id'))
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class Usuario(Base):
@@ -77,7 +78,7 @@ class Usuario(Base):
     password = Column(String(255), nullable=False)
     direccion_id = Column(Integer, ForeignKey('direcciones.id'))
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Integer, default=0)
     duracion = Column(Integer, default=20)
 
@@ -86,7 +87,7 @@ class Rol(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String(50), nullable=False)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class UsuarioEmpresaRol(Base):
@@ -96,7 +97,7 @@ class UsuarioEmpresaRol(Base):
     id_empresa = Column(Integer, ForeignKey('empresas.id'))
     id_rol = Column(Integer, ForeignKey('roles.id'))
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class MenuGeneral(Base):
@@ -124,7 +125,7 @@ class MenuGeneralRol(Base):
     id_menu = Column(Integer, ForeignKey('menus_generales.id'), primary_key=True)
     id_rol = Column(Integer, ForeignKey('roles.id'), primary_key=True)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class MenuEspecifico(Base):
@@ -155,7 +156,7 @@ class MenuEspecificoTipoEmpresa(Base):
     id_menu = Column(Integer, ForeignKey('menus_especificos.id'), primary_key=True)
     tipo_empresa = Column(String(50), primary_key=True)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class MenuPublico(Base):
@@ -164,7 +165,7 @@ class MenuPublico(Base):
     id_menu = Column(Integer, ForeignKey('menus_generales.id'))
     url_publica = Column(String(255), nullable=False)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
 class ConfiguracionEmpresa(Base):
@@ -174,7 +175,7 @@ class ConfiguracionEmpresa(Base):
     clave = Column(String(255), nullable=False)
     valor = Column(Text)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
 
 class Auditoria(Base):
     __tablename__ = 'auditoria'
@@ -196,7 +197,7 @@ class ParametroSistema(Base):
     valor = Column(Text)
     descripcion = Column(Text)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Integer, default=0)
 
 class Acceso(Base):
@@ -208,4 +209,4 @@ class Acceso(Base):
     fecha_vencimiento = Column(TIMESTAMP, nullable=False)
     token = Column(String(255), unique=True, nullable=False)
     fecha_creacion = Column(TIMESTAMP, default=func.now())
-    fecha_modificacion = Column(TIMESTAMP, default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())

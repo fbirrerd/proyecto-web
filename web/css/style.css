@@ -103,3 +103,8 @@ body {
     padding: 0.15rem 0.4rem;
     font-size: 0.7rem;
 }
+.vertical-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg); /* Opcional, si quieres que vaya de abajo hacia arriba */
+    text-align: center;
+  }

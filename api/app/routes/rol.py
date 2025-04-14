@@ -22,8 +22,8 @@ def create_role(role: RolCreate, db: Session = Depends(get_db)):
     return create_role(db=db, role=role)
 
 @router.get("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
-def read_roles(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    datos = get_roles(db=db, skip=skip, limit=limit)
+def read_roles(db: Session = Depends(get_db)):
+    datos = get_roles(db=db)
     return  objRespuesta(
         respuesta=True,
         data=datos

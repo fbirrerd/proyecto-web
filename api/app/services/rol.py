@@ -37,8 +37,8 @@ def getDatosRol(db: Session, UsuarioId: int, EmpresaId: int):
 def get_role(db: Session, role_id: int)  -> objRespuesta:
     return db.query(Rol).filter(Rol.id == role_id).first()
 
-def get_roles(db: Session, skip: int = 0, limit: int = 100)  -> objRespuesta:
-    return db.query(Rol).offset(skip).limit(limit).all()
+def get_roles(db: Session)  -> objRespuesta:
+    return db.query(Rol).all()
 
 def create_role(db: Session, role: RolCreate)  -> objRespuesta:
     db_role = Rol(nombre=Rol.nombre, estado=role.estado)

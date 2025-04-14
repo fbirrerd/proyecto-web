@@ -68,9 +68,7 @@ def filtrarEspecial(db: Session, UsuarioId: int, EmpresaId: int) -> List:
 def getListMenuOrdenada(db: Session,UsuarioId: int, EmpresaId: int)  -> objRespuesta:
     try:
         # Obtener todos los registros de la tabla MenuGeneral
-        
-        print("pasa por aca")
-        
+       
         if(EmpresaId and UsuarioId):
             menu_general_list = filtrarEspecial(db, UsuarioId, EmpresaId)
         else:

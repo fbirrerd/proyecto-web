@@ -26,36 +26,6 @@ function fetchMenus() {
 
 }
 
-const icons = [
-    // Informes y Documentos
-    "fa-file", "fa-file-alt", "fa-file-pdf", "fa-file-excel", "fa-file-word", 
-    "fa-file-powerpoint", "fa-file-archive", "fa-file-contract", "fa-book", 
-    "fa-book-open", "fa-clipboard", "fa-clipboard-check", "fa-paste",
-  
-    // Gráficos y Datos
-    "fa-chart-bar", "fa-chart-line", "fa-chart-pie", "fa-database",
-  
-    // Gestión / Configuración
-    "fa-cog", "fa-tools", "fa-wrench", "fa-folder", "fa-folder-open",
-    "fa-save", "fa-edit", "fa-sync", "fa-redo", "fa-undo",
-  
-    // Personas / Usuarios
-    "fa-user", "fa-user-circle", "fa-user-edit", "fa-user-plus", 
-    "fa-users", "fa-user-friends",
-  
-    // Tablas / Listas / Estructuras
-    "fa-table", "fa-layer-group", "fa-sitemap", "fa-project-diagram",
-  
-    // Conversaciones / Comunicación
-    "fa-comments", "fa-comment", "fa-envelope", "fa-envelope-open",
-    "fa-paper-plane", "fa-paperclip", "fa-phone", "fa-mobile-alt",
-  
-    // Navegación general
-    "fa-home", "fa-dashboard", "fa-search", "fa-sign-in-alt", "fa-sign-out-alt",
-    "fa-arrow-up", "fa-arrow-down", "fa-arrow-left", "fa-arrow-right"
-  ];
-icons.sort();
-
 const tipoOptions = ["link", "padre", "blank","popup"];
 
 function llenarTabla() {
@@ -70,8 +40,8 @@ function llenarTabla() {
                 <button class="btn dropdown-toggle btn-sm" type="button" id="dropdown-${menu.id}" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fas ${menu.icono} me-2"></i> Seleccione
                 </button>
-                <ul class="dropdown-menu dropdown-menu-sm" aria-labelledby="dropdown-${menu.id}">
-                    ${icons.map(icon => `
+                <ul class="dropdown-menu dropdown-menu-sm" style="max-height: 200px; overflow-y: auto; font-size: 0.85rem;" aria-labelledby="dropdown-${menu.id}">
+                    ${iconosFontAwesome.map(icon => `
                         <li><a class="dropdown-item icon-item" href="#" data-icon="${icon}"><i class="fas ${icon} me-2"></i> ${icon}</a></li>
                     `).join('')}
                 </ul>
@@ -103,11 +73,11 @@ function llenarTabla() {
                 <button class="btn btn-sm small-btn estado-toggle ${menu.estado ? 'btn-success' : 'btn-secondary'}" data-id="${menu.id}">
                     ${menu.estado ? 'Activo' : 'Inactivo'}
                 </button>
-                <button class="btn btn-success btn-sm guardar-btn small-btn" data-id="${menu.id}">
-                    <i class="fas fa-save"></i> Guardar
+                <button class="btn btn-secondary btn-sm guardar-btn small-btn" data-id="${menu.id}">
+                    <i class="fas fa-save"></i>
                 </button>
-                <button class="btn btn-warning btn-sm editar-btn small-btn" data-id="${menu.id}">
-                    <i class="fas fa-edit"></i> Editar
+                <button class="btn btn-secondary btn-sm editar-btn small-btn" data-id="${menu.id}">
+                    <i class="fas fa-edit"></i>
                 </button>
             `)
         );
@@ -198,7 +168,7 @@ $(document).on("click", ".editar-btn", function () {
 
     const $iconoSelect = $("#icono-select");
     $iconoSelect.empty(); // limpiar opciones previas
-    icons.forEach(icon => {
+    iconosFontAwesome.forEach(icon => {
         const selected = icon === menu.icono ? 'selected' : '';
         $iconoSelect.append(`
             <option value="${icon}">
@@ -209,7 +179,7 @@ $(document).on("click", ".editar-btn", function () {
 
     // 🔽 Llenar select de menús padre
     const $menuPadreSelect = $("#padre-select");
-    $menuPadreSelect.empty();
+    $menuPadreSelect.empty();i
     $menuPadreSelect.append(`<option value="">(Sin padre)</option>`); // opción vacía
 
     currentData.forEach(m => {

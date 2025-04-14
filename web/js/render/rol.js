@@ -100,7 +100,6 @@ $(document).on("click", ".editar-btn", function () {
 
 
     rolSeleccionadoId = rolId;
-    $('#overlay').show();
     $('#popup').show();
   
     const menus = fetchMenus()
