@@ -8,7 +8,6 @@ class RolMenuBase(BaseModel):
 
 
 class RolMenu(RolMenuBase):
-    id: int
     fecha_creacion: datetime
     fecha_modificacion: datetime
 

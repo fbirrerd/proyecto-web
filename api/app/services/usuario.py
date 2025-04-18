@@ -17,7 +17,7 @@ def create_usuario(db: Session, usuario: UsuarioCreate):
         apellidos=usuario.apellidos,
         email=usuario.email,
         password=usuario.password,  # Aquí debes usar hashing para la contraseña
-        direccion_id=usuario.direccion_id,
+        id_direccion=usuario.id_direccion,
         duracion=usuario.duracion,
     )
     db.add(db_usuario)
@@ -30,12 +30,12 @@ def get_usuarios(db: Session, skip: int = 0, limit: int = 10):
     return db.query(Usuario).offset(skip).limit(limit).all()
 
 # Obtener un usuario por ID
-def get_usuario(db: Session, usuario_id: int):
-    return db.query(Usuario).filter(Usuario.id == usuario_id).first()
+def get_usuario(db: Session, id_usuario: int):
+    return db.query(Usuario).filter(Usuario.id == id_usuario).first()
 
 # Actualizar un usuario
-def update_usuario(db: Session, usuario_id: int, usuario: UsuarioUpdate):
-    db_usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+def update_usuario(db: Session, id_usuario: int, usuario: UsuarioUpdate):
+    db_usuario = db.query(Usuario).filter(Usuario.id == id_usuario).first()
     if db_usuario:
         if usuario.username:
             db_usuario.username = usuario.username
@@ -52,8 +52,8 @@ def update_usuario(db: Session, usuario_id: int, usuario: UsuarioUpdate):
     return db_usuario
 
 # Eliminar un usuario
-def delete_usuario(db: Session, usuario_id: int):
-    db_usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+def delete_usuario(db: Session, id_usuario: int):
+    db_usuario = db.query(Usuario).filter(Usuario.id == id_usuario).first()
     if db_usuario:
         db.delete(db_usuario)
         db.commit()

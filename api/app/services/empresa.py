@@ -1,6 +1,6 @@
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
-from app.models.models import Empresa, UsuarioEmpresaRol
+from app.models.models import Empresa, EmpresaUsuario, EmpresaUsuarioRol
 from app.schemas.empresa import EmpresaAcceso, EmpresaCreate
 
 def crear_empresa(db: Session, empresa: EmpresaCreate):
@@ -11,15 +11,15 @@ def crear_empresa(db: Session, empresa: EmpresaCreate):
     return db_empresa
 
 def getDatosEmpresa(db: Session, UsuarioId: int):
-    userEmpRolObj = db.query(UsuarioEmpresaRol).filter(
-        and_(UsuarioEmpresaRol.id_usuario == UsuarioId, 
-             UsuarioEmpresaRol.estado == True)).all()
-    if not userEmpRolObj:
-        raise Exception("Registro UsuarioRolEmpresa no encontrada ")
+    userEmpObj = db.query(EmpresaUsuario).filter(
+        and_(EmpresaUsuario.id_usuario == UsuarioId, 
+             EmpresaUsuario.estado == True)).all()
+    if not userEmpObj:
+        raise Exception("Registro EmpresaUsuario no encontrado")
     
-    empresa_ids = [item.id_empresa for item in userEmpRolObj]
+    id_empresas = [item.id_empresa for item in userEmpObj]
     
-    empresaList = db.query(Empresa).filter(Empresa.id.in_(empresa_ids)).all()
+    empresaList = db.query(Empresa).filter(Empresa.id.in_(id_empresas)).all()
     
     if not empresaList:
         raise Exception("Empresas no encontrada")

@@ -62,7 +62,7 @@ const tipoOptions = ["link", "padre", "blank","popup"];
 function llenarTabla() {
     const $tbody = $("#tableBody");
     $tbody.empty();
-    currentData.forEach(menu => {
+    currentData.forEach(item => {
         const $row = $("<tr>");
         
         // Div que simula el select para los iconos
@@ -104,11 +104,8 @@ function llenarTabla() {
                 <button class="btn btn-sm small-btn estado-toggle ${menu.estado ? 'btn-success' : 'btn-secondary'}" data-id="${menu.id}">
                     ${menu.estado ? 'Activo' : 'Inactivo'}
                 </button>                
-                <button class="btn btn-success btn-sm guardar-btn small-btn" data-id="${menu.id}">
-                    <i class="fas fa-save"></i> Guardar
-                </button>
-                <button class="btn btn-warning btn-sm editar-btn small-btn" data-id="${menu.id}">
-                    <i class="fas fa-edit"></i> Editar
+                <button class="btn btn-success btn-sm guardar-btn small-btn" data-id="${menu.id}"><i class="fas fa-save"></i> </button>
+                <button class="btn btn-warning btn-sm editar-btn small-btn" data-id="${menu.id}"> <i class="fas fa-edit"></i> 
                 </button>
             `)
         );

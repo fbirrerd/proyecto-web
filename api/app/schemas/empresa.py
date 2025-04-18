@@ -18,8 +18,8 @@ class EmpresaOut(EmpresaBase):
 class EmpresaAcceso(EmpresaBase):
     id: int    
     nombre: str
-    tipo_empresa: str
-    direccion_id: Optional[int] = None    
+    id_tipo_empresa: str
+    id_direccion: Optional[int] = None    
 
     class Config:
         orm_mode = True

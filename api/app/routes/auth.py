@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import true
 from sqlalchemy.orm import Session
 from app.schemas.auth import LoginReload, UsuarioCambioPassword, UsuarioLogin
@@ -17,8 +17,8 @@ def get_db():
 
     
 @router.put("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
-def cambiarPassword(user: UsuarioCambioPassword, db: Session = Depends(get_db)):
-    respuesta = actualizar_password(db, user)
+def cambiarPassword(user: UsuarioCambioPassword, request: Request, db: Session = Depends(get_db)):
+    respuesta = actualizar_password(db, user, request)
     if respuesta:
         return respuesta
     # Si las credenciales no coinciden
@@ -29,8 +29,8 @@ def cambiarPassword(user: UsuarioCambioPassword, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
-def crear(user: UsuarioLogin, db: Session = Depends(get_db)):
-    respuesta = validar_login_usuario(db, user)
+def crear(user: UsuarioLogin, request: Request, db: Session = Depends(get_db)):
+    respuesta = validar_login_usuario(db, user, request)
     if respuesta:
         return respuesta
     # Si las credenciales no coinciden
@@ -42,8 +42,8 @@ def crear(user: UsuarioLogin, db: Session = Depends(get_db)):
     
     
 @router.post("/reload", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
-def crear(login: LoginReload, db: Session = Depends(get_db)):
-    respuesta =  validar_token_empresa(db, login)
+def crear(login: LoginReload, request: Request, db: Session = Depends(get_db)):
+    respuesta =  validar_token_empresa(db, login, request)
     if respuesta:
         return respuesta
     # Si las credenciales no coinciden

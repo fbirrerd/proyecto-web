@@ -1,107 +1,115 @@
 from typing import List, Optional
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
+from app.models.models import EmpresaUsuarioRol, Menu, MenuRol
 from app.utils.tree import getArbolOrdenadoTabulado
 from app.schemas.respond import objRespuesta
-from app.schemas.menuGeneral import MenuGeneralAcceso, MenuUpdate
-from app.models.models import MenuGeneral, MenuGeneralRol, UsuarioEmpresaRol
+from app.schemas.menus import MenuAcceso, MenuUpdate
 
-def filtrarEspecial(db: Session, UsuarioId: int, EmpresaId: int) -> List:
-    userEmpRolList = db.query(UsuarioEmpresaRol).filter(
-        and_(UsuarioEmpresaRol.id_usuario == UsuarioId, 
-             UsuarioEmpresaRol.id_empresa == EmpresaId,
-             UsuarioEmpresaRol.estado == True)
+
+def filtrarEspecial(db: Session, UsuarioId: int, EmpresaId: int) -> List[any]:
+    EmpresaUsuarioRolList = db.query(EmpresaUsuarioRol).filter(
+        and_(EmpresaUsuarioRol.id_usuario == UsuarioId, 
+             EmpresaUsuarioRol.id_empresa == EmpresaId,
+             EmpresaUsuarioRol.estado == True)
     ).all()
-    if not userEmpRolList:
+    
+    if not EmpresaUsuarioRolList:
         raise Exception("Registro UsuarioRolEmpresa no encontrada ")
 
-    roles_ids = [item.id_rol for item in userEmpRolList]
-    MenuGeneralRolList = db.query(MenuGeneralRol).filter(
-        and_(MenuGeneralRol.id_rol.in_(roles_ids),
-             MenuGeneralRol.estado == True)
-    ).all()
+    roles_ids = [item.id_rol for item in EmpresaUsuarioRolList] 
+    print(f" roles_ids {roles_ids} ")
 
-    menus_ids = [item.id_menu for item in MenuGeneralRolList]
-    MenuGeneralList = db.query(MenuGeneral).filter(
-        and_(MenuGeneral.id.in_(menus_ids),
-             MenuGeneral.estado == True)).all() 
-    return MenuGeneralList   
+    MenuRolList = db.query(MenuRol).filter(MenuRol.id_rol.in_(roles_ids)).all()
+    if not MenuRolList:
+        raise Exception("Registro MenuRol no encontrado ")
+    
+    menus_ids = [item.id_menu for item in MenuRolList]
+    print(f" menus_ids {menus_ids} ")
+    
+    MenuList = db.query(Menu).filter(
+        and_(Menu.id.in_(menus_ids),
+             Menu.estado == True)).all() 
+   
+    print(f" MenuList {MenuList.count} ")    
+    
+    return MenuList   
 
-# def getDatosMenuGenerales(db: Session, UsuarioId: int, EmpresaId: int):
-#     userEmpRolList = db.query(UsuarioEmpresaRol).filter(
-#         and_(UsuarioEmpresaRol.id_usuario == UsuarioId, 
-#              UsuarioEmpresaRol.id_empresa == EmpresaId,
-#              UsuarioEmpresaRol.estado == True)
+# def getDatosMenues(db: Session, UsuarioId: int, EmpresaId: int):
+#     userEmpRolList = db.query(EmpresaUsuarioRol).filter(
+#         and_(EmpresaUsuarioRol.id_usuario == UsuarioId, 
+#              EmpresaUsuarioRol.id_empresa == EmpresaId,
+#              EmpresaUsuarioRol.estado == True)
 #     ).all()
 #     if not userEmpRolList:
 #         raise Exception("Registro UsuarioRolEmpresa no encontrada ")
 
 #     roles_ids = [item.id_rol for item in userEmpRolList]
-#     MenuGeneralRolList = db.query(MenuGeneralRol).filter(
-#         and_(MenuGeneralRol.id_rol.in_(roles_ids),
-#              MenuGeneralRol.estado == True)
+#     MenuRolList = db.query(MenuRol).filter(
+#         and_(MenuRol.id_rol.in_(roles_ids),
+#              MenuRol.estado == True)
 #     ).all()
 
-#     menus_ids = [item.id_menu for item in MenuGeneralRolList]
-#     MenuGeneralList = db.query(MenuGeneral).filter(
-#         and_(MenuGeneral.id.in_(menus_ids),
-#              MenuGeneral.estado == True)).all()
+#     menus_ids = [item.id_menu for item in MenuRolList]
+#     MenuList = db.query(Menu).filter(
+#         and_(Menu.id.in_(menus_ids),
+#              Menu.estado == True)).all()
     
     
     
     
-#     if not MenuGeneralList:
-#         raise Exception("Registro MenuGeneral no encontrada ")
-#     for menu in MenuGeneralList:
+#     if not MenuList:
+#         raise Exception("Registro Menu no encontrada ")
+#     for menu in MenuList:
 #         # Verificar si el menú tiene hijos
-#         has_children = db.query(MenuGeneral).filter(MenuGeneral.id_padre == menu.id).count() > 0
+#         has_children = db.query(Menu).filter(Menu.id_padre == menu.id).count() > 0
 #         # Agregar el campo 'tiene_hijos' al menú
 #         menu.hijos = has_children
             
 #     # Si hay empresas, las convertimos a Pydantic
-#     menu_pydantic_list = [MenuGeneralAcceso.from_orm(menugeneral) for menugeneral in MenuGeneralList]
+#     menu_pydantic_list = [MenuAcceso.from_orm(Menu) for Menu in MenuList]
 #     if menu_pydantic_list:
 #         return menu_pydantic_list  # O devolver la lista completa si es necesario
 #     else:
 #         return None
   
-def getListMenuOrdenada(db: Session,UsuarioId: int, EmpresaId: int)  -> objRespuesta:
+def getListMenuOrdenada(db: Session,UsuarioId: int, EmpresaId: int):
     try:
-        # Obtener todos los registros de la tabla MenuGeneral
-       
+        # Obtener todos los registros de la tabla Menu
+        # menu_general_list=[]
         if(EmpresaId and UsuarioId):
+            print(f"::::::: UsuarioId: {UsuarioId} EmpresaId: {EmpresaId} :::::::")
             menu_general_list = filtrarEspecial(db, UsuarioId, EmpresaId)
         else:
-            menu_general_list = db.query(MenuGeneral).all()
+            menu_general_list = db.query(Menu).all()
 
         # Verificar si la lista está vacía
         if not menu_general_list:
-            raise ValueError("No se encontraron registros en MenuGeneral")
+            raise ValueError("No se encontraron registros en Menu")
 
         # Construir árbol ordenado y devolverlo como parte de la respuesta
-        menu_general_list = getArbolOrdenadoTabulado(menu_general_list)
+        # menu_general_list = getArbolOrdenadoTabulado(menu_general_list)
 
         return menu_general_list
     except Exception as e:
         # Captura de errores genéricos
-        return objRespuesta(
-            respuesta=False,
-            data={"error": str(e)}
-        )
+        return None
+        
+        
     
 def get_lista_menu(db: Session)  -> objRespuesta:
     try:
-        MenuGeneralList = db.query(MenuGeneral).all()
-        if not MenuGeneralList:
-            raise Exception("Registro MenuGeneral no encontrada ")
-        for menu in MenuGeneralList:
+        MenuList = db.query(Menu).all()
+        if not MenuList:
+            raise Exception("Registro Menu no encontrada ")
+        for menu in MenuList:
             # Verificar si el menú tiene hijos
-            has_children = db.query(MenuGeneral).filter(MenuGeneral.id_padre == menu.id).count() > 0
+            has_children = db.query(Menu).filter(Menu.id_padre == menu.id).count() > 0
             # Agregar el campo 'tiene_hijos' al menú
             menu.hijos = has_children
                 
         # Si hay empresas, las convertimos a Pydantic
-        menu_pydantic_list = [MenuGeneralAcceso.from_orm(menugeneral) for menugeneral in MenuGeneralList]
+        menu_pydantic_list = [MenuAcceso.from_orm(Menu) for Menu in MenuList]
         
         return objRespuesta(
             respuesta=True,
@@ -135,7 +143,7 @@ def actualizar_menu_general(db: Session, menu: MenuUpdate)  -> objRespuesta:
  
 def actualizar_estado(db: Session, id_menu: int, estado: bool):
     try:
-        menu = db.query(MenuGeneral).filter(MenuGeneral.id == id_menu).first()
+        menu = db.query(Menu).filter(Menu.id == id_menu).first()
 
         if menu is None:
             print(f"No se encontró el menú con ID: {id_menu}")
@@ -159,7 +167,7 @@ def actualizar_estado(db: Session, id_menu: int, estado: bool):
 def editar_menu(db, id_menu, nombre=None, icono=None, ruta=None, id_padre=None, es_publico=None, tipo=None, estado=None):
     try:
         # Buscar el menú en la base de datos
-        menu = db.query(MenuGeneral).filter(MenuGeneral.id == id_menu).one()
+        menu = db.query(Menu).filter(Menu.id == id_menu).one()
 
         # Actualizar los campos proporcionados
         if nombre:
@@ -189,14 +197,14 @@ def editar_menu(db, id_menu, nombre=None, icono=None, ruta=None, id_padre=None, 
         print(f"Error al editar el menú: {e}")
         return False
 
-# def getListMenuGeneralesArbol(db: Session)  -> objRespuesta:
+# def getListMenuesArbol(db: Session)  -> objRespuesta:
 #     try:
-#         # Obtener todos los registros de la tabla MenuGeneral
-#         menu_general_list = db.query(MenuGeneral).all()
+#         # Obtener todos los registros de la tabla Menu
+#         menu_general_list = db.query(Menu).all()
 
 #         # Verificar si la lista está vacía
 #         if not menu_general_list:
-#             raise ValueError("No se encontraron registros en MenuGeneral")
+#             raise ValueError("No se encontraron registros en Menu")
 
 #         # Construir árbol ordenado y devolverlo como parte de la respuesta
 #         data_ordenada = construir_arbol_ordenado(menu_general_list)

@@ -29,22 +29,22 @@ function fetchRoles() {
 function llenarTabla() {
     const $tbody = $("#tableBody");
     $tbody.empty(); // Limpiar la tabla antes de llenar
-    currentData.forEach(rol => {
+    currentData.forEach(item => {
         const $row = $("<tr>");
         $row.append(
-            $("<td>").append(`<input type="text" class="form-control form-control-sm" id="nombre-${rol.id}" value="${rol.nombre}">`),
+            $("<td>").append(`<input type="text" class="form-control form-control-sm" id="nombre-${item.id}" value="${item.nombre}">`),
             $("<td>").append(`
-                <select class="form-select form-select-sm" id="estado-${rol.id}">
-                    <option value="true" ${rol.estado ? "selected" : ""}>Activo</option>
-                    <option value="false" ${!rol.estado ? "selected" : ""}>Inactivo</option>
-                </select>
-            `),
-            $("<td>").append(`
-                <button class="btn btn-success btn-sm guardar-btn" data-id="${rol.id}">
-                    <i class="fas fa-save"></i> Guardar
+                <button 
+                    class="btn btn-sm toggle-estado-btn ${item.estado ? 'btn-success' : 'btn-secondary'}" 
+                    data-id="${item.id}" 
+                    data-estado="${item.estado}">
+                    ${item.estado ? 'Activo' : 'Inactivo'}
+                </button>                
+                <button class="btn btn-success btn-sm guardar-btn" data-id="${item.id}">
+                    <i class="fas fa-save"></i>
                 </button>
-                <button class="btn btn-warning btn-sm editar-btn" data-id="${rol.id}">
-                    <i class="fas fa-edit"></i> Editar
+                <button class="btn btn-warning btn-sm editar-btn" data-id="${item.id}">
+                    <i class="fas fa-edit"></i>
                 </button>
             `)
         );
@@ -61,13 +61,7 @@ function mostrarFilaNueva() {
       <tr id="filaNueva">
         <td><input type="text" class="form-control" id="nuevoRolNombre" placeholder="Nombre del rol"></td>
         <td>
-          <select class="form-select" id="nuevoRolEstado">
-            <option value="true">Activo</option>
-            <option value="false">Inactivo</option>
-          </select>
-        </td>
-        <td>
-          <button class="btn btn-success btn-sm me-2" onclick="guardarNuevoRol()"><i class="fa fa-check"></i> Guardar</button>
+          <button class="btn btn-success btn-sm me-2" onclick="insertarRol()"><i class="fa fa-check"></i> Guardar</button>
           <button class="btn btn-secondary btn-sm" onclick="cancelarNuevoRol()"><i class="fa fa-times"></i> Cancelar</button>
         </td>
       </tr>
@@ -76,18 +70,58 @@ function mostrarFilaNueva() {
 }
 
 async function insertarRol() {
-    const nombre = $('#nuevoNombre').val().trim();
+    const nombre = $('#nuevoRolNombre').val();
     if (!nombre) return alert('Ingresa un nombre');
-    await axios.post('/roles', { nombre });
-    $('#nuevoNombre').val('');
-    cargarRoles();
+    let params = {
+        "nombre": nombre,
+        "estado": true
+      }
+    callApi('POST', 'rol', params)
+    .done(function(response) {
+        if (response.respuesta) {
+            return response.data;
+        } else {
+            console.log(response.error);
+            showWarning(`Error al guardar el Rol. (${response.data.error})`);
+        }
+    })
+    .fail(function() {
+        showDanger("No se puede conectar con el servidor"); 
+    });
+    $('#nuevoRolNombre').val('');
+    fetchRoles();
 }
 
-async function actualizarRol(id, nuevoNombre) {
-    await axios.put(`/roles/${id}`, { nombre: nuevoNombre });
-    cargarRoles();
+async function actualizarRol(id, nuevoRolNombre) {
+    await axios.put(`/roles/${id}`, { nombre: nuevoRolNombre });
+    fetchRoles();
 }
 
+$tbody.on("click", ".toggle-estado-btn", function () {
+    const $btn = $(this);
+    const id = $btn.data("id");
+    const estadoActual = $btn.data("estado") === true || $btn.data("estado") === "true";
+    const nuevoEstado = !estadoActual;
+
+    // Actualiza en la base de datos (AJAX o fetch)
+    $.ajax({
+        url: `/api/actualizar-estado/${id}`,
+        method: "PUT",
+        contentType: "application/json",
+        data: JSON.stringify({ estado: nuevoEstado }),
+        success: function () {
+            // Actualiza el botón visualmente
+            $btn
+                .data("estado", nuevoEstado)
+                .removeClass("btn-success btn-secondary")
+                .addClass(nuevoEstado ? "btn-success" : "btn-secondary")
+                .text(nuevoEstado ? "Activo" : "Inactivo");
+        },
+        error: function () {
+            alert("Error al actualizar el estado.");
+        }
+    });
+});
 
 $(document).on("click", ".editar-btn", function () {
     const id = $(this).data("id");

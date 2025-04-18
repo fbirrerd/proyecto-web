@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.schemas.respond import objRespuesta
-from app.schemas.menuGeneral import  MenuEstadoUpdate, MenuUpdate
-from app.services.menuGenerales import actualizar_estado, actualizar_menu_general, get_lista_menu, getListMenuOrdenada
+from app.schemas.menus import  MenuEstadoUpdate, MenuUpdate
+from app.services.menus import actualizar_estado, actualizar_menu_general, get_lista_menu, getListMenuOrdenada
 from app.database import SessionLocal
 
 
@@ -55,6 +55,6 @@ def putGeneralesEstado(menu: MenuEstadoUpdate, db: Session = Depends(get_db)):
 #     return getListMenuOrdenada(db)
 
 
-# @router.get("/especificos/all", response_model=MenuGeneral)
+# @router.get("/especificos/all", response_model=Menu)
 # def getEspecificos(empresa: EmpresaCreate, db: Session = Depends(get_db)):
 #     return crear_empresa(db, empresa)

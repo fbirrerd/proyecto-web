@@ -1,10 +1,10 @@
 from typing import Dict, List
-from app.schemas.menuGeneral import MenuOut
-from app.models.models import MenuGeneral
+from app.schemas.menus import MenuOut
+from app.models.models import Menu
 
 
-def getArbolOrdenadoTabulado(data: List[MenuGeneral]) -> List:
-    # Ya son objetos MenuGeneral, no necesitamos convertirlos
+def getArbolOrdenadoTabulado(data: List[Menu]) -> List:
+    # Ya son objetos Menu, no necesitamos convertirlos
     menus_con_nivel = []
     
     for menu in data:

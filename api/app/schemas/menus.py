@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class MenuGeneralBase(BaseModel):
+class MenuBase(BaseModel):
     nombre: Optional[str] = None
     icono: Optional[str] = None
     ruta: Optional[str] = None
@@ -13,7 +13,7 @@ class MenuGeneralBase(BaseModel):
     class Config:
         orm_mode = True  # Esto permite que Pydantic utilice objetos SQLAlchemy
 
-class MenuCreate(MenuGeneralBase):
+class MenuCreate(MenuBase):
     pass
 
 
@@ -29,7 +29,7 @@ class MenuEstadoUpdate(BaseModel):
     id: int
     estado: bool
 
-class MenuOut(MenuGeneralBase):
+class MenuOut(MenuBase):
     id: int
     id_padre: Optional[int] = None
     hijos: Optional[bool] 
@@ -37,7 +37,7 @@ class MenuOut(MenuGeneralBase):
     class Config:
         orm_mode = True
 
-class MenuGeneralAcceso(MenuGeneralBase):
+class MenuAcceso(MenuBase):
     id: Optional[int] = None
     tipo: Optional[str] = None
     orden: Optional[int] = None 

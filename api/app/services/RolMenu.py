@@ -2,7 +2,7 @@ import traceback
 from fastapi import HTTPException
 from app.schemas.rolMenu import ObjetoRelaciones, RelacionMenuRol, RolMenu, RolMenu_relacion
 from app.schemas.rol import RolAcceso
-from app.models.models import MenuGeneral, MenuGeneralRol, Rol, UsuarioEmpresaRol
+from app.models.models import Menu, MenuRol, Rol, EmpresaUsuarioRol
 from sqlalchemy.orm import Session
 
 from sqlalchemy import and_, or_
@@ -10,10 +10,10 @@ from app.schemas.respond import objRespuesta
 
 
 def getDatosRol(db: Session, UsuarioId: int, EmpresaId: int):
-    userEmpRolList = db.query(UsuarioEmpresaRol).filter(
-        and_(UsuarioEmpresaRol.id_usuario == UsuarioId, 
-             UsuarioEmpresaRol.id_empresa == EmpresaId,
-             UsuarioEmpresaRol.estado == True)
+    userEmpRolList = db.query(EmpresaUsuarioRol).filter(
+        and_(EmpresaUsuarioRol.id_usuario == UsuarioId, 
+             EmpresaUsuarioRol.id_empresa == EmpresaId,
+             EmpresaUsuarioRol.estado == True)
     ).all()
     if not userEmpRolList:
         raise Exception("Registro UsuarioRolEmpresa no encontrada ")
@@ -35,7 +35,7 @@ def getDatosRol(db: Session, UsuarioId: int, EmpresaId: int):
         return None
 
 def get_RolMenu(db: Session)  -> objRespuesta:
-    datos = db.query(MenuGeneralRol).all()
+    datos = db.query(MenuRol).all()
     return objRespuesta(
         respuesta=True,
         data=datos
@@ -47,10 +47,10 @@ def set_relaciones(db: Session, obj: ObjetoRelaciones) -> objRespuesta:
 
     try:
         for relacion in obj.relaciones:
-            existente = db.query(MenuGeneralRol).filter(
+            existente = db.query(MenuRol).filter(
                 and_(
-                    MenuGeneralRol.id_rol == relacion.id_rol,
-                    MenuGeneralRol.id_menu == relacion.id_menu
+                    MenuRol.id_rol == relacion.id_rol,
+                    MenuRol.id_menu == relacion.id_menu
                 )
             ).first()
 
@@ -66,7 +66,7 @@ def set_relaciones(db: Session, obj: ObjetoRelaciones) -> objRespuesta:
                     "estado": existente.estado
                 })
             else:
-                nueva_relacion = MenuGeneralRol(
+                nueva_relacion = MenuRol(
                     estado=relacion.estado,
                     id_menu=relacion.id_menu,
                     id_rol=relacion.id_rol
@@ -104,14 +104,14 @@ def set_relaciones(db: Session, obj: ObjetoRelaciones) -> objRespuesta:
 def obtener_menu_rol_info(db: Session):
     resultados = (
         db.query(
-            MenuGeneralRol.id_rol,
+            MenuRol.id_rol,
             Rol.nombre.label("rol_nombre"),
-            MenuGeneralRol.id_menu,
-            MenuGeneral.nombre.label("menu_nombre"),
-            MenuGeneralRol.estado
+            MenuRol.id_menu,
+            Menu.nombre.label("menu_nombre"),
+            MenuRol.estado
         )
-        .join(Rol, Rol.id == MenuGeneralRol.id_rol)
-        .join(MenuGeneral, MenuGeneral.id == MenuGeneralRol.id_menu)
+        .join(Rol, Rol.id == MenuRol.id_rol)
+        .join(Menu, Menu.id == MenuRol.id_menu)
         .all()
     )
 

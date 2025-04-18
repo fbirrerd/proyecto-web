@@ -31,7 +31,7 @@ const tipoOptions = ["link", "padre", "blank","popup"];
 function llenarTabla() {
     const $tbody = $("#tableBody");
     $tbody.empty();
-    currentData.forEach(menu => {
+    currentData.forEach(item => {
         const $row = $("<tr>");
 
         // Div que simula el select para los iconos

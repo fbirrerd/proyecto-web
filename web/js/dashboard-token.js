@@ -54,7 +54,7 @@ function cargarNombreEmpresa(empresaNombre) {
 }
 
 function IniciarMenu(tokenData) {
-    LoadMenu(tokenData.menusGenerales, null, "leftMenuGeneralContainer")
+    LoadMenu(tokenData.menusGenerales, null, "leftMenuContainer")
     LoadMenu(tokenData.menusEspecificos, "leftMenuEspecificoContainer")
 }
 function LoadMenu(menuJson, idPadre, idContainer) {

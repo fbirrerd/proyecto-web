@@ -3,8 +3,8 @@ from datetime import datetime
 from typing import Optional
 
 class AccesoBase(BaseModel):
-    usuario_id: int
-    empresa_id: Optional[int] = None
+    id_usuario: int
+    id_empresa: Optional[int] = None
     fecha_vencimiento: datetime
     token: str
 

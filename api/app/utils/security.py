@@ -16,7 +16,7 @@ def generar_jwt(idUsuario: int, minutosDuracion: int):
 
     # Crea un token JWT con una fecha de expiración
     payload = {
-        'usuario_id': idUsuario,
+        'id_usuario': idUsuario,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=minutosDuracion)
     }
 

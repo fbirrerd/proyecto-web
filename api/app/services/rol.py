@@ -1,6 +1,6 @@
 
 from app.schemas.rol import RolAcceso, RolCreate, RolUpdate
-from app.models.models import Rol, UsuarioEmpresaRol
+from app.models.models import Rol, EmpresaUsuarioRol
 from sqlalchemy.orm import Session
 
 
@@ -10,10 +10,10 @@ from app.schemas.respond import objRespuesta
 
 
 def getDatosRol(db: Session, UsuarioId: int, EmpresaId: int):
-    userEmpRolList = db.query(UsuarioEmpresaRol).filter(
-        and_(UsuarioEmpresaRol.id_usuario == UsuarioId, 
-             UsuarioEmpresaRol.id_empresa == EmpresaId,
-             UsuarioEmpresaRol.estado == True)
+    userEmpRolList = db.query(EmpresaUsuarioRol).filter(
+        and_(EmpresaUsuarioRol.id_usuario == UsuarioId, 
+             EmpresaUsuarioRol.id_empresa == EmpresaId,
+             EmpresaUsuarioRol.estado == True)
     ).all()
     if not userEmpRolList:
         raise Exception("Registro UsuarioRolEmpresa no encontrada ")

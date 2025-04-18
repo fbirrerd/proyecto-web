@@ -7,7 +7,7 @@ class UsuarioBase(BaseModel):
     nombres: str
     apellidos: str
     email: str
-    direccion_id: Optional[int] = None
+    id_direccion: Optional[int] = None
     duracion: Optional[int] = 20
 
     class Config:
@@ -34,7 +34,7 @@ class UsuarioAcceso(UsuarioBase):
     nombres: str
     apellidos: str
     email: str
-    direccion_id: Optional[int] = None
+    id_direccion: Optional[int] = None
     class Config:
         orm_mode = True      
 

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estructura de Menús</title>
+    <!-- Incluir Bootstrap y Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJ6L2WjQpUwC7U+yZ35jX6k+JYjl/78Kn/3Z8J32l5+jFtmFFaI6kONGrfru" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        #arbol-usuario {
+            margin-top: 20px;
+            padding-left: 20px;
+        }
+
+        /* Estilo para los íconos */
+        .fa-folder, .fa-folder-open {
+            color: #007bff;
+        }
+
+        .fa-cogs {
+            color: #28a745;
+        }
+
+        .fa-users {
+            color: #e74c3c;
+        }
+
+        /* Estilo de ocultar sublistas */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Estructura de Usuario</h2>
+    <div id="arbol-usuario" class="container"></div>
+
+    <script>
+        // Datos de ejemplo (usuario, empresas, roles y menús)
+        const estructuraUsuario = {
+            username: 'juanperez',
+            empresas: [
+                {
+                    nombre: 'Farmacia Central',
+                    roles: [
+                        {
+                            nombre: 'Administrador',
+                            menus: [
+                                { nombre: 'Inicio', hijos: [
+                                    { nombre: 'Dashboard' },
+                                    { nombre: 'Reportes' }
+                                ] },
+                                { nombre: 'Configuraciones', hijos: [
+                                    { nombre: 'Usuarios', hijos: [
+                                        { nombre: 'Administrar Usuarios' },
+                                        { nombre: 'Roles' }
+                                    ] }
+                                ] }
+                            ]
+                        },
+                        {
+                            nombre: 'Vendedor',
+                            menus: [
+                                { nombre: 'Ventas' },
+                                { nombre: 'Clientes' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    nombre: 'Librería El Saber',
+                    roles: [
+                        {
+                            nombre: 'Administrador',
+                            menus: [
+                                { nombre: 'Inventario', hijos: [
+                                    { nombre: 'Gestión de Productos' }
+                                ] },
+                                { nombre: 'Reportes' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Función para generar el árbol
+        function generarArbol(data) {
+            const contenedor = document.getElementById('arbol-usuario');
+            contenedor.innerHTML = ''; // Limpiar el contenido previo
+
+            // Crear un contenedor para el árbol
+            const ul = document.createElement('ul');
+            ul.classList.add('list-group');
+
+            // Iterar sobre las empresas
+            data.empresas.forEach(empresa => {
+                const liEmpresa = document.createElement('li');
+                liEmpresa.classList.add('list-group-item', 'list-group-item-info');
+                liEmpresa.innerHTML = `<span class="toggle-icon"><i class="fa fa-folder"></i></span> ${empresa.nombre}`;
+
+                // Crear sublistas para los roles
+                const ulRoles = document.createElement('ul');
+                ulRoles.classList.add('list-group', 'ms-3');
+                empresa.roles.forEach(rol => {
+                    const liRol = document.createElement('li');
+                    liRol.classList.add('list-group-item', 'list-group-item-warning');
+                    liRol.innerHTML = `<span class="toggle-icon"><i class="fa fa-users"></i></span> ${rol.nombre}`;
+
+                    // Crear sublistas para los menús
+                    const ulMenus = document.createElement('ul');
+                    ulMenus.classList.add('list-group', 'ms-3');
+                    rol.menus.forEach(menu => {
+                        const liMenu = document.createElement('li');
+                        liMenu.classList.add('list-group-item');
+                        liMenu.innerHTML = `<span class="toggle-icon"><i class="fa fa-cogs"></i></span> ${menu.nombre}`;
+                        
+                        // Crear sublistas si tiene hijos
+                        if (menu.hijos && menu.hijos.length > 0) {
+                            const ulHijos = document.createElement('ul');
+                            ulHijos.classList.add('list-group', 'ms-3');
+                            menu.hijos.forEach(hijo => {
+                                const liHijo = document.createElement('li');
+                                liHijo.classList.add('list-group-item');
+                                liHijo.innerHTML = `${hijo.nombre}`;
+                                ulHijos.appendChild(liHijo);
+                            });
+                            liMenu.appendChild(ulHijos);
+                        }
+                        ulMenus.appendChild(liMenu);
+                    });
+                    liRol.appendChild(ulMenus);
+                    ulRoles.appendChild(liRol);
+                });
+                liEmpresa.appendChild(ulRoles);
+                ul.appendChild(liEmpresa);
+            });
+
+            contenedor.appendChild(ul);
+        }
+
+        // Alternar visibilidad de sublistas
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('toggle-icon')) {
+                const icon = event.target.querySelector('i');
+                const parentLi = event.target.closest('li');
+                const sublist = parentLi.querySelector('ul');
+
+                if (sublist) {
+                    sublist.classList.toggle('hidden');
+                    icon.classList.toggle('fa-folder');
+                    icon.classList.toggle('fa-folder-open');
+                }
+            }
+        });
+
+        // Llamar la función para generar el árbol de la estructura de usuario
+        generarArbol(estructuraUsuario);
+    </script>
+
+    <!-- Scripts de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+

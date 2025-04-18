@@ -12,8 +12,8 @@ def obtener_todos_los_accesos(db: Session, skip: int = 0, limit: int = 100):
 
 def crear_acceso(db: Session, acceso: AccesoCreate):
     nuevo_acceso = Acceso(
-        usuario_id=acceso.usuario_id,
-        empresa_id=acceso.empresa_id,
+        id_usuario=acceso.id_usuario,
+        id_empresa=acceso.id_empresa,
         fecha_vencimiento=acceso.fecha_vencimiento,
         token=acceso.token,
     )
@@ -25,8 +25,8 @@ def crear_acceso(db: Session, acceso: AccesoCreate):
 def actualizar_acceso(db: Session, acceso_id: int, acceso_actualizado: AccesoUpdate):
     acceso = db.query(Acceso).filter(Acceso.id == acceso_id).first()
     if acceso:
-        acceso.usuario_id = acceso_actualizado.usuario_id
-        acceso.empresa_id = acceso_actualizado.empresa_id
+        acceso.id_usuario = acceso_actualizado.id_usuario
+        acceso.id_empresa = acceso_actualizado.id_empresa
         acceso.fecha_vencimiento = acceso_actualizado.fecha_vencimiento
         acceso.token = acceso_actualizado.token
         acceso.fecha_modificacion = datetime.now()

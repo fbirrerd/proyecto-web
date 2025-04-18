@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
-from app.schemas.menuGeneral import MenuGeneralAcceso
+from app.schemas.menus import MenuAcceso
 from app.schemas.rol import RolAcceso
 from app.schemas.empresa import EmpresaAcceso
 from app.schemas.usuario import UsuarioAcceso
@@ -14,11 +14,12 @@ class DatosAcceso(BaseModel):
     email: str
     token: str
     usuario: UsuarioAcceso
-    menusGenerales: List
-    # menusEspecificos: List
+    menus: Optional[List['MenuAcceso']]
     empresas: List['EmpresaAcceso']
     empresaSeleccionada: Optional[int] 
-    roles: List['RolAcceso']
+    roles: Optional[List['RolAcceso']] 
+    # duracionAcceso: any
+
 
     class Config:
         orm_mode = True
@@ -54,7 +55,6 @@ class AccesoRoles(BaseModel):
 
 # Clase que representa el menú de acceso
 class AccesoMenu(BaseModel):
-    id: int
     nombre: str
     url: str
 

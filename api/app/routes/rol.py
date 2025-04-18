@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.schemas.rol import RolCreate, RolUpdate
 from app.schemas.respond import objRespuesta
-from app.services.rol import get_role, get_roles
+from app.services.rol import create_role, get_role, get_roles
 from app.database import SessionLocal
 
 
@@ -18,8 +18,12 @@ def get_db():
         db.close()
         
 @router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
-def create_role(role: RolCreate, db: Session = Depends(get_db)):
-    return create_role(db=db, role=role)
+def set_rol(rol: RolCreate, db: Session = Depends(get_db)):
+    datos = create_role(db,rol)
+    return  objRespuesta(
+        respuesta=True,
+        data=datos
+    )    
 
 @router.get("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def read_roles(db: Session = Depends(get_db)):

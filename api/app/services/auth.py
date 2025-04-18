@@ -1,68 +1,72 @@
+from fastapi import Request
+from app.services.logAcceso import registrar_log_acceso
 from app.services.complejos import getObjetoAcceso
 from app.schemas.auth import LoginReload, UsuarioCambioPassword, UsuarioLogin
-from app.models.models import Acceso, Usuario
+from app.models.models import Acceso, EmpresaUsuario, Usuario
 from app.utils.password import get_password_hash, verify_password
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from sqlalchemy import and_, or_
 from app.schemas.respond import objRespuesta
 
-def validar_login_usuario(db: Session, user: UsuarioLogin) -> objRespuesta:
+# Función utilitaria para obtener IP y user-agent
+def obtener_info_cliente(request: Request):
+    if request:
+        ip = request.client.host
+        user_agent = request.headers.get("user-agent")
+        return ip, user_agent
+    return None, None
+
+def validar_login_usuario(db: Session, user: UsuarioLogin, request: Request) -> objRespuesta:
+    ip, user_agent = obtener_info_cliente(request)
+
+    usuarioID = ""
+
     try:
-        # Buscar el usuario con el nombre de usuario proporcionado
         userObj = db.query(Usuario).filter(
-            or_(Usuario.username == user.username,
-                Usuario.email == user.username)
+            or_(Usuario.username == user.username, Usuario.email == user.username)
         ).first()
 
-        # Si el usuario no existe, retornar respuesta de error
         if not userObj:
-            return objRespuesta(
-                respuesta=False,
-                data={'error': 'Usuario no existe en la base de datos'}
-            )
+            registrar_log_acceso(db, userObj.username, False, "Usuario no encontrado", userObj.id, ip, user_agent)
+            return objRespuesta(respuesta=False, data={'error': 'Usuario no existe en la base de datos'})
+        
+        usuarioID = userObj.id 
 
-        # Validar si la contraseña necesita ser cambiada
         if userObj.password == "cambiar":
-            return objRespuesta(
-                respuesta=True,
-                data={'cambioClave': True}
-            )
+            registrar_log_acceso(db, userObj.username, True, "Requiere cambio de clave", userObj.id, ip, user_agent)
+            return objRespuesta(respuesta=True, data={'cambioClave': True})
 
-        # Verificar si la contraseña proporcionada coincide con la almacenada
         if not verify_password(user.password, userObj.password):
-            return objRespuesta(
-                respuesta=False,
-                data={'error': 'Usuario y clave inválidos'}
-            )
+            registrar_log_acceso(db, userObj.username, False, "Contraseña incorrecta", userObj.id, ip, user_agent)
+            return objRespuesta(respuesta=False, data={'error': 'Usuario y clave inválidos'})
 
-        # Armar el objeto de acceso (si está implementado)
         objAcceso = getObjetoAcceso(db, userObj.id)
+        registrar_log_acceso(db, userObj.username, True, "Login exitoso", userObj.id, ip, user_agent)
 
-        # Si el usuario existe y la contraseña es correcta, retornar respuesta exitosa
-        return objRespuesta(
-            respuesta=True,
-            data=objAcceso
-        )
+        return objRespuesta(respuesta=True, data=objAcceso)
 
     except Exception as e:
-        # Capturar cualquier excepción que ocurra durante el proceso
-        print(f"Error durante la validación del login: {e}")
+        print(f"❌ Error durante la validación del login: {e}")
+        registrar_log_acceso(db, user.username, False, f"Excepción en login: {e}", usuarioID, ip, user_agent)
         return objRespuesta(
             respuesta=False,
-            data={'error': {"numero": 500, "mensaje": f'Ocurrió un error interno: {e}'}}
+            data={'error': {"numero": 500, "mensaje": f'Ocurrió un error interno: {str(e)}'}}
         )
 
-def validar_token_empresa(db: Session, login: LoginReload) -> objRespuesta:
+
+def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> objRespuesta:
     try:
+        ip, user_agent = obtener_info_cliente(request)
         # Buscar el usuario con el nombre de usuario proporcionado
         idUsuario = getIDUsuarioXToken(db, login.token)
 
 
-        objAcceso = getObjetoAcceso(db, idUsuario,
+        objAcceso = getObjetoAcceso(db, 
+                                    idUsuario,
                                     login.empresaid, 
                                     login.token)
-
+        registrar_log_acceso(db, objAcceso.username, True, "Cambio de empresa exitoso. Nueva empresa: " + login.empresaid, objAcceso.id, ip, user_agent)
         # Si el usuario existe y la contraseña es correcta, retornar respuesta exitosa
         return objRespuesta(
             respuesta=True,
@@ -77,7 +81,8 @@ def validar_token_empresa(db: Session, login: LoginReload) -> objRespuesta:
         )
 
 
-def actualizar_password(db: Session, user: UsuarioCambioPassword) -> objRespuesta:
+def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Request) -> objRespuesta:
+    ip, user_agent = obtener_info_cliente(request)
     userObj = db.query(Usuario).filter(
         and_(
             Usuario.username == user.username,
@@ -88,17 +93,17 @@ def actualizar_password(db: Session, user: UsuarioCambioPassword) -> objRespuest
     if userObj:
         userObj.password = get_password_hash(user.password)
         userObj.fecha_modificacion = datetime.now(timezone.utc) # 👈 Asegura que se actualice la fecha
-
+        registrar_log_acceso(db, userObj.username, True, "Cambio de clave exitoso", userObj.id, ip, user_agent)
         db.commit()
         db.refresh(userObj)
 
         return objRespuesta(
             respuesta=True,
             data={
-                "id": userObj.id,
                 "username": userObj.username,
                 "email": userObj.email,
-                "fecha_modificacion": userObj.fecha_modificacion.isoformat()
+                "fecha_modificacion": userObj.fecha_modificacion.isoformat(),
+                "mensaje": "Cambio de clave OK"
             }
         )
     else:
@@ -116,7 +121,7 @@ def getIDUsuarioXToken(db: Session, token: str):
 
     if accesoObj:
         # Convierte el ORM en Pydantic
-        return accesoObj.usuario_id
+        return accesoObj.id_usuario
     else:
         return None       
     
