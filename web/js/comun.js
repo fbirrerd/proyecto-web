@@ -224,10 +224,7 @@ let iconosFontAwesome = [
     icon: "fa-brands fa-discord fa-fw",
     name: "discord",
   },
-  {
-    icon: "fa-solid fa-circle-xmark fa-fw",
-    name: "circle-xmark",
-  },
+
 
   {
     icon: "fa-solid fa-bomb fa-fw",
@@ -404,10 +401,6 @@ let iconosFontAwesome = [
     icon: "fa-solid fa-trash fa-fw",
     name: "trash",
   },
-  {
-    icon: "fa-solid fa-circle-up fa-fw",
-    name: "circle-up",
-  },
 
   {
     icon: "fa-brands fa-docker fa-fw",
@@ -535,11 +528,6 @@ let iconosFontAwesome = [
     icon: "fa-solid fa-magnet fa-fw",
     name: "magnet",
   },
-  {
-    icon: "fa-solid fa-hand fa-fw",
-    name: "hand",
-  },
-
   {
     icon: "fa-solid fa-folder fa-fw",
     name: "folder",
@@ -689,10 +677,6 @@ let iconosFontAwesome = [
     icon: "fa-solid fa-bath fa-fw",
     name: "bath",
   },
-  {
-    icon: "fa-solid fa-handshake fa-fw",
-    name: "handshake",
-  },
 
   {
     icon: "fa-brands fa-medium fa-fw",
@@ -841,10 +825,6 @@ let iconosFontAwesome = [
     name: "car-side",
   },
   {
-    icon: "fa-solid fa-hand-holding-heart fa-fw",
-    name: "hand-holding-heart",
-  },
-  {
     icon: "fa-brands fa-intercom fa-fw",
     name: "intercom",
   },
@@ -911,10 +891,6 @@ let iconosFontAwesome = [
   {
     icon: "fa-solid fa-backward fa-fw",
     name: "backward",
-  },
-  {
-    icon: "fa-solid fa-handshake-slash fa-fw",
-    name: "handshake-slash",
   },
   {
     icon: "fa-solid fa-chevron-up fa-fw",
@@ -1080,10 +1056,7 @@ let iconosFontAwesome = [
     icon: "fa-brands fa-internet-explorer fa-fw",
     name: "internet-explorer",
   },
-  {
-    icon: "fa-solid fa-hand-point-up fa-fw",
-    name: "hand-point-up",
-  },
+
 
   {
     icon: "fa-brands fa-pagelines fa-fw",
@@ -1350,10 +1323,6 @@ let iconosFontAwesome = [
     name: "square-twitter",
   },
   {
-    icon: "fa-solid fa-hands fa-fw",
-    name: "hands",
-  },
-  {
     icon: "fa-solid fa-signal fa-fw",
     name: "signal",
   },
@@ -1613,10 +1582,7 @@ let iconosFontAwesome = [
     icon: "fa-solid fa-comments-dollar fa-fw",
     name: "comments-dollar",
   },
-  {
-    icon: "fa-solid fa-truck-monster fa-fw",
-    name: "truck-monster",
-  },
+
   {
     icon: "fa-solid fa-recycle fa-fw",
     name: "recycle",
@@ -1905,10 +1871,7 @@ let iconosFontAwesome = [
     icon: "fa-brands fa-meetup fa-fw",
     name: "meetup",
   },
-  {
-    icon: "fa-solid fa-border-none fa-fw",
-    name: "border-none",
-  },
+
   {
     icon: "fa-solid fa-dumbbell fa-fw",
     name: "dumbbell",
@@ -2758,14 +2721,6 @@ let iconosFontAwesome = [
     name: "spell-check",
   },
   {
-    icon: "fa-solid fa-spaghetti-monster-flying fa-fw",
-    name: "spaghetti-monster-flying",
-  },
-  {
-    icon: "fa-solid fa-spa fa-fw",
-    name: "spa",
-  },
-  {
     icon: "fa-solid fa-sort-up fa-fw",
     name: "sort-up",
   },
@@ -2796,14 +2751,6 @@ let iconosFontAwesome = [
   {
     icon: "fa-solid fa-sleigh fa-fw",
     name: "sleigh",
-  },
-  {
-    icon: "fa-solid fa-skull-crossbones fa-fw",
-    name: "skull-crossbones",
-  },
-  {
-    icon: "fa-solid fa-skull fa-fw",
-    name: "skull",
   },
   {
     icon: "fa-solid fa-sink fa-fw",
@@ -3012,10 +2959,6 @@ let iconosFontAwesome = [
   {
     icon: "fa-solid fa-road-circle-check fa-fw",
     name: "road-circle-check",
-  },
-  {
-    icon: "fa-solid fa-road-bridge fa-fw",
-    name: "road-bridge",
   },
   {
     icon: "fa-solid fa-road-barrier fa-fw",
@@ -3861,10 +3804,7 @@ let iconosFontAwesome = [
     icon: "fa-solid fa-kip-sign fa-fw",
     name: "kip-sign",
   },
-  {
-    icon: "fa-solid fa-khanda fa-fw",
-    name: "khanda",
-  },
+
   {
     icon: "fa-solid fa-kaaba fa-fw",
     name: "kaaba",
@@ -4188,126 +4128,6 @@ let iconosFontAwesome = [
   {
     icon: "fa-solid fa-hanukiah fa-fw",
     name: "hanukiah",
-  },
-  {
-    icon: "fa-solid fa-handshake-simple-slash fa-fw",
-    name: "handshake-simple-slash",
-  },
-  {
-    icon: "fa-solid fa-handshake-simple fa-fw",
-    name: "handshake-simple",
-  },
-  {
-    icon: "fa-solid fa-handshake-angle fa-fw",
-    name: "handshake-angle",
-  },
-  {
-    icon: "fa-solid fa-hands-praying fa-fw",
-    name: "hands-praying",
-  },
-  {
-    icon: "fa-solid fa-hands-holding-circle fa-fw",
-    name: "hands-holding-circle",
-  },
-  {
-    icon: "fa-solid fa-hands-holding-child fa-fw",
-    name: "hands-holding-child",
-  },
-  {
-    icon: "fa-solid fa-hands-holding fa-fw",
-    name: "hands-holding",
-  },
-  {
-    icon: "fa-solid fa-hands-clapping fa-fw",
-    name: "hands-clapping",
-  },
-  {
-    icon: "fa-solid fa-hands-bubbles fa-fw",
-    name: "hands-bubbles",
-  },
-  {
-    icon: "fa-solid fa-hands-bound fa-fw",
-    name: "hands-bound",
-  },
-  {
-    icon: "fa-solid fa-hands-asl-interpreting fa-fw",
-    name: "hands-asl-interpreting",
-  },
-  {
-    icon: "fa-solid fa-handcuffs fa-fw",
-    name: "handcuffs",
-  },
-  {
-    icon: "fa-solid fa-hand-spock fa-fw",
-    name: "hand-spock",
-  },
-  {
-    icon: "fa-solid fa-hand-sparkles fa-fw",
-    name: "hand-sparkles",
-  },
-  {
-    icon: "fa-solid fa-hand-scissors fa-fw",
-    name: "hand-scissors",
-  },
-  {
-    icon: "fa-solid fa-hand-pointer fa-fw",
-    name: "hand-pointer",
-  },
-  {
-    icon: "fa-solid fa-hand-point-right fa-fw",
-    name: "hand-point-right",
-  },
-  {
-    icon: "fa-solid fa-hand-point-left fa-fw",
-    name: "hand-point-left",
-  },
-  {
-    icon: "fa-solid fa-hand-point-down fa-fw",
-    name: "hand-point-down",
-  },
-  {
-    icon: "fa-solid fa-hand-peace fa-fw",
-    name: "hand-peace",
-  },
-  {
-    icon: "fa-solid fa-hand-middle-finger fa-fw",
-    name: "hand-middle-finger",
-  },
-  {
-    icon: "fa-solid fa-hand-lizard fa-fw",
-    name: "hand-lizard",
-  },
-  {
-    icon: "fa-solid fa-hand-holding-medical fa-fw",
-    name: "hand-holding-medical",
-  },
-  {
-    icon: "fa-solid fa-hand-holding-hand fa-fw",
-    name: "hand-holding-hand",
-  },
-  {
-    icon: "fa-solid fa-hand-holding-droplet fa-fw",
-    name: "hand-holding-droplet",
-  },
-  {
-    icon: "fa-solid fa-hand-holding-dollar fa-fw",
-    name: "hand-holding-dollar",
-  },
-  {
-    icon: "fa-solid fa-hand-holding fa-fw",
-    name: "hand-holding",
-  },
-  {
-    icon: "fa-solid fa-hand-fist fa-fw",
-    name: "hand-fist",
-  },
-  {
-    icon: "fa-solid fa-hand-dots fa-fw",
-    name: "hand-dots",
-  },
-  {
-    icon: "fa-solid fa-hand-back-fist fa-fw",
-    name: "hand-back-fist",
   },
   {
     icon: "fa-solid fa-hamsa fa-fw",
@@ -5550,30 +5370,6 @@ let iconosFontAwesome = [
     name: "briefcase-medical",
   },
   {
-    icon: "fa-solid fa-bridge-water fa-fw",
-    name: "bridge-water",
-  },
-  {
-    icon: "fa-solid fa-bridge-lock fa-fw",
-    name: "bridge-lock",
-  },
-  {
-    icon: "fa-solid fa-bridge-circle-xmark fa-fw",
-    name: "bridge-circle-xmark",
-  },
-  {
-    icon: "fa-solid fa-bridge-circle-exclamation fa-fw",
-    name: "bridge-circle-exclamation",
-  },
-  {
-    icon: "fa-solid fa-bridge-circle-check fa-fw",
-    name: "bridge-circle-check",
-  },
-  {
-    icon: "fa-solid fa-bridge fa-fw",
-    name: "bridge",
-  },
-  {
     icon: "fa-solid fa-bread-slice fa-fw",
     name: "bread-slice",
   },
@@ -5634,20 +5430,8 @@ let iconosFontAwesome = [
     name: "bore-hole",
   },
   {
-    icon: "fa-solid fa-border-top-left fa-fw",
-    name: "border-top-left",
-  },
-  {
-    icon: "fa-solid fa-border-all fa-fw",
-    name: "border-all",
-  },
-  {
     icon: "fa-solid fa-book-tanakh fa-fw",
     name: "book-tanakh",
-  },
-  {
-    icon: "fa-solid fa-book-skull fa-fw",
-    name: "book-skull",
   },
   {
     icon: "fa-solid fa-book-quran fa-fw",
@@ -5738,40 +5522,8 @@ let iconosFontAwesome = [
     name: "bed",
   },
   {
-    icon: "fa-solid fa-battery-three-quarters fa-fw",
-    name: "battery-three-quarters",
-  },
-  {
-    icon: "fa-solid fa-battery-quarter fa-fw",
-    name: "battery-quarter",
-  },
-  {
-    icon: "fa-solid fa-battery-half fa-fw",
-    name: "battery-half",
-  },
-  {
-    icon: "fa-solid fa-battery-full fa-fw",
-    name: "battery-full",
-  },
-  {
-    icon: "fa-solid fa-battery-empty fa-fw",
-    name: "battery-empty",
-  },
-  {
     icon: "fa-solid fa-basketball fa-fw",
     name: "basketball",
-  },
-  {
-    icon: "fa-solid fa-basket-shopping fa-fw",
-    name: "basket-shopping",
-  },
-  {
-    icon: "fa-solid fa-baseball-bat-ball fa-fw",
-    name: "baseball-bat-ball",
-  },
-  {
-    icon: "fa-solid fa-baseball fa-fw",
-    name: "baseball",
   },
   {
     icon: "fa-solid fa-bars-staggered fa-fw",
@@ -5846,194 +5598,6 @@ let iconosFontAwesome = [
     name: "asterisk",
   },
   {
-    icon: "fa-solid fa-arrows-up-to-line fa-fw",
-    name: "arrows-up-to-line",
-  },
-  {
-    icon: "fa-solid fa-arrows-up-down-left-right fa-fw",
-    name: "arrows-up-down-left-right",
-  },
-  {
-    icon: "fa-solid fa-arrows-up-down fa-fw",
-    name: "arrows-up-down",
-  },
-  {
-    icon: "fa-solid fa-arrows-turn-to-dots fa-fw",
-    name: "arrows-turn-to-dots",
-  },
-  {
-    icon: "fa-solid fa-arrows-turn-right fa-fw",
-    name: "arrows-turn-right",
-  },
-  {
-    icon: "fa-solid fa-arrows-to-eye fa-fw",
-    name: "arrows-to-eye",
-  },
-  {
-    icon: "fa-solid fa-arrows-to-dot fa-fw",
-    name: "arrows-to-dot",
-  },
-  {
-    icon: "fa-solid fa-arrows-to-circle fa-fw",
-    name: "arrows-to-circle",
-  },
-  {
-    icon: "fa-solid fa-arrows-split-up-and-left fa-fw",
-    name: "arrows-split-up-and-left",
-  },
-  {
-    icon: "fa-solid fa-arrows-spin fa-fw",
-    name: "arrows-spin",
-  },
-  {
-    icon: "fa-solid fa-arrows-rotate fa-fw",
-    name: "arrows-rotate",
-  },
-  {
-    icon: "fa-solid fa-arrows-left-right-to-line fa-fw",
-    name: "arrows-left-right-to-line",
-  },
-  {
-    icon: "fa-solid fa-arrows-left-right fa-fw",
-    name: "arrows-left-right",
-  },
-  {
-    icon: "fa-solid fa-arrows-down-to-people fa-fw",
-    name: "arrows-down-to-people",
-  },
-  {
-    icon: "fa-solid fa-arrows-down-to-line fa-fw",
-    name: "arrows-down-to-line",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-z-a fa-fw",
-    name: "arrow-up-z-a",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-wide-short fa-fw",
-    name: "arrow-up-wide-short",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-short-wide fa-fw",
-    name: "arrow-up-short-wide",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-right-dots fa-fw",
-    name: "arrow-up-right-dots",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-long fa-fw",
-    name: "arrow-up-long",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-from-water-pump fa-fw",
-    name: "arrow-up-from-water-pump",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-from-ground-water fa-fw",
-    name: "arrow-up-from-ground-water",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-a-z fa-fw",
-    name: "arrow-up-a-z",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-9-1 fa-fw",
-    name: "arrow-up-9-1",
-  },
-  {
-    icon: "fa-solid fa-arrow-up-1-9 fa-fw",
-    name: "arrow-up-1-9",
-  },
-  {
-    icon: "fa-solid fa-arrow-turn-up fa-fw",
-    name: "arrow-turn-up",
-  },
-  {
-    icon: "fa-solid fa-arrow-turn-down fa-fw",
-    name: "arrow-turn-down",
-  },
-  {
-    icon: "fa-solid fa-arrow-trend-up fa-fw",
-    name: "arrow-trend-up",
-  },
-  {
-    icon: "fa-solid fa-arrow-trend-down fa-fw",
-    name: "arrow-trend-down",
-  },
-  {
-    icon: "fa-solid fa-arrow-rotate-right fa-fw",
-    name: "arrow-rotate-right",
-  },
-  {
-    icon: "fa-solid fa-arrow-rotate-left fa-fw",
-    name: "arrow-rotate-left",
-  },
-  {
-    icon: "fa-solid fa-arrow-right-to-city fa-fw",
-    name: "arrow-right-to-city",
-  },
-  {
-    icon: "fa-solid fa-arrow-right-to-bracket fa-fw",
-    name: "arrow-right-to-bracket",
-  },
-  {
-    icon: "fa-solid fa-arrow-right-long fa-fw",
-    name: "arrow-right-long",
-  },
-  {
-    icon: "fa-solid fa-arrow-right-from-bracket fa-fw",
-    name: "arrow-right-from-bracket",
-  },
-  {
-    icon: "fa-solid fa-arrow-right-arrow-left fa-fw",
-    name: "arrow-right-arrow-left",
-  },
-  {
-    icon: "fa-solid fa-arrow-pointer fa-fw",
-    name: "arrow-pointer",
-  },
-  {
-    icon: "fa-solid fa-arrow-left-long fa-fw",
-    name: "arrow-left-long",
-  },
-  {
-    icon: "fa-solid fa-arrow-down-z-a fa-fw",
-    name: "arrow-down-z-a",
-  },
-  {
-    icon: "fa-solid fa-arrow-down-wide-short fa-fw",
-    name: "arrow-down-wide-short",
-  },
-  {
-    icon: "fa-solid fa-arrow-down-up-lock fa-fw",
-    name: "arrow-down-up-lock",
-  },
-  {
-    icon: "fa-solid fa-arrow-down-up-across-line fa-fw",
-    name: "arrow-down-up-across-line",
-  },
-  {
-    icon: "fa-solid fa-arrow-down-short-wide fa-fw",
-    name: "arrow-down-short-wide",
-  },
-  {
-    icon: "fa-solid fa-arrow-down-long fa-fw",
-    name: "arrow-down-long",
-  },
-  {
-    icon: "fa-solid fa-arrow-down-a-z fa-fw",
-    name: "arrow-down-a-z",
-  },
-  {
-    icon: "fa-solid fa-arrow-down-9-1 fa-fw",
-    name: "arrow-down-9-1",
-  },
-  {
-    icon: "fa-solid fa-arrow-down-1-9 fa-fw",
-    name: "arrow-down-1-9",
-  },
-  {
     icon: "fa-solid fa-archway fa-fw",
     name: "archway",
   },
@@ -6044,34 +5608,6 @@ let iconosFontAwesome = [
   {
     icon: "fa-solid fa-ankh fa-fw",
     name: "ankh",
-  },
-  {
-    icon: "fa-solid fa-angles-up fa-fw",
-    name: "angles-up",
-  },
-  {
-    icon: "fa-solid fa-angles-right fa-fw",
-    name: "angles-right",
-  },
-  {
-    icon: "fa-solid fa-angles-left fa-fw",
-    name: "angles-left",
-  },
-  {
-    icon: "fa-solid fa-angles-down fa-fw",
-    name: "angles-down",
-  },
-  {
-    icon: "fa-solid fa-angle-right fa-fw",
-    name: "angle-right",
-  },
-  {
-    icon: "fa-solid fa-angle-left fa-fw",
-    name: "angle-left",
-  },
-  {
-    icon: "fa-solid fa-angle-down fa-fw",
-    name: "angle-down",
   },
   {
     icon: "fa-solid fa-anchor-lock fa-fw",
@@ -6089,66 +5625,8 @@ let iconosFontAwesome = [
     icon: "fa-solid fa-anchor-circle-check fa-fw",
     name: "anchor-circle-check",
   },
-  {
-    icon: "fa-solid fa-align-right fa-fw",
-    name: "align-right",
-  },
-  {
-    icon: "fa-solid fa-align-left fa-fw",
-    name: "align-left",
-  },
-  {
-    icon: "fa-solid fa-align-justify fa-fw",
-    name: "align-justify",
-  },
-  {
-    icon: "fa-solid fa-align-center fa-fw",
-    name: "align-center",
-  },
-  {
-    icon: "fa-solid fa-a fa-fw",
-    name: "a",
-  },
-  {
-    icon: "fa-solid fa-9 fa-fw",
-    name: "9",
-  },
-  {
-    icon: "fa-solid fa-8 fa-fw",
-    name: "8",
-  },
-  {
-    icon: "fa-solid fa-7 fa-fw",
-    name: "7",
-  },
-  {
-    icon: "fa-solid fa-6 fa-fw",
-    name: "6",
-  },
-  {
-    icon: "fa-solid fa-5 fa-fw",
-    name: "5",
-  },
-  {
-    icon: "fa-solid fa-4 fa-fw",
-    name: "4",
-  },
-  {
-    icon: "fa-solid fa-3 fa-fw",
-    name: "3",
-  },
-  {
-    icon: "fa-solid fa-2 fa-fw",
-    name: "2",
-  },
-  {
-    icon: "fa-solid fa-1 fa-fw",
-    name: "1",
-  },
-  {
-    icon: "fa-solid fa-0 fa-fw",
-    name: "0",
-  },
+
+
 ];
 iconosFontAwesome.sort((a, b) => a.name.localeCompare(b.name));
 iconosFontAwesome.filter((item) => item.icon.includes("fa-solid"));

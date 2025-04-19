@@ -35,19 +35,35 @@ function llenarTabla() {
         const $row = $("<tr>");
 
         // Div que simula el select para los iconos
+        let icon = item.icono;
+        let iconObj = iconosFontAwesome.find(i => i.icon === icon);
+    
+        // Si no tiene ícono seleccionado, usar texto "Seleccione"
+        let dropdownBtnContent = iconObj
+          ? `<i class="${iconObj.icon} me-2"></i> <span class="icon-name">${iconObj.name}</span>`
+          : `<span class="text-muted icon-name">Seleccione</span>`;
+    
         let $iconSelectDiv = $(`
-            <div class="dropdown">
-                <button class="btn dropdown-toggle btn-sm" type="button" id="dropdown-${item.id}" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas ${item.icono} me-2"></i> Seleccione
-                </button>
-                <ul class="dropdown-menu dropdown-menu-sm" style="max-height: 200px; overflow-y: auto; font-size: 0.85rem;" aria-labelledby="dropdown-${item.id}">
-                    ${iconosFontAwesome.map(icon => `
-                        <li><a class="dropdown-item icon-item" href="#" data-icon="${icon.name}"><i class="fas ${icon.icon} me-2"></i> ${icon.name}</a></li>
-                    `).join('')}
-                </ul>
-                </div>
-                <input type="hidden" id="icono-${item.id}" value="${item.icon}">
+          <div class="dropdown">
+            <button class="btn dropdown-toggle btn-sm" type="button" id="dropdown-${item.id}" data-bs-toggle="dropdown" aria-expanded="false">
+              ${dropdownBtnContent}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-sm dropdown-menu-scrollable" aria-labelledby="dropdown-${item.id}">
+              ${iconosFontAwesome.map(iconObj => `
+                <li>
+                  <a class="dropdown-item icon-item" href="#"
+                    data-icon="${iconObj.icon}"
+                    data-name="${iconObj.name}"
+                    data-id="${item.id}">
+                    <i class="${iconObj.icon} me-2"></i> ${iconObj.name}
+                  </a>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+          <input type="hidden" id="icono-${item.id}" value="${icon || ''}">
         `);
+        
 
         // Agregar el resto de campos de la tabla
         $row.append(
@@ -70,13 +86,13 @@ function llenarTabla() {
             `),
             // $("<td>").append(`<input type="number" class="form-control form-control-sm" style="width:50px" id="orden-${item.id}" value="${item.orden}">`),
             $("<td>").append(`
-                <button class="btn btn-sm small-btn estado-toggle ${item.estado ? 'btn-success' : 'btn-secondary'}" data-id="${item.id}">
+                <button class="btn btn-sm estado-toggle ${item.estado ? 'btn-success' : 'btn-secondary'}" data-id="${item.id}">
                     ${item.estado ? 'Activo' : 'Inactivo'}
                 </button>
-                <button class="btn btn-secondary btn-sm guardar-btn small-btn" data-id="${item.id}">
+                <button class="btn btn-success btn-sm guardar-btn " data-id="${item.id}">
                     <i class="fas fa-save"></i>
                 </button>
-                <button class="btn btn-secondary btn-sm editar-btn small-btn" data-id="${item.id}">
+                <button class="btn btn-sm btn-warning" onclick="abrirModalEditar(${item.id})">
                     <i class="fas fa-edit"></i>
                 </button>
             `)
@@ -147,65 +163,123 @@ $(document).on("click", ".guardar-btn", function () {
 });
 
 // Asignar icono al seleccionar una opción
-$(document).on("click", ".icon-item", function () {
-    const icon = $(this).data("icon");
-    const id = $(this).closest(".dropdown").find("button").attr("id").split('-')[1];
+$(document).on('click', '.icon-item', function (e) {
+    e.preventDefault();
+  
+    const newIcon = $(this).data('icon');
+    const newName = $(this).data('name');
+    const itemId = $(this).data('id');
+  
+    const $btn = $(`#dropdown-${itemId}`);
     
-    // Actualizar el ícono visible en el botón del dropdown
-    $(this).closest(".dropdown").find("button").html(`<i class="fas ${icon} me-2"></i> ${icon}`);
+    // Reemplaza el icono
+    $btn.find('i').attr('class', `${newIcon} me-2`);
     
-    // Actualizar el valor del input oculto
-    $(`#icono-${id}`).val(icon);
-});
+    // Reemplaza el texto por el name (más corto)
+    $btn.find('.icon-name').text(newName);
+  
+    // Guarda en el input hidden el valor completo del icono
+    $(`#icono-${itemId}`).val(newIcon);
+  });
 
 // ✏️ ABRIR MODAL para edición completa
-$(document).on("click", ".editar-btn", function () {
-    const id = $(this).data("id");
-    const item = currentData.find(r => r.id === id);
 
-    if (!item) return;
+// $(document).on("click", ".editar-btn", function () {
+//     const id = $(this).data("id");
+//     const item = currentData.find(r => r.id === id);
 
-    const $iconoSelect = $("#icono-select");
-    $iconoSelect.empty(); // limpiar opciones previas
-    iconosFontAwesome.forEach(icon => {
-        const selected = icon === item.icono ? 'selected' : '';
-        $iconoSelect.append(`
-            <option value="${icon}">
-                ${icon}
-            </option>
-        `);
+//     if (!item) return;
+
+//     const $iconoSelect = $("#icono-select");
+//     $iconoSelect.empty(); // limpiar opciones previas
+//     iconosFontAwesome.forEach(icon => {
+//         const selected = icon === item.icono ? 'selected' : '';
+//         $iconoSelect.append(`
+//             <option value="${icon}">
+//                 ${icon}
+//             </option>
+//         `);
+//     });
+
+//     // 🔽 Llenar select de menús padre
+//     const $itemPadreSelect = $("#padre-select");
+//     $itemPadreSelect.empty();i
+//     $itemPadreSelect.append(`<option value="">(Sin padre)</option>`); // opción vacía
+
+//     currentData.forEach(m => {
+//         // Evitar que un menú sea su propio padre
+//         if (m.id !== id) {
+//             const selected = m.id === item.id_padre ? "selected" : "";
+//             $itemPadreSelect.append(
+//                 `<option value="${m.id}" ${selected}>${m.nombre}</option>`
+//             );
+//         }
+//     });
+
+//     // Cargar datos en el modal
+//     // $("#editForm [name='id']").val(item.id);
+//     // $("#editForm [name='nombre']").val(item.nombre);
+//     // $("#editForm [name='ruta']").val(item.ruta);
+//     // $("#editForm [name='id_padre']").val(item.id_padre);
+//     // $("#editForm [name='tipo']").val(item.tipo);
+//     // $("#editForm [name='orden']").val(item.orden);
+//     // $("#editForm [name='estado']").val(item.estado.toString());
+
+
+//     // Mostrar el modal
+//     const modal = new bootstrap.Modal(document.getElementById("editModal"));
+//     modal.show();
+// });
+
+// Esta función se ejecuta cuando haces clic en el botón de editar
+async function abrirModalEditar(menuId) {
+    // Obtener los datos del menú por ID desde tu API
+    const resMenu = await fetch(`/api/menus/${menuId}`);
+    const menu = await resMenu.json();
+  
+    // Obtener la lista completa de roles
+    const resRoles = await fetch('/api/roles');
+    const roles = await resRoles.json();
+  
+    // Obtener los roles asociados a este menú
+    const resRolesAsociados = await fetch(`/api/menus/${menuId}/roles`);
+    const rolesAsociados = await resRolesAsociados.json();
+    const rolesSeleccionados = rolesAsociados.map(r => r.id); // [1, 2, ...]
+  
+    // Llenar los campos del formulario
+    document.getElementById("menu-id").value = menu.id;
+    document.getElementById("nombre").value = menu.nombre;
+    document.getElementById("ruta").value = menu.ruta;
+    document.getElementById("orden").value = menu.orden;
+    document.getElementById("estado").value = menu.estado;
+  
+    // Selects (rellénalos si no están llenos aún)
+    await cargarSelects(); // Función que llena los select de iconos, padres y tipos si es necesario
+  
+    document.getElementById("icono-select").value = menu.icono;
+    document.getElementById("padre-select").value = menu.id_padre || "";
+    document.getElementById("tipo-select").value = menu.id_tipo_menu;
+  
+    // Llenar checkboxes de roles
+    const rolesContainer = document.getElementById("roles-container");
+    rolesContainer.innerHTML = ""; // Limpiar primero
+  
+    roles.forEach(rol => {
+      const checked = rolesSeleccionados.includes(rol.id) ? "checked" : "";
+      const div = document.createElement("div");
+      div.className = "form-check";
+      div.innerHTML = `
+        <input class="form-check-input" type="checkbox" name="roles" id="rol-${rol.id}" value="${rol.id}" ${checked}>
+        <label class="form-check-label" for="rol-${rol.id}">${rol.nombre}</label>
+      `;
+      rolesContainer.appendChild(div);
     });
-
-    // 🔽 Llenar select de menús padre
-    const $itemPadreSelect = $("#padre-select");
-    $itemPadreSelect.empty();i
-    $itemPadreSelect.append(`<option value="">(Sin padre)</option>`); // opción vacía
-
-    currentData.forEach(m => {
-        // Evitar que un menú sea su propio padre
-        if (m.id !== id) {
-            const selected = m.id === item.id_padre ? "selected" : "";
-            $itemPadreSelect.append(
-                `<option value="${m.id}" ${selected}>${m.nombre}</option>`
-            );
-        }
-    });
-
-    // Cargar datos en el modal
-    // $("#editForm [name='id']").val(item.id);
-    // $("#editForm [name='nombre']").val(item.nombre);
-    // $("#editForm [name='ruta']").val(item.ruta);
-    // $("#editForm [name='id_padre']").val(item.id_padre);
-    // $("#editForm [name='tipo']").val(item.tipo);
-    // $("#editForm [name='orden']").val(item.orden);
-    // $("#editForm [name='estado']").val(item.estado.toString());
-
-
-    // Mostrar el modal
+  
+    // Abrir el modal
     const modal = new bootstrap.Modal(document.getElementById("editModal"));
     modal.show();
-});
-
+  }
+  
 
 
 function editar(id) {
@@ -245,3 +319,36 @@ function guardarCambios(e) {
         fetchitems();
       });
 }
+
+
+// Mostrar modal en modo "crear"
+function mostrarFilaNueva() {
+    limpiarFormulario();
+    $('#editModalLabel').text('Crear Menú');
+    const modal = new bootstrap.Modal(document.getElementById('editModal'));
+    modal.show();
+  }
+  
+  // Mostrar modal en modo "editar"
+  function editarMenu(menu) {
+    $('#editModalLabel').text('Editar Menú');
+    $('#menu-id').val(menu.id);
+    $('#nombre').val(menu.nombre);
+    $('#icono').val(menu.icono);
+    $('#url').val(menu.url);
+    $('#descripcion').val(menu.descripcion);
+    $('#id_tipo_menu').val(menu.id_tipo_menu);
+    $('#id_padre').val(menu.id_padre);
+    $('#orden').val(menu.orden);
+    $('#estado').val(menu.estado.toString());
+  
+    const modal = new bootstrap.Modal(document.getElementById('editModal'));
+    modal.show();
+  }
+  
+  // Limpiar el formulario
+  function limpiarFormulario() {
+    $('#editForm')[0].reset();
+    $('#menu-id').val('');
+  }
+  

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel
 
 
@@ -21,7 +21,8 @@ class MenuUpdate(BaseModel):
     id: int
     nombre: str
     icono: str
-    url: Optional[str] = None
+    url: Optional[str] = None    
+    tipo: Optional[str] = None
     id_padre: Optional[int] = None
 
 class MenuEstadoUpdate(BaseModel):
@@ -45,4 +46,15 @@ class MenuAcceso(MenuBase):
   
     class Config:
         orm_mode = True
+        
+class MenuInput(BaseModel):
+    nombre: str
+    icono: str
+    id_tipo_menu: int
+    id_padre: Optional[int]
+    url: str
+    descripcion: Optional[str]
+    orden: Optional[int]
+    estado: bool
+    roles: List[int]  # ← esto es nuevo        
         

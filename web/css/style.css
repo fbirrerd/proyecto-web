@@ -108,3 +108,7 @@ body {
     transform: rotate(180deg); /* Opcional, si quieres que vaya de abajo hacia arriba */
     text-align: center;
   }
+  .dropdown-menu-scrollable {
+    max-height: 200px;
+    overflow-y: auto;
+  }

@@ -47,87 +47,92 @@
     </div>
 
     <!-- Modal de edición -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form class="modal-content" id="editForm">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Editar Menú</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="id">
-
-                    <!-- Dividir en dos columnas -->
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="nombre" class="form-label">Nombre:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" name="nombre" id="nombre" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="ruta" class="form-label">Ruta:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" name="ruta" id="ruta" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="tipo" class="form-label">Padre:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" name="padre" id="padre" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="tipo" class="form-label">Tipo:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" name="tipo" id="tipo" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="icono" class="form-label">Ícono:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <select class="form-select" id="icono-select" name="icono" style="width: 100%"></select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="orden" class="form-label">Padre:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <select class="form-select" id="padre-select" name="id_padre">
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="estado" class="form-label">Estado:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <select name="estado" id="estado" class="form-select" required>
-                                <option value="true">Activo</option>
-                                <option value="false">Inactivo</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+<!-- Modal de edición/creación -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="editForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Editar / Crear Menú</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
-
+  
+        <div class="modal-body">
+          <input type="hidden" name="id" id="menu-id">
+  
+          <div class="row mb-2">
+            <div class="col-md-3"><label class="form-label">Nombre:</label></div>
+            <div class="col-md-9"><input type="text" class="form-control" name="nombre" id="nombre" required></div>
+          </div>
+  
+          <div class="row mb-2">
+            <div class="col-md-3"><label class="form-label">Ruta (URL):</label></div>
+            <div class="col-md-9"><input type="text" class="form-control" name="ruta" id="ruta" required></div>
+          </div>
+  
+          <div class="row mb-2">
+            <div class="col-md-3"><label class="form-label">Ícono:</label></div>
+            <div class="col-md-9">
+              <select class="form-select" name="icono" id="icono-select"></select>
+            </div>
+          </div>
+  
+          <div class="row mb-2">
+            <div class="col-md-3"><label class="form-label">Padre:</label></div>
+            <div class="col-md-9">
+              <select class="form-select" name="id_padre" id="padre-select"></select>
+            </div>
+          </div>
+  
+          <div class="row mb-2">
+            <div class="col-md-3"><label class="form-label">Tipo:</label></div>
+            <div class="col-md-9">
+              <select class="form-select" name="id_tipo_menu" id="tipo-select"></select>
+            </div>
+          </div>
+  
+          <div class="row mb-2">
+            <div class="col-md-3"><label class="form-label">Orden:</label></div>
+            <div class="col-md-9">
+              <input type="number" class="form-control" name="orden" id="orden">
+            </div>
+          </div>
+  
+          <div class="row mb-2">
+            <div class="col-md-3"><label class="form-label">Estado:</label></div>
+            <div class="col-md-9">
+              <select class="form-select" name="estado" id="estado">
+                <option value="true">Activo</option>
+                <option value="false">Inactivo</option>
+              </select>
+            </div>
+          </div>
+  
+          <!-- Roles -->
+          <div class="row mb-2">
+            <div class="col-md-3"><label class="form-label">Roles:</label></div>
+            <div class="col-md-9">
+              <div id="roles-container" class="form-check d-flex flex-wrap gap-2">
+                <!-- JS insertará aquí los checkboxes de roles -->
+                <!-- Ejemplo de un checkbox:
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="1" name="roles" id="rol-1">
+                  <label class="form-check-label" for="rol-1">Administrador</label>
+                </div>
+                -->
+              </div>
+            </div>
+          </div>
+  
+        </div>
+  
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
     </div>
+  </div>
+  
 
     </form>
     </div>
