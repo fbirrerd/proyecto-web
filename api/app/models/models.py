@@ -139,7 +139,6 @@ class Menu(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String(100), nullable=False)
     icono = Column(String(50))
-    ruta = Column(String(255))
     id_tipo_menu = Column(Integer, ForeignKey('tipos_menu.id'))
     id_padre = Column(Integer, ForeignKey('menus.id', ondelete='SET NULL'))
     url = Column(String(255))

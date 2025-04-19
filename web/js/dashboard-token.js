@@ -8,13 +8,11 @@ $(document).ready(function () {
 
     let data = getDatos();
     if (data) {
-        let tokenData = data;
+        let token = data.token;
+        let empresas = data.empresas;
 
-        // Si 'token' existe en el objeto, accedemos a él
-        let token = tokenData.token;
-        let empresas = tokenData.empresas;
         LoadEmpresas(empresas)
-        IniciarMenu(tokenData);
+        IniciarMenu(data);
 
     } else {
         console.log('No token found in localStorage');
@@ -54,47 +52,44 @@ function cargarNombreEmpresa(empresaNombre) {
 }
 
 function IniciarMenu(tokenData) {
-    LoadMenu(tokenData.menusGenerales, null, "leftMenuContainer")
-    LoadMenu(tokenData.menusEspecificos, "leftMenuEspecificoContainer")
+    LoadMenu(tokenData.menus, null, "leftMenuContainer")
+    //LoadMenu(tokenData.menusEspecificos, "leftMenuEspecificoContainer")
 }
+
 function LoadMenu(menuJson, idPadre, idContainer) {
     if(menuJson==null){
         return
     }
     let datos = getHijosOrdenados(menuJson, idPadre);
-
+    console.log(datos);
     let menuHTML = `<ul class="list-unstyled components mb-5">`;
     datos.forEach(nodo => {
         let identificadorMenuHijo = `submenu-${nodo.id}`;
-        if(nodo.tipo=="padre")
-            nodo.hijos=true;
-
-        if (nodo.hijos) {
+        if(tieneHijos(menuJson,nodo.id)){
             menuHTML += `<li>
             <a href="#${identificadorMenuHijo}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
             <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
             </a>` 
-            menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);  
-        }else {
-            switch (nodo.tipo) {
-                case "link":
-                    menuHTML += `<li>
-                        <a href="${nodo.ruta}" target="main-iframe" class="menu-link">
-                        <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
-                        </a>`
-                        break;
-                case "blank":
-                    menuHTML += `<li>
-                        <a href="${nodo.ruta}" target="_blank" class="menu-link">
-                        <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
-                        </a>`
-                        break;
-            }
-
+            menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);         
+        }else{
+            // switch (nodo.tipo) {
+            //     case "link":
+            menuHTML += `<li>
+                <a onclick="abrirEnIframe('${nodo.url}',this.id)"  href="#" target="main-iframe" class="menu-link">
+                <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+                </a>`
+            //             break;
+            //     case "blank":
+            //         menuHTML += `<li>
+            //             <a href="${nodo.ruta}" target="_blank" class="menu-link">
+            //             <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+            //             </a>`
+            //             break;
+            // }
         }
     });
     menuHTML += `</ul>`;
-    // console.log("html----", menuHTML);
+    console.log("html----", menuHTML);
     document.getElementById(idContainer).innerHTML = menuHTML;
 }
 
@@ -109,90 +104,34 @@ function loadSubMenu(menuJson, idPadre, identificadorMenuHijo) {
     let strPadre = "";
     datos.forEach(nodo => {
         let identificadorMenuHijo = `submenu-${nodo.id}`;
-        if(nodo.tipo=="padre")
-            nodo.hijos=true;
 
-        if (nodo.hijos) {
+        if(tieneHijos(menuJson,nodo.id)){
             menuHTML += `<li>
             <a href="#${identificadorMenuHijo}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
             <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
             </a>` 
             menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);  
         }else {
-            switch (nodo.tipo) {
-                case "link":
-                    menuHTML += `<li>
-                        <a href="${nodo.ruta}" target="main-iframe" class="menu-link">
-                        <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
-                        </a>`
-                        break;
-                case "blank":
-                    menuHTML += `<li>
-                        <a href="${nodo.ruta}" target="_blank" class="menu-link">
-                        <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
-                        </a>`
-                        break;
-            }
+            // switch (nodo.tipo) {
+            //     case "link":
+            menuHTML += `<li>
+                <a onclick="abrirEnIframe('${nodo.url}',this)"  href="#" target="main-iframe" class="menu-link">
+                <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+                </a>`
+                        // break;
+                // case "blank":
+                //     menuHTML += `<li>
+                //         <a href="${nodo.ruta}" target="_blank" class="menu-link">
+                //         <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+                //         </a>`
+                //         break;
+            // }
 
         }
     });
     menuHTML += `</ul>`;
     // console.log("html----", str);
     return menuHTML;
-}
-
-
-
-function armarSegundo(menuJson, padreId, TipoPadre, identificadorMenuHijo) {
-
-    console.log("armarSegundo")
-    let datos = getHijosOrdenados(menuJson, padreId)
-    let str = ""
-
-    str += `<ul class="collapse list-unstyled" id="${identificadorMenuHijo}">`
-
-    datos.forEach(padre => {
-        let sTarget = `target="main-iframe"`;
-        let sCaption = `<i class="fas fa-${padre.icono} fa-fw me-2"></i>\n ${padre.nombre}`
-        if (padre.tipo == "link") {
-            str += `<li><a href="${padre.ruta}"  ${sTarget}  class="menu-link">${sCaption}</a></li>\n`
-        } else {
-            identificadorMenuHijo = `submenu-${padre.id}`
-            str += `<li>
-                    <a href="#${identificadorMenuHijo}" 
-                        data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                        ${sCaption}
-                    </a>\n`
-            str += armarSegundo(menuJson, padre.id, padre.tipo, identificadorMenuHijo)
-            str += `</li>\n`
-
-        }
-
-    });
-    str += `</ul>`
-    console.log(str);
-    return str;
-}
-
-function armarTercero(menuJson, padreId, TipoPadre, identificadorMenuHijo) {
-    console.log("armarTercero")
-    let datos = getHijosOrdenados(menuJson, padreId)
-    let str = "<li>"
-    datos.forEach(padre => {
-        console.log("padre", padre);
-        let sCaption = `<i class="fas fa-${padre.icono} fa-fw me-2"></i> ${padre.nombre}</a></li>`
-        if (padre.tipo == "link") {
-            str += `<li><a href="${padre.ruta}" data-bs-toggle="collapse" target="main-iframe" class="menu-link">${sCaption}\n`
-        }
-        if (padre.tipo == "padre") {
-            identificadorMenuHijo = `submenu-${padre.id}`
-            str += `<li><a href="#${identificadorMenuHijo}" target="main-iframe" class="menu-link">${sCaption}\n`
-            //menuHTML += armarSegundo(menuJson,padre.id, padre.tipo ,identificadorMenuHijo)
-            str += `</li>\n`
-        }
-    });
-
-    return str
 }
 
 function getHijosOrdenados(menuJson, padreId) {
@@ -212,4 +151,30 @@ function getHijosOrdenados(menuJson, padreId) {
         return []; // Devolvemos un arreglo vacío en caso de error
     }
 }
+
+
+function tieneHijos(menuJson, padreId) {
+    try { 
+        console.log(`Se revisa si tiene hijos 
+            ${padreId} 
+            ${menuJson.filter(item => item.id_padre === padreId).length} 
+            ${menuJson.filter(item => item.id_padre === padreId).length > 0} `)
+        // Verificamos si menuJson está vacío
+        return menuJson.filter(item => item.id_padre === padreId).length > 0;
+    } catch (error) {
+        return false; // Devolvemos un arreglo vacío en caso de error
+    }
+}
+
+function abrirEnIframe(url, linkElement) {
+    url = url?.startsWith("/") ? url.substring(1) : url;
+    const $url = url + ".html";
+    console.log($url);
+    $("#mainFrame").attr("src", $url);
+
+    // Opcional: manejar estilos activos con jQuery
+    $("ul li").removeClass("activo");
+    $(linkElement).parent().addClass("activo");
+}
+
 console.log("dashboard-token.js cargado (versión con jQuery para UI).");

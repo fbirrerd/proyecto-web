@@ -1,10 +1,13 @@
 $(document).ready(function() {
-    // $('#togglePassword').on('click', function () {
-    //     const passwordField = $('#password');
-    //     const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
-    //     passwordField.attr('type', type);
-    //     $(this).toggleClass('fa-eye fa-eye-slash');
-    // });
+    const savedUsername = localStorage.getItem("rememberedUsername");
+    const savedPassword = localStorage.getItem("rememberedPassword");
+
+    if (savedUsername && savedPassword) {
+      document.getElementById("username").value = savedUsername;
+      document.getElementById("password").value = savedPassword;
+      document.getElementById("rememberMe").checked = true;
+    }
+    
     $('#btnCambiarClave').click(function(event) {
         window.location.href = 'cambiar_clave.html'; // Redirige a la página para cambiar la clave
     });    
@@ -16,6 +19,8 @@ $(document).ready(function() {
         const username = $('#username').val();
         const password = $('#password').val();
 
+
+
         // Muestra un mensaje de error si no se llenan los campos
         if (!username || !password) {
             showWarning("Ingrese un usuario y contraseña válido")
@@ -26,6 +31,17 @@ $(document).ready(function() {
             username: username,
             password: password
         };
+
+        const remember = document.getElementById("rememberMe").checked;
+            
+        if (remember) {
+          localStorage.setItem("rememberedUsername", username);
+          localStorage.setItem("rememberedPassword", password);
+        } else {
+          localStorage.removeItem("rememberedUsername");
+          localStorage.removeItem("rememberedPassword");
+        }
+
 
         // Llamada a la API para autenticar al usuario con Basic Auth
         callApi('POST', 'auth/', params)

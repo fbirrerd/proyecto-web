@@ -6150,7 +6150,7 @@ let iconosFontAwesome = [
     name: "0",
   },
 ];
-iconosFontAwesome.sort();
+iconosFontAwesome.sort((a, b) => a.name.localeCompare(b.name));
 iconosFontAwesome.filter((item) => item.icon.includes("fa-solid"));
 
 $(document).on("change", ".icon-select", function () {

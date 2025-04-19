@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class MenuBase(BaseModel):
     nombre: Optional[str] = None
     icono: Optional[str] = None
-    ruta: Optional[str] = None
+    url: Optional[str] = None
     id_padre: Optional[int] = None
     es_publico: Optional[bool] = False
     estado: Optional[bool] = True
@@ -21,8 +21,7 @@ class MenuUpdate(BaseModel):
     id: int
     nombre: str
     icono: str
-    ruta: str
-    tipo: str
+    url: Optional[str] = None
     id_padre: Optional[int] = None
 
 class MenuEstadoUpdate(BaseModel):
@@ -41,6 +40,7 @@ class MenuAcceso(MenuBase):
     id: Optional[int] = None
     tipo: Optional[str] = None
     orden: Optional[int] = None 
+    url: Optional[str] = None
 
   
     class Config:

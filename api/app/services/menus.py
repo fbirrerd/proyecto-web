@@ -78,7 +78,7 @@ def getListMenuOrdenada(db: Session,UsuarioId: int, EmpresaId: int):
         # Obtener todos los registros de la tabla Menu
         # menu_general_list=[]
         if(EmpresaId and UsuarioId):
-            print(f"::::::: UsuarioId: {UsuarioId} EmpresaId: {EmpresaId} :::::::")
+            # print(f"::::::: UsuarioId: {UsuarioId} EmpresaId: {EmpresaId} :::::::")
             menu_general_list = filtrarEspecial(db, UsuarioId, EmpresaId)
         else:
             menu_general_list = db.query(Menu).all()
@@ -88,7 +88,7 @@ def getListMenuOrdenada(db: Session,UsuarioId: int, EmpresaId: int):
             raise ValueError("No se encontraron registros en Menu")
 
         # Construir árbol ordenado y devolverlo como parte de la respuesta
-        # menu_general_list = getArbolOrdenadoTabulado(menu_general_list)
+        menu_general_list = getArbolOrdenadoTabulado(menu_general_list)
 
         return menu_general_list
     except Exception as e:
@@ -123,10 +123,10 @@ def get_lista_menu(db: Session)  -> objRespuesta:
             data={"error": str(e)}
         ) 
     
-def actualizar_menu_general(db: Session, menu: MenuUpdate)  -> objRespuesta:
+def actualizar_menu(db: Session, menu: MenuUpdate)  -> objRespuesta:
     try:
 
-        valor = editar_menu(db, menu.id, menu.nombre, menu.icono, menu.ruta, menu.id_padre,None,menu.tipo, None)
+        valor = editar_menu(db, menu.id, menu.nombre, menu.icono, menu.url, menu.id_padre,None,menu.tipo, None)
         if valor:
             return objRespuesta(
                 respuesta=True,
@@ -164,7 +164,7 @@ def actualizar_estado(db: Session, id_menu: int, estado: bool):
          
  
         
-def editar_menu(db, id_menu, nombre=None, icono=None, ruta=None, id_padre=None, es_publico=None, tipo=None, estado=None):
+def editar_menu(db, id_menu, nombre=None, icono=None, url=None, id_padre=None, es_publico=None, tipo=None, estado=None):
     try:
         # Buscar el menú en la base de datos
         menu = db.query(Menu).filter(Menu.id == id_menu).one()
@@ -174,8 +174,8 @@ def editar_menu(db, id_menu, nombre=None, icono=None, ruta=None, id_padre=None, 
             menu.nombre = nombre
         if icono:
             menu.icono = icono
-        if ruta:
-            menu.ruta = ruta
+        if url:
+            menu.url = url
         if id_padre is not None:  # Para manejar la asignación de null correctamente
             menu.id_padre = id_padre
         if es_publico is not None:

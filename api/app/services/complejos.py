@@ -57,7 +57,7 @@ def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , t
             fecha_vencimiento=datetime.now() + timedelta(minutes=minutosAcceso),
         )   
         
-        # crear_acceso(db, db_acceso)             
+        crear_acceso(db, db_acceso)             
     else:
         newToken = token
 

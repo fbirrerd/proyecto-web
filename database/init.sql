@@ -127,12 +127,11 @@ CREATE TABLE menus (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     icono VARCHAR(50),
-	ruta VARCHAR(255),
     id_tipo_menu INT REFERENCES tipos_menu(id),
     id_padre INT REFERENCES menus(id) ON DELETE SET NULL,
-    url VARCHAR(255),
+    "url" VARCHAR(255),
     descripcion VARCHAR(255),
-    token VARCHAR(255) UNIQUE,
+    "token" VARCHAR(255) UNIQUE,
 	orden int,
     estado BOOLEAN DEFAULT TRUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -318,18 +317,25 @@ INSERT INTO roles (nombre) VALUES
 ('Soporte'), ('Administrador'), ('Auditor'), ('Usuario');
 
 -- Menús
-INSERT INTO menus (nombre, icono, id_tipo_menu, id_padre, url, descripcion, token, orden)
-VALUES 
+INSERT INTO public.menus
+(nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden)
+VALUES
 ('Dashboard', 'home', 1, NULL, '/dashboard', 'Vista principal', 'token_dashboard', 1),
 ('Gestión', 'folder', 1, NULL, '/gestion', 'Módulo de gestión', 'token_gestion', 2),
 ('Tablas', 'table', 1, 2, '/gestion/tablas', 'Tablas base del sistema', 'token_tablas', 1),
-('Usuarios', 'user', 1, 3, '/gestion/tablas/usuarios', 'Gestión de usuarios', 'token_usuarios', 1),
-('Menús', 'list', 1, 3, '/gestion/tablas/menus', 'Gestión de menús', 'token_menus', 2),
-('Roles', 'shield', 1, 3, '/gestion/tablas/roles', 'Gestión de roles', 'token_roles', 3);
+('Permisos', NULL, 1, 2, NULL, 'Gestionador de relaciones', NULL, NULL),
+('Usuarios', 'user', 1, 3, '/gestion/tablas/usuarios', 'Gestión de usuarios', 'token_usuarios', 2),
+('Menús', 'list', 1, 3, '/gestion/menus', 'Gestión de menús', 'token_menus', 3),
+('Roles', 'shield', 1, 3, '/gestion/rol', 'Gestión de roles', 'token_roles', 4),
+('Empresas', NULL, 1, 3, '/gestion/empresas', 'Mantener las empresas del sistem', NULL, 1),
+('Rol Menu', NULL, NULL, 8, '/gestion/RolMenu', NULL, NULL, NULL),
+('Empresa Usuario', NULL, NULL, 8, '/gestion/EmpresaUsuario', NULL, NULL, NULL),
+('Empresa Usuario Rol', NULL, NULL, 8, '/gestion/EmpresaUsuarioRol', NULL, NULL, NULL);
+
 -- Relación menú-rol
 INSERT INTO menu_rol (id_menu, id_rol) 
 VALUES 
-(1, 1),(2, 1),(3, 1),(4, 1),(5, 1),(6, 1);
+(1, 1),(2, 1),(3, 1),(4, 1),(5, 1),(6, 1),(7, 1),(8, 1),(9, 1);
 
 -- Menús específicos para tipos de empresa
 INSERT INTO menu_tipo_empresa (id_menu, id_tipo_empresa) VALUES (1, 1);

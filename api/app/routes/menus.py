@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.schemas.respond import objRespuesta
 from app.schemas.menus import  MenuEstadoUpdate, MenuUpdate
-from app.services.menus import actualizar_estado, actualizar_menu_general, get_lista_menu, getListMenuOrdenada
+from app.services.menus import actualizar_estado, actualizar_menu, get_lista_menu, getListMenuOrdenada
 from app.database import SessionLocal
 
 
@@ -26,7 +26,7 @@ def getGenerales(db: Session = Depends(get_db)):
 
 @router.put("/generales", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def putGenerales(menu: MenuUpdate, db: Session = Depends(get_db)):
-    respuesta = actualizar_menu_general(db, menu)
+    respuesta = actualizar_menu(db, menu)
     if respuesta:
         return respuesta
     # Si las credenciales no coinciden

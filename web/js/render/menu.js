@@ -2,12 +2,12 @@ let currentData = [];
 let editModal;
 
 document.addEventListener("DOMContentLoaded", () => {
-    fetchMenus();
+    fetchitems();
     editModal = new bootstrap.Modal(document.getElementById('editModal'));
     document.getElementById("editForm").addEventListener("submit", guardarCambios);
 });
 
-function fetchMenus() {
+function fetchitems() {
     let params;
     callApi('GET', 'menu/generales', params)
     .done(function(response) {
@@ -37,46 +37,46 @@ function llenarTabla() {
         // Div que simula el select para los iconos
         let $iconSelectDiv = $(`
             <div class="dropdown">
-                <button class="btn dropdown-toggle btn-sm" type="button" id="dropdown-${menu.id}" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas ${menu.icono} me-2"></i> Seleccione
+                <button class="btn dropdown-toggle btn-sm" type="button" id="dropdown-${item.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas ${item.icono} me-2"></i> Seleccione
                 </button>
-                <ul class="dropdown-menu dropdown-menu-sm" style="max-height: 200px; overflow-y: auto; font-size: 0.85rem;" aria-labelledby="dropdown-${menu.id}">
+                <ul class="dropdown-menu dropdown-menu-sm" style="max-height: 200px; overflow-y: auto; font-size: 0.85rem;" aria-labelledby="dropdown-${item.id}">
                     ${iconosFontAwesome.map(icon => `
-                        <li><a class="dropdown-item icon-item" href="#" data-icon="${icon}"><i class="fas ${icon} me-2"></i> ${icon}</a></li>
+                        <li><a class="dropdown-item icon-item" href="#" data-icon="${icon.name}"><i class="fas ${icon.icon} me-2"></i> ${icon.name}</a></li>
                     `).join('')}
                 </ul>
                 </div>
-                <input type="hidden" id="icono-${menu.id}" value="${menu.icono}">
+                <input type="hidden" id="icono-${item.id}" value="${item.icon}">
         `);
 
         // Agregar el resto de campos de la tabla
         $row.append(
             $("<td>").append($iconSelectDiv),
-            $("<td>").append(`<input type="text" class="form-control form-control-sm small-input" id="nombre-${menu.id}" value="${menu.nombre}">`),
-            $("<td>").append(`<input type="text" class="form-control form-control-sm small-input" id="ruta-${menu.id}" value="${menu.ruta ?? ''}">`),
-            $("<td>").append(`<select class="form-select form-select-sm small-input" id="tipo-${menu.id}">
-                ${tipoOptions.map(tipo => `<option value="${tipo}" ${tipo === menu.tipo ? "selected" : ""}>${tipo}</option>`).join('')}
-            </select>`),
+            $("<td>").append(`<input type="text" class="form-control form-control-sm small-input" id="nombre-${item.id}" value="${item.nombre}">`),
+            $("<td>").append(`<input type="text" class="form-control form-control-sm small-input" id="ruta-${item.id}" value="${item.url ?? ''}">`),
+            // $("<td>").append(`<select class="form-select form-select-sm small-input" id="tipo-${item.id}">
+            //     ${tipoOptions.map(tipo => `<option value="${tipo}" ${tipo === item.tipo ? "selected" : ""}>${tipo}</option>`).join('')}
+            // </select>`),
             $("<td>").append(`
-                <select class="form-select form-select-sm small-input" id="padre-${menu.id}">>
+                <select class="form-select form-select-sm small-input" id="padre-${item.id}">>
                     <option value="">-- Sin padre --</option>
-                    ${currentData.filter(m => m.tipo === "padre") // solo padres
+                    ${currentData // solo padres
                         .map(padre => `
-                            <option value="${padre.id}" ${padre.id === menu.id_padre ? "selected" : ""}>
+                            <option value="${padre.id}" ${padre.id === item.id_padre ? "selected" : ""}>
                                 ${padre.nombre}
                             </option>
                         `).join('')}
                 </select>
             `),
-            // $("<td>").append(`<input type="number" class="form-control form-control-sm" style="width:50px" id="orden-${menu.id}" value="${menu.orden}">`),
+            // $("<td>").append(`<input type="number" class="form-control form-control-sm" style="width:50px" id="orden-${item.id}" value="${item.orden}">`),
             $("<td>").append(`
-                <button class="btn btn-sm small-btn estado-toggle ${menu.estado ? 'btn-success' : 'btn-secondary'}" data-id="${menu.id}">
-                    ${menu.estado ? 'Activo' : 'Inactivo'}
+                <button class="btn btn-sm small-btn estado-toggle ${item.estado ? 'btn-success' : 'btn-secondary'}" data-id="${item.id}">
+                    ${item.estado ? 'Activo' : 'Inactivo'}
                 </button>
-                <button class="btn btn-secondary btn-sm guardar-btn small-btn" data-id="${menu.id}">
+                <button class="btn btn-secondary btn-sm guardar-btn small-btn" data-id="${item.id}">
                     <i class="fas fa-save"></i>
                 </button>
-                <button class="btn btn-secondary btn-sm editar-btn small-btn" data-id="${menu.id}">
+                <button class="btn btn-secondary btn-sm editar-btn small-btn" data-id="${item.id}">
                     <i class="fas fa-edit"></i>
                 </button>
             `)
@@ -126,8 +126,7 @@ $(document).on("click", ".guardar-btn", function () {
         id: id,
         nombre: $(`#nombre-${id}`).val(),
         icono: $(`#icono-${id}`).val(),
-        ruta: $(`#ruta-${id}`).val(),
-        tipo: $(`#tipo-${id}`).val(),
+        url: $(`#ruta-${id}`).val(),
         id_padre: $(`#padre-${id}`).val() || null // Si está vacío, usa null
     };
 
@@ -162,14 +161,14 @@ $(document).on("click", ".icon-item", function () {
 // ✏️ ABRIR MODAL para edición completa
 $(document).on("click", ".editar-btn", function () {
     const id = $(this).data("id");
-    const menu = currentData.find(r => r.id === id);
+    const item = currentData.find(r => r.id === id);
 
-    if (!menu) return;
+    if (!item) return;
 
     const $iconoSelect = $("#icono-select");
     $iconoSelect.empty(); // limpiar opciones previas
     iconosFontAwesome.forEach(icon => {
-        const selected = icon === menu.icono ? 'selected' : '';
+        const selected = icon === item.icono ? 'selected' : '';
         $iconoSelect.append(`
             <option value="${icon}">
                 ${icon}
@@ -178,28 +177,28 @@ $(document).on("click", ".editar-btn", function () {
     });
 
     // 🔽 Llenar select de menús padre
-    const $menuPadreSelect = $("#padre-select");
-    $menuPadreSelect.empty();i
-    $menuPadreSelect.append(`<option value="">(Sin padre)</option>`); // opción vacía
+    const $itemPadreSelect = $("#padre-select");
+    $itemPadreSelect.empty();i
+    $itemPadreSelect.append(`<option value="">(Sin padre)</option>`); // opción vacía
 
     currentData.forEach(m => {
         // Evitar que un menú sea su propio padre
         if (m.id !== id) {
-            const selected = m.id === menu.id_padre ? "selected" : "";
-            $menuPadreSelect.append(
+            const selected = m.id === item.id_padre ? "selected" : "";
+            $itemPadreSelect.append(
                 `<option value="${m.id}" ${selected}>${m.nombre}</option>`
             );
         }
     });
 
     // Cargar datos en el modal
-    // $("#editForm [name='id']").val(menu.id);
-    // $("#editForm [name='nombre']").val(menu.nombre);
-    // $("#editForm [name='ruta']").val(menu.ruta);
-    // $("#editForm [name='id_padre']").val(menu.id_padre);
-    // $("#editForm [name='tipo']").val(menu.tipo);
-    // $("#editForm [name='orden']").val(menu.orden);
-    // $("#editForm [name='estado']").val(menu.estado.toString());
+    // $("#editForm [name='id']").val(item.id);
+    // $("#editForm [name='nombre']").val(item.nombre);
+    // $("#editForm [name='ruta']").val(item.ruta);
+    // $("#editForm [name='id_padre']").val(item.id_padre);
+    // $("#editForm [name='tipo']").val(item.tipo);
+    // $("#editForm [name='orden']").val(item.orden);
+    // $("#editForm [name='estado']").val(item.estado.toString());
 
 
     // Mostrar el modal
@@ -210,13 +209,13 @@ $(document).on("click", ".editar-btn", function () {
 
 
 function editar(id) {
-    const menu = currentData.find(m => m.id === id);
-    if (!menu) return;
+    const item = currentData.find(m => m.id === id);
+    if (!item) return;
 
     const form = document.getElementById("editForm");
-    for (let key in menu) {
+    for (let key in item) {
         if (form[key] !== undefined) {
-            form[key].value = menu[key];
+            form[key].value = item[key];
         }
     }
     editModal.show();
@@ -236,13 +235,13 @@ function guardarCambios(e) {
     data.fecha_creacion = new Date().toISOString();
     data.fecha_modificacion = new Date().toISOString();
 
-    fetch("/menu", {
+    fetch("/item", {
         method: "PUT",
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
     }).then(res => res.json())
       .then(() => {
         editModal.hide();
-        fetchMenus();
+        fetchitems();
       });
 }
