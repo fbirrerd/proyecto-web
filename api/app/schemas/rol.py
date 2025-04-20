@@ -12,7 +12,7 @@ class RolCreate(RolBase):
 class RolUpdate(RolBase):
     pass
 
-class Rol(RolBase):
+class RolOut(RolBase):
     id: int
     fecha_creacion: datetime
     fecha_modificacion: datetime
@@ -26,3 +26,10 @@ class RolAcceso(RolBase):
     nombre: str
     class Config:
         orm_mode = True
+        
+class RolList(BaseModel):
+    id: int
+    nombre: str
+
+    class Config:
+        orm_mode = True        

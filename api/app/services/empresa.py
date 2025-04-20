@@ -1,14 +1,9 @@
+from typing import List
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from app.models.models import Empresa, EmpresaUsuario, EmpresaUsuarioRol
-from app.schemas.empresa import EmpresaAcceso, EmpresaCreate
+from app.schemas.empresa import EmpresaAcceso, EmpresaCreate, EmpresaList, EmpresaOut, EmpresaUpdate
 
-def crear_empresa(db: Session, empresa: EmpresaCreate):
-    db_empresa = Empresa(**empresa.dict())
-    db.add(db_empresa)
-    db.commit()
-    db.refresh(db_empresa)
-    return db_empresa
 
 def getDatosEmpresa(db: Session, UsuarioId: int):
     userEmpObj = db.query(EmpresaUsuario).filter(
@@ -33,3 +28,36 @@ def getDatosEmpresa(db: Session, UsuarioId: int):
     else:
         return None
   
+def get_all(db: Session) ->  List[EmpresaOut]:
+    return db.query(Empresa).all()
+
+def get_by_id(db: Session, empresa_id: int) ->  EmpresaOut:
+    return db.query(Empresa).filter(Empresa.id == empresa_id).first()
+
+def create(db: Session, empresa: EmpresaCreate) ->  EmpresaOut:
+    nueva = Empresa(**empresa.dict())
+    db.add(nueva)
+    db.commit()
+    db.refresh(nueva)
+    return nueva
+
+def update(db: Session, empresa_id: int, data: EmpresaUpdate) ->  EmpresaOut:
+    obj = db.query(Empresa).filter(Empresa.id == empresa_id).first()
+    if not obj:
+        return None
+    for field, value in data.dict(exclude_unset=True).items():
+        setattr(obj, field, value)
+    db.commit()
+    db.refresh(obj)
+    return obj
+
+def delete(db: Session, empresa_id: int) ->  EmpresaOut:
+    obj = db.query(Empresa).filter(Empresa.id == empresa_id).first()
+    if obj:
+        db.delete(obj)
+        db.commit()
+    return obj
+
+def get_lista(db: Session) ->  EmpresaList:
+    datos = db.query(Empresa).filter(Empresa.estado == True).all()
+    return [EmpresaList.from_orm(emp) for emp in datos]
