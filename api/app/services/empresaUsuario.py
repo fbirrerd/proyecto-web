@@ -1,43 +1,52 @@
 
 
-from app.models.models import EmpresaUsuario
+from sqlalchemy import func
+from app.schemas.empresaUsuario import EmpresaUsuarioCreate, EmpresaUsuarioList, EmpresaUsuarioOut
+from app.models.models import Empresa, EmpresaUsuario, Usuario
 from sqlalchemy.orm import Session
 
 
 from datetime import datetime, timezone
 
 
-
 def getDatosEmpresaUsuario(db: Session):
-    empresaUsuarioList = db.query(EmpresaUsuario).all()
-    if not empresaUsuarioList:
-        raise Exception("Registro EmpresaUsuario no encontrada ")
-    
-    # Si hay empresas, las convertimos a Pydantic
-    empresaUsuario_pydantic_list = [EmpresaUsuario.from_orm(dato) for dato in empresaUsuarioList]
+    datos = (
+        db.query(
+            func.concat(Usuario.nombres, ' ', Usuario.apellidos).label("usuario_nombre"),
+            Empresa.nombre.label("empresa_nombre"),
+            Usuario.id.label("usuario_id"),
+            Empresa.id.label("empresa_id"),
+            EmpresaUsuario.estado.label("estado")
+        )
+        .join(EmpresaUsuario, Usuario.id == EmpresaUsuario.id_usuario)
+        .join(Empresa, Empresa.id == EmpresaUsuario.id_empresa)
+        .filter(EmpresaUsuario.estado == True)
+        .all()
+    )
+    return [EmpresaUsuarioList.from_orm(r) for r in datos]
+  
+def setEmpresaUsuario(db: Session, oCrear: EmpresaUsuarioCreate) -> EmpresaUsuarioOut:
+    # Verificar si ya existe la relación
+    existe = db.query(EmpresaUsuario).filter_by(
+        id_empresa = oCrear.id_empresa,
+        id_usuario = oCrear.id_usuario
+    ).first()
 
-    # Si necesitas devolver solo una empresa (por ejemplo, la primera), puedes hacer esto:
-    if empresaUsuario_pydantic_list:
-        return empresaUsuario_pydantic_list  # O devolver la lista completa si es necesario
-    else:
-        return None
-  
-def getDatosEmpresaUsuarioList(db: Session):
-    empresaUsuarioList = db.query(EmpresaUsuario).all()
-    if not empresaUsuarioList:
-        raise Exception("Registro EmpresaUsuario no encontrada ")
-    
-    # Si hay empresas, las convertimos a Pydantic
-    empresaUsuario_pydantic_list = [EmpresaUsuario.from_orm(dato) for dato in empresaUsuarioList]
+    nueva_relacion = EmpresaUsuario(
+        id_empresa = oCrear.id_empresa,
+        id_usuario = oCrear.id_usuario,
+        estado = oCrear.estado
+    )
 
-    # Si necesitas devolver solo una empresa (por ejemplo, la primera), puedes hacer esto:
-    if empresaUsuario_pydantic_list:
-        return empresaUsuario_pydantic_list  # O devolver la lista completa si es necesario
-    else:
-        return None
+    db.add(nueva_relacion)
+    db.commit()
+    return [EmpresaUsuarioOut.from_orm(r) for r in nueva_relacion]
+  
+   
   
   
   
+   
    
   
   

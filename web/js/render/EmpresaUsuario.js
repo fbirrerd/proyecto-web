@@ -1,82 +1,115 @@
-let empresas = [];
-let usuarios = [];
-let roles = [];
+let currentData = [], empresas = [], usuarios = [], roles = [];
+let editModal;
 
-$(document).ready(function () {
-  cargarDatosIniciales();
+$(function () {
+  editModal = new bootstrap.Modal($('#editModal')[0]);
+  // $("#editForm").on("submit", guardarCambios);
+
+  const urls = ['empresausuario/list', 'empresa/list/all', 'rol/list/all', 'usuario/list/all'];
+
+  fetchMultiple(urls,
+    function (responses) {
+      [currentData, empresas, roles, usuarios] = responses.map(r => r.respuesta ? r.data : []);
+      cargarTabla();
+    },
+    function (err) {
+      console.error("Fallo global:", err);
+    }
+  );
 });
 
-function cargarDatosIniciales() {
-  $.when(
-    $.get("/api/empresas"),
-    $.get("/api/usuarios"),
-    $.get("/api/roles")
-  ).done(function (resEmp, resUsu, resRol) {
-    empresas = resEmp[0];
-    usuarios = resUsu[0];
-    roles = resRol[0];
-
-    cargarTabla();
-  });
-}
-
 function cargarTabla() {
-  $.get("/api/empresa-usuario/listado", function (data) {
-    const tbody = $("#tbody-empresa-usuario");
-    tbody.empty();
+  const $tbody = $("#tableBody").empty();
 
-    data.forEach(item => {
-      const rolesHtml = item.roles.map(r => `<span class="badge bg-info me-1">${r.nombre}</span>`).join("");
-      const row = `
-        <tr>
-          <td>${item.empresa_nombre}</td>
-          <td>${item.usuario_nombre}</td>
-          <td>${item.estado ? "Activo" : "Inactivo"}</td>
-          <td>
-            <button class="btn btn-sm btn-primary" onclick="editarEmpresaUsuario(${item.id_empresa}, ${item.id_usuario})">Editar</button>
-          </td>
-        </tr>`;
-      tbody.append(row);
-    });
+  if (!Array.isArray(currentData)) {
+    console.warn("No hay datos válidos para cargar en la tabla.");
+    return;
+  }
+
+  currentData.forEach(item => {
+    const estadoClass = item.estado ? 'btn-success' : 'btn-secondary';
+    const estadoTexto = item.estado ? 'Activo' : 'Inactivo';    
+    const row = `
+      <tr>
+        <td>${item.empresa_nombre || "Sin nombre"}</td>
+        <td>${item.usuario_nombre || "Sin nombre"}</td>
+        <td>
+          <button class="btn btn-sm ${estadoClass}" onclick="cambiarEstado(${item.id_empresa}, ${item.id_usuario}, ${item.estado})">
+            ${estadoTexto}
+          </button>          
+          <button class="btn btn-sm btn-primary" onclick="editarEmpresaUsuario(${item.id_empresa}, ${item.id_usuario})">Editar</button>
+        </td>
+      </tr>`;
+    $tbody.append(row);
   });
 }
 
-function agregarFilaNueva() {
-  const tbody = $("#tbody-empresa-usuario");
+function agregarFilaInline() {
+  const empresaSelect = [`<option value="">Seleccione una empresa</option>`]
+    .concat(empresas.map(e => `<option value="${e.id}">${e.nombre}</option>`))
+    .join("");
 
-  const empresaSelect = empresas.map(e => `<option value="${e.id}">${e.nombre}</option>`).join("");
-  const usuarioSelect = usuarios.map(u => `<option value="${u.id}">${u.nombre}</option>`).join("");
-  const rolesCheckboxes = roles.map(r => `
-    <div class="form-check form-check-inline">
-      <input class="form-check-input" type="checkbox" value="${r.id}" id="rol-${r.id}">
-      <label class="form-check-label" for="rol-${r.id}">${r.nombre}</label>
-    </div>
-  `).join("");
+  const usuarioSelect = [`<option value="">Seleccione un usuario</option>`]
+    .concat(usuarios.map(u => `<option value="${u.id}">${u.nombreCompleto}</option>`))
+    .join("");
 
-  const fila = `
-    <tr id="fila-nueva">
+  const nuevaFila = `
+    <tr id="fila-inline">
       <td>
-        <select class="form-select" id="nueva-empresa">${empresaSelect}</select>
+        <select class="form-select form-select-sm" id="inline-empresa">${empresaSelect}</select>
       </td>
       <td>
-        <select class="form-select" id="nueva-usuario">${usuarioSelect}</select>
+        <select class="form-select form-select-sm" id="inline-usuario">${usuarioSelect}</select>
       </td>
       <td>
-        <select class="form-select" id="nuevo-estado">
-          <option value="true">Activo</option>
-          <option value="false">Inactivo</option>
-        </select>
+        <button class="btn btn-success btn-sm" onclick="guardarFilaInline()">Guardar</button>
+        <button class="btn btn-secondary btn-sm" onclick="$('#fila-inline').remove()">Cancelar</button>
       </td>
-      <td>${rolesCheckboxes}</td>
-      <td>
-        <button class="btn btn-sm btn-success" onclick="guardarNuevoRegistro()">Guardar</button>
-        <button class="btn btn-sm btn-secondary" onclick="cancelarNuevaFila()">Cancelar</button>
-      </td>
-    </tr>
-  `;
+    </tr>`;
 
-  $("#fila-nueva").remove(); // elimina fila anterior si existe
-  tbody.prepend(fila);
+  $('#fila-inline').remove();
+  $('#tableBody').prepend(nuevaFila);
+}
+
+function guardarFilaInline() {
+  const id_empresa = $('#inline-empresa').val();
+  const id_usuario = $('#inline-usuario').val();
+
+  if (!id_empresa || !id_usuario) {
+    alert("Debe seleccionar una empresa y un usuario.");
+    return;
+  }
+
+  const payload = {
+    id_empresa,
+    id_usuario,
+    estado,
+    roles: []
+  };
+
+  $.ajax({
+    url: "/api/empresa-usuario",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(payload),
+    success: function () {
+      alert("Registro guardado correctamente");
+      $('#fila-inline').remove();
+      fetchMultiple(['empresausuario/list'], function ([res]) {
+        if (res.respuesta) {
+          currentData = res.data;
+          cargarTabla();
+        }
+      });
+    },
+    error: function () {
+      alert("Error al guardar el registro");
+    }
+  });
+}
+
+function editarEmpresaUsuario(idEmpresa, idUsuario) {
+  alert("Función de edición en desarrollo");
 }
 
 function cancelarNuevaFila() {
@@ -87,16 +120,11 @@ function guardarNuevoRegistro() {
   const id_empresa = parseInt($("#nueva-empresa").val());
   const id_usuario = parseInt($("#nueva-usuario").val());
   const estado = $("#nuevo-estado").val() === "true";
-  const roles = $("input[type='checkbox']:checked").map(function () {
+  const rolesSeleccionados = $("input[type='checkbox']:checked").map(function () {
     return parseInt($(this).val());
   }).get();
 
-  const payload = {
-    id_empresa,
-    id_usuario,
-    estado,
-    roles
-  };
+  const payload = { id_empresa, id_usuario, estado, roles: rolesSeleccionados };
 
   $.ajax({
     url: "/api/empresa-usuario",
@@ -105,8 +133,14 @@ function guardarNuevoRegistro() {
     data: JSON.stringify(payload),
     success: function () {
       alert("Registro guardado correctamente");
-      cargarTabla();
       cancelarNuevaFila();
+      // Aquí puedes recargar los datos reales desde la API si lo deseas
+      fetchMultiple(['empresausuario/list'], function ([res]) {
+        if (res.respuesta) {
+          currentData = res.data;
+          cargarTabla();
+        }
+      });
     },
     error: function () {
       alert("Error al guardar");
@@ -114,7 +148,63 @@ function guardarNuevoRegistro() {
   });
 }
 
+
 function editarEmpresaUsuario(idEmpresa, idUsuario) {
-  // Aquí puedes llamar a tu modal si quieres edición avanzada
-  alert("Función de edición avanzada aquí (modal o inline)");
+  const data = currentData.find(x => x.id_empresa === idEmpresa && x.id_usuario === idUsuario);
+  if (!data) return alert("No se encontró el registro");
+
+  $("#editEmpresaId").val(idEmpresa);
+  $("#editUsuarioId").val(idUsuario);
+  $("#editEmpresaNombre").val(data.empresa_nombre);
+  $("#editUsuarioNombre").val(data.usuario_nombre);
+
+  const rolesAsignados = data.roles.map(r => r.id);
+  const contenedor = $("#checkboxRoles");
+  contenedor.empty();
+
+  listaRolesDisponibles.forEach(rol => {
+      const checked = rolesAsignados.includes(rol.id) ? "checked" : "";
+      contenedor.append(`
+          <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="${rol.id}" id="rol_${rol.id}" ${checked}>
+              <label class="form-check-label" for="rol_${rol.id}">${rol.nombre}</label>
+          </div>
+      `);
+  });
+
+  const modal = new bootstrap.Modal(document.getElementById("modalEditarRoles"));
+  modal.show();
 }
+
+// Guardar roles seleccionados
+$("#editForm").on("submit", function (e) {
+  e.preventDefault();
+
+  const idEmpresa = $("#editEmpresaId").val();
+  const idUsuario = $("#editUsuarioId").val();
+  const rolesSeleccionados = $("#checkboxRoles input:checked").map(function () {
+      return parseInt(this.value);
+  }).get();
+
+  const payload = {
+      id_empresa: parseInt(idEmpresa),
+      id_usuario: parseInt(idUsuario),
+      roles: rolesSeleccionados
+  };
+
+  $.ajax({
+      url: "/empresa-usuario-rol/update",
+      method: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(payload),
+      success: function () {
+          alert("Roles actualizados correctamente");
+          $('#modalEditarRoles').modal('hide');
+          // Aquí puedes recargar los datos o actualizar la tabla
+      },
+      error: function (err) {
+          console.error(err);
+          alert("Error al actualizar los roles");
+      }
+  });
+});

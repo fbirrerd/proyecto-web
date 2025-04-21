@@ -61,6 +61,19 @@ function mostrarAlerta({
   }, duracion * 1000);
 }
 
+async function fetchMultiple(endpoints = [], onSuccess = () => {}, onError = () => {}) {
+  try {
+      const responses = await Promise.all(
+          endpoints.map(endpoint => callApi('GET', endpoint))
+      );
+      onSuccess(responses);
+  } catch (err) {
+      onError(err);
+      showDanger("No se puede conectar con el servidor");
+  }
+}
+
+
 function callApi(method, endpoint, params) {
   // Crear el elemento del mensaje de carga
   // Crear el elemento del icono de carga de Font Awesome

@@ -27,8 +27,11 @@ class EmpresaUsuarioUpdate(BaseModel):
     estado: Optional[bool] = None
         
 class EmpresaUsuarioList(BaseModel):
-    id: int
-    nombre: str
+    usuario_id: int
+    usuario_nombre: str
+    empresa_id: int
+    empresa_nombre: str
+    estado: bool
 
     class Config:
         orm_mode = True              
