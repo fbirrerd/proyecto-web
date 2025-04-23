@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import datetime
 
 class TipoEmpresaBase(BaseModel):
-    nombre: str
+    nombre: Optional[str]
     estado: Optional[bool] = True
 
 class TipoEmpresaCreate(TipoEmpresaBase):

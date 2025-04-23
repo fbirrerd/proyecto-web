@@ -15,9 +15,7 @@ function fetchitems() {
             currentData = response.data;
             llenarTabla();            
         } else {
-            // Si hay un error en la respuesta
-            console.log(response.error);
-            $('#error-message').text(`Error en el login. Verifica tus credenciales. (${response.data.error})`).removeClass('d-none');
+            showWarning("Error al cargar el menu");
         }
     })
     .fail(function() {

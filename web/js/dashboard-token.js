@@ -37,10 +37,7 @@ $(document).ready(function () {
                 <li><a class="dropdown-item empresa-opcion" href="#" data-id="${emp.id}">${emp.nombre}</a></li>
             `);
         });
-
     }
-
-
 })
 
 function cargarNombreEmpresa(empresaNombre) {
@@ -68,20 +65,10 @@ function LoadMenu(menuJson, idPadre, idContainer) {
             </a>` 
             menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);         
         }else{
-            // switch (nodo.tipo) {
-            //     case "link":
             menuHTML += `<li>
                 <a onclick="abrirEnIframe('${nodo.url}',this.id)" title="${nodo.descripcion || ''}"  href="#" target="main-iframe" class="menu-link">
                 <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
                 </a>`
-            //             break;
-            //     case "blank":
-            //         menuHTML += `<li>
-            //             <a href="${nodo.ruta}" target="_blank" class="menu-link">
-            //             <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
-            //             </a>`
-            //             break;
-            // }
         }
     });
     menuHTML += `</ul>`;
@@ -108,25 +95,14 @@ function loadSubMenu(menuJson, idPadre, identificadorMenuHijo) {
             </a>` 
             menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);  
         }else {
-            // switch (nodo.tipo) {
-            //     case "link":
             menuHTML += `<li>
                 <a onclick="abrirEnIframe('${nodo.url}',this)" title="${nodo.descripcion || ''}" href="#" target="main-iframe" class="menu-link">
                 <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
                 </a>`
-                        // break;
-                // case "blank":
-                //     menuHTML += `<li>
-                //         <a href="${nodo.ruta}" target="_blank" class="menu-link">
-                //         <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
-                //         </a>`
-                //         break;
-            // }
-
         }
     });
     menuHTML += `</ul>`;
-    // console.log("html----", str);
+
     return menuHTML;
 }
 
@@ -142,7 +118,6 @@ function getHijosOrdenados(menuJson, padreId) {
                 .sort((a, b) => a.orden - b.orden);
         }
     } catch (error) {
-        // Capturamos cualquier error y mostramos un mensaje en la consola
         console.error("Error al obtener los hijos ordenados:", error);
         return []; // Devolvemos un arreglo vacío en caso de error
     }
@@ -151,11 +126,6 @@ function getHijosOrdenados(menuJson, padreId) {
 
 function tieneHijos(menuJson, padreId) {
     try { 
-        // console.log(`Se revisa si tiene hijos 
-        //     ${padreId} 
-        //     ${menuJson.filter(item => item.id_padre === padreId).length} 
-        //     ${menuJson.filter(item => item.id_padre === padreId).length > 0} `)
-        // Verificamos si menuJson está vacío
         return menuJson.filter(item => item.id_padre === padreId).length > 0;
     } catch (error) {
         return false; // Devolvemos un arreglo vacío en caso de error

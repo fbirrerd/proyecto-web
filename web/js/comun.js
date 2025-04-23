@@ -137,7 +137,6 @@ function logToConsole(title, message) {
     title: title,
     message: message,
   };
-  // console.log(log);
 }
 
 /**

@@ -112,3 +112,8 @@ body {
     max-height: 200px;
     overflow-y: auto;
   }
+  .acciones-td {
+    text-align: right;
+    vertical-align: middle;
+    width: 150px;
+  }

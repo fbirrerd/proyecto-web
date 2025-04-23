@@ -25,7 +25,7 @@ def getArbolOrdenadoTabulado(data: List[MenuAcceso]) -> List:
                     'estado': menu.estado,
                     'descripcion': menu.descripcion
                 })
-                print(f"✅ Menú '{menu.nombre}' procesado con nivel {nivel} y {'con hijos' if tiene_hijos else 'sin hijos'}... descripcion {menu.descripcion} ")
+                # print(f"✅ Menú '{menu.nombre}' procesado con nivel {nivel} y {'con hijos' if tiene_hijos else 'sin hijos'}... descripcion {menu.descripcion} ")
             except Exception as e:
                 print(f"🔴 Error al procesar el menú con ID {menu.id}: {e}")
     
@@ -34,7 +34,7 @@ def getArbolOrdenadoTabulado(data: List[MenuAcceso]) -> List:
         for menu in menus_con_nivel:
             try:
                 hijos_por_padre.setdefault(menu['id_padre'], []).append(menu)
-                print(f"🟡 Hijos agregados para el menú ID {menu['id_padre']}")
+                # print(f"🟡 Hijos agregados para el menú ID {menu['id_padre']}")
             except Exception as e:
                 print(f"🔴 Error al agregar hijos para el menú ID {menu['id']}: {e}")
     
@@ -42,7 +42,7 @@ def getArbolOrdenadoTabulado(data: List[MenuAcceso]) -> List:
         for lista_hijos in hijos_por_padre.values():
             try:
                 lista_hijos.sort(key=lambda x: x['orden'])  # Asegúrate de que 'orden' esté presente
-                print(f"🟢 Hijos ordenados para el menú padre {lista_hijos[0]['id_padre']}")
+                # print(f"🟢 Hijos ordenados para el menú padre {lista_hijos[0]['id_padre']}")
             except Exception as e:
                 print(f"🔴 Error al ordenar los hijos de un menú padre: {e}")
     
@@ -51,7 +51,7 @@ def getArbolOrdenadoTabulado(data: List[MenuAcceso]) -> List:
             try:
                 resultado.append(menu)
                 hijos = hijos_por_padre.get(menu['id'], [])
-                print(f"🟡 Agregando hijos para el menú ID {menu['id']}")
+                # print(f"🟡 Agregando hijos para el menú ID {menu['id']}")
                 for hijo in hijos:
                     agregar_con_hijos(hijo, resultado)
             except Exception as e:
@@ -61,7 +61,7 @@ def getArbolOrdenadoTabulado(data: List[MenuAcceso]) -> List:
         resultado_final = []
         for menu_raiz in sorted(hijos_por_padre.get(None, []), key=lambda x: x['orden']):
             try:
-                print(f"🌳 Procesando menú raíz '{menu_raiz['nombre']}'")
+                # print(f"🌳 Procesando menú raíz '{menu_raiz['nombre']}'")
                 agregar_con_hijos(menu_raiz, resultado_final)
             except Exception as e:
                 print(f"🔴 Error al procesar el menú raíz con ID {menu_raiz['id']}: {e}")

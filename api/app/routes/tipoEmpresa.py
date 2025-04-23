@@ -17,19 +17,29 @@ def get_db():
 
 @router.get("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def listar(db: Session = Depends(get_db)):
-    return get_all(db)
+    datos = get_all(db=db)
+    return  objRespuesta(
+        respuesta=True,
+        data=datos
+    )    
 
 @router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def crear(data: TipoEmpresaCreate, db: Session = Depends(get_db)):
-    return create(db, data)
+    datos = create(db,data)
+    return  objRespuesta(
+        respuesta=True,
+        data=datos
+    ) 
 
 @router.put("/{id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def actualizar(id: int, data: TipoEmpresaUpdate, db: Session = Depends(get_db)):
     result = update(db, id, data)
     if not result:
         raise HTTPException(status_code=404, detail="TipoEmpresa no encontrado")
-    return result
-
+    return  objRespuesta(
+        respuesta=True,
+        data=result
+    ) 
 @router.get("/list/all", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def obtener_id_nombre_empresas(db: Session = Depends(get_db)):
     lista = get_lista(db)

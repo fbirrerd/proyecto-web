@@ -93,7 +93,6 @@ async function buildTable() {
         });
       });
 
-      console.log("Enviando a API:", {relaciones: relaciones});
       await callApi('POST', 'rolmenu/guardar-relaciones', {relaciones: relaciones})
       .done(function(response) {
         if(response.respuesta){
