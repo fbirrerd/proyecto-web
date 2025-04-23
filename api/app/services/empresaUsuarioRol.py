@@ -1,5 +1,4 @@
 
-from app.schemas.rol import RolAcceso, RolCreate, RolUpdate
 from app.models.models import EmpresaUsuario, Rol, EmpresaUsuarioRol
 from sqlalchemy.orm import Session
 

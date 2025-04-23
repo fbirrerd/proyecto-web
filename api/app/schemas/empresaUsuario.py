@@ -8,7 +8,7 @@ class EmpresaUsuarioBase(BaseModel):
     id_usuario: int
     fecha_creacion: Optional[datetime] = None
     fecha_modificacion: Optional[datetime] = None
-    estado: bool
+    estado: Optional[bool]
 
     class Config:
         orm_mode = True

@@ -3,20 +3,17 @@ from typing import List
 from app.schemas.rol import RolAcceso, RolCreate, RolList, RolOut, RolUpdate
 from app.models.models import Rol, EmpresaUsuarioRol
 from sqlalchemy.orm import Session
-
-
 from datetime import datetime, timezone
 from sqlalchemy import and_, or_
-from app.schemas.respond import objRespuesta
 
 
 
   
-def get_role(db: Session, rol_id: int)  -> RolOut:
+def get_rol(db: Session, rol_id: int)  -> RolOut:
     return db.query(Rol).filter(Rol.id == rol_id).first()
 
-def get_roles(db: Session)  -> List[RolOut]:
-    return db.query(Rol).all()
+def get_all(db: Session)  -> List[RolOut]:
+    return db.query(Rol).order_by(Rol.nombre).all()
 
 def create_role(db: Session, role: RolCreate)  -> RolOut:
     db_role = Rol(nombre=Rol.nombre, estado=role.estado)

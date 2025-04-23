@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.schemas.rol import RolCreate, RolUpdate
 from app.schemas.respond import objRespuesta
-from app.services.rol import create_role, get_lista, get_role, get_roles
+from app.services.rol import create_role, get_lista, get_rol, get_all
 from app.database import SessionLocal
 
 
@@ -28,7 +28,7 @@ def set_rol(rol: RolCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def read_roles(db: Session = Depends(get_db)):
-    datos = get_roles(db=db)
+    datos = get_all(db=db)
     return  objRespuesta(
         respuesta=True,
         data=datos
@@ -37,7 +37,7 @@ def read_roles(db: Session = Depends(get_db)):
 
 @router.get("/{rol_id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def read_rol(rol_id: int, db: Session = Depends(get_db)):
-    db_role = get_role(db=db, rol_id=rol_id)
+    db_role = get_rol(db=db, rol_id=rol_id)
     if db_role is None:
         raise HTTPException(status_code=404, detail="Role not found")
     return db_role

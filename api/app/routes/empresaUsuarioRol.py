@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from api.app.schemas.empresaUsuarioRol import EmpresaUsuarioRolCreate
-from api.app.schemas.respond import objRespuesta
-from api.app.services.empresaUsuario import setEmpresaUsuario
-from api.app.services.empresaUsuarioRol import obtener_empresa_usuario_roles
+from app.services.empresaUsuarioRol import obtener_roles_por_empresa_usuario
+from app.schemas.empresaUsuarioRol import EmpresaUsuarioRolCreate
+from app.schemas.respond import objRespuesta
+from app.services.empresaUsuario import setEmpresaUsuario
+
 from app.database import SessionLocal
 from app.schemas.empresa import EmpresaCreate, EmpresaOut
 
@@ -22,7 +23,7 @@ def get_db():
 def obtener_nombres_empresa_usuario(db: Session = Depends(get_db)):
     return objRespuesta(
         respuesta=True,
-        data=obtener_empresa_usuario_roles(db)
+        data=obtener_roles_por_empresa_usuario(db)
     )    
 
 @router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})

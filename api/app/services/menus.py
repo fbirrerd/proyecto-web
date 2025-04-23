@@ -18,20 +18,20 @@ def filtrarEspecial(db: Session, UsuarioId: int, EmpresaId: int) -> List[any]:
         raise Exception("Registro UsuarioRolEmpresa no encontrada ")
 
     roles_ids = [item.id_rol for item in EmpresaUsuarioRolList] 
-    print(f" roles_ids {roles_ids} ")
+    # print(f" roles_ids {roles_ids} ")
 
     MenuRolList = db.query(MenuRol).filter(MenuRol.id_rol.in_(roles_ids)).all()
     if not MenuRolList:
         raise Exception("Registro MenuRol no encontrado ")
     
     menus_ids = [item.id_menu for item in MenuRolList]
-    print(f" menus_ids {menus_ids} ")
+    # print(f" menus_ids {menus_ids} ")
     
     MenuList = db.query(Menu).filter(
         and_(Menu.id.in_(menus_ids),
              Menu.estado == True)).all() 
    
-    print(f" MenuList {MenuList.count} ")    
+    # print(f" MenuList {MenuList.count} ")    
     
     return MenuList   
 

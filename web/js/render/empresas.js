@@ -1,251 +1,181 @@
-let currentData = [];
-let editModal;
+let currentData = [],
+  tipoEmpresas = [];
 
-document.addEventListener("DOMContentLoaded", () => {
-    fetchMenus();
-    editModal = new bootstrap.Modal(document.getElementById('editModal'));
-    document.getElementById("editForm").addEventListener("submit", guardarCambios);
-});
+$(document).ready(() => {
+  cargarConsultas();
+  //   cargarEmpresas();
 
-function fetchMenus() {
-    let params;
-    callApi('GET', 'menu/generales', params)
-    .done(function(response) {
-        if (response.respuesta) {
-            currentData = response.data;
-            llenarTabla();            
-        } else {
-            // Si hay un error en la respuesta
-            console.log(response.error);
-            $('#error-message').text(`Error en el login. Verifica tus credenciales. (${response.data.error})`).removeClass('d-none');
-        }
-    })
-    .fail(function() {
-        showDanger("No se puede conectar con el servidor"); 
-    });
-
-}
-
-const tipoOptions = ["link", "padre", "blank","popup"];
-
-function llenarTabla() {
-    const $tbody = $("#tableBody");
-    $tbody.empty();
-    currentData.forEach(item => {
-        const $row = $("<tr>");
-        
-        // Div que simula el select para los iconos
-        let icon = item.icono || 'fa-solid fa-house fa-fw';
-        let iconObj = iconosFontAwesome.find(i => i.icon === icon) || iconosFontAwesome[0];
-        
-        let $iconSelectDiv = $(`
-          <div class="dropdown">
-            <button class="btn dropdown-toggle btn-sm" type="button" id="dropdown-${item.id}" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="${iconObj.icon} me-2"></i> <span class="icon-name">${iconObj.name}</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-sm" aria-labelledby="dropdown-${item.id}">
-              ${iconosFontAwesome.map(iconObj => `
-                <li>
-                  <a class="dropdown-item icon-item" href="#"
-                    data-icon="${iconObj.icon}"
-                    data-name="${iconObj.name}"
-                    data-id="${item.id}">
-                    <i class="${iconObj.icon} me-2"></i> ${iconObj.name}
-                  </a>
-                </li>
-              `).join('')}
-            </ul>
-          </div>
-          <input type="hidden" id="icono-${item.id}" value="${iconObj.icon}">
-        `);
-        
-
-        // Agregar el resto de campos de la tabla
-        $row.append(
-            $("<td>").append($iconSelectDiv),
-            $("<td>").append(`<input type="text" class="form-control form-control-sm small-input" id="nombre-${item.id}" value="${menu.nombre}">`),
-            $("<td>").append(`<input type="text" class="form-control form-control-sm small-input" id="ruta-${item.id}" value="${menu.ruta ?? ''}">`),
-            $("<td>").append(`<select class="form-select form-select-sm small-input" id="tipo-${item.id}">
-                ${tipoOptions.map(tipo => `<option value="${tipo}" ${tipo === menu.tipo ? "selected" : ""}>${tipo}</option>`).join('')}
-            </select>`),
-            $("<td>").append(`
-                <select class="form-select form-select-sm small-input" name="padre_id">
-                    <option value="">-- Sin padre --</option>
-                    ${currentData.filter(m => m.tipo === "padre") // solo padres
-                        .map(padre => `
-                            <option value="${padre.id}" ${padre.id === menu.padre_id ? "selected" : ""}>
-                                ${padre.nombre}
-                            </option>
-                        `).join('')}
-                </select>
-            `),
-            // $("<td>").append(`<input type="number" class="form-control form-control-sm" style="width:50px" id="orden-${item.id}" value="${menu.orden}">`),
-            $("<td>").append(`
-                <button class="btn btn-sm small-btn estado-toggle ${menu.estado ? 'btn-success' : 'btn-secondary'}" data-id="${item.id}">
-                    ${menu.estado ? 'Activo' : 'Inactivo'}
-                </button>                
-                <button class="btn btn-success btn-sm guardar-btn small-btn" data-id="${item.id}"><i class="fas fa-save"></i> </button>
-                <button class="btn btn-warning btn-sm editar-btn small-btn" data-id="${item.id}"> <i class="fas fa-edit"></i> 
-                </button>
-            `)
-        );
-
-        $tbody.append($row);
-    });
-}
-
-$(document).on("click", ".estado-toggle", function () {
-    const $btn = $(this);
-    const id = $btn.data("id");
-    const currentEstado = $btn.hasClass("btn-success");
-
-    // Cambiar visual
-    $btn
-        .toggleClass("btn-success btn-secondary")
-        .text(currentEstado ? "Inactivo" : "Activo");
-
-    // Actualizar el hidden input si lo necesitas
-    $(`#estado-${id}`).val(!currentEstado);
-
-    // Actualizar directamente si deseas (opcional)
-    const params = {
-        id: id,
-        estado: !currentEstado
-    };
-
-    callApi('PUT', 'menu/cambiar-estado', params)
-    .done(() => {
-        if (response.respuesta) {
-            currentData = response.data;
-            mostrarAlerta({
-                mensaje: "Actualizado con éxito",
-                tipo: "success",
-                duracion: 5 // 5 segundos
-            });            
-            llenarTabla();            
-        } else {
-            mostrarAlerta({
-                mensaje: "Hubo un error al intentar actualizar",
-                tipo: "danger",
-                duracion: 5 // 5 segundos
-            });            
-        }
-    })
-    .fail(function() {
-        showDanger("No se puede conectar con el servidor");           
-    });
-});
-
-// 🟢 GUARDAR cambios desde la fila
-$(document).on("click", ".guardar-btn", function () {
-    const id = $(this).data("id");
-
-    const params = {
-        id: id,
-        nombre: $(`#nombre-${id}`).val(),
-        icono: $(`#icono-${id}`).val(),
-        ruta: $(`#ruta-${id}`).val(),
-        tipo: $(`#tipo-${id}`).val(),
-        orden: parseInt($(`#orden-${id}`).val()),
-        estado: $(`#estado-${id}`).val() === "true"
-    };
-    callApi('PUT', 'menu/generales', params)
-    .done(function(response) {
-        if (response.respuesta) {
-            currentData = response.data;
-            mostrarAlerta({
-                mensaje: "Actualizado con éxito",
-                tipo: "success",
-                duracion: 5 // 5 segundos
-            });            
-            llenarTabla();            
-        } else {
-            mostrarAlerta({
-                mensaje: "Hubo un error al intentar actualizar",
-                tipo: "danger",
-                duracion: 5 // 5 segundos
-            });            
-        }
-    })
-    .fail(function() {
-        showDanger("No se puede conectar con el servidor");           
-    });
-    
-});
-
-// Asignar icono al seleccionar una opción
-$(document).on('click', '.icon-item', function (e) {
+  $("#formEmpresa").submit(function (e) {
     e.preventDefault();
-  
-    const newIcon = $(this).data('icon');
-    const newName = $(this).data('name');
-    const itemId = $(this).data('id');
-  
-    // Actualizar el ícono y el nombre del botón
-    const $btn = $(`#dropdown-${itemId}`);
-    $btn.find('i').attr('class', `${newIcon} me-2`);
-    $btn.find('.icon-name').text(newName);
-  
-    // Actualizar input hidden
-    $(`#icono-${itemId}`).val(newIcon);
+    guardarEmpresa();
   });
-
-// ✏️ ABRIR MODAL para edición completa
-$(document).on("click", ".editar-btn", function () {
-    const id = $(this).data("id");
-    const menu = currentData.find(r => r.id === id);
-
-    if (!menu) return;
-
-    // Cargar datos en el modal
-    $("#editForm [name='id']").val(item.id);
-    $("#editForm [name='nombre']").val(menu.nombre);
-    $("#editForm [name='ruta']").val(menu.ruta);
-    $("#editForm [name='tipo']").val(menu.tipo);
-    $("#editForm [name='orden']").val(menu.orden);
-    $("#editForm [name='estado']").val(menu.estado.toString());
-
-    // Mostrar el modal
-    const modal = new bootstrap.Modal(document.getElementById("editModal"));
-    modal.show();
 });
 
+function cargarConsultas() {
+  const urls = ["empresa", "tipoempresa/list/all  "];
 
-
-function editar(id) {
-    const menu = currentData.find(m => m.id === id);
-    if (!menu) return;
-
-    const form = document.getElementById("editForm");
-    for (let key in menu) {
-        if (form[key] !== undefined) {
-            form[key].value = menu[key];
-        }
+  fetchMultiple(
+    urls,
+    function (responses) {
+      [currentData, tipoEmpresas] = responses.map((r) =>
+        r.respuesta ? r.data : []
+      );
+      cargarEmpresas();
+      cargarTiposEmpresa();
+    },
+    function (err) {
+      console.error("Fallo global:", err);
     }
-    editModal.show();
+  );
 }
 
-function guardarCambios(e) {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-
-    data.id = parseInt(data.id);
-    data.orden = parseInt(data.orden);
-    data.estado = data.estado === "true";
-    data.es_publico = false;
-    data.icono = "";
-    data.fecha_creacion = new Date().toISOString();
-    data.fecha_modificacion = new Date().toISOString();
-
-    fetch("/menu", {
-        method: "PUT",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    }).then(res => res.json())
-      .then(() => {
-        editModal.hide();
-        fetchMenus();
-      });
+function cargarTiposEmpresa() {
+  $("#tipoEmpresa").html(
+    '<option value="">Seleccione</option>' +
+      tipoEmpresas
+        .map((t) => `<option value="${t.id}">${t.nombre}</option>`)
+        .join("")
+  );
 }
+
+function cargarEmpresas() {
+  const rows = currentData.map(
+    (emp) => `
+      <tr>
+        <td><input class="form-control form-control-sm" value="${
+          emp.nombre
+        }" onchange="editarCampo(${emp.id}, 'nombre', this.value)"></td>
+        <td>
+          <select class="form-select form-select-sm" onchange="editarCampo(${
+            emp.id
+          }, 'id_tipo_empresa', this.value)">
+            ${tipoEmpresas
+              .map(
+                (t) =>
+                  `<option value="${t.id}" ${
+                    t.id === emp.id_tipo_empresa ? "selected" : ""
+                  }>${t.nombre}</option>`
+              )
+              .join("")}
+          </select>
+        </td>
+        <td>
+            <button 
+            class="btn btn-sm toggle-estado ${
+              emp.estado ? "btn-success" : "btn-secondary"
+            }" 
+            data-id="${emp.id}"
+            onclick="cambiarEstado(${emp.id}, ${!emp.estado})">
+                ${emp.estado ? "Activo" : "Inactivo"}
+            </button>
+            <button class="btn btn-sm btn-primary guardar-fila" data-id="${emp.id}">
+                <i class="fas fa-save"></i> 
+            </button>
+            <button class="btn btn-sm btn-warning" onclick="abrirModal(${
+              emp.id
+            })">
+                <i class="fas fa-pen"></i> 
+            </button>        
+        </td>
+      </tr>
+    `
+  );
+  $("#tableBodyEmpresa").html(rows.join(""));
+}
+
+function cambiarEstado(id, nuevoEstado) {
+  const url = [`empresa/${id}`];
+
+  const empresa = {
+    estado: nuevoEstado,
+  };
+
+  let resultado = callApi("PUT", url, empresa)
+    .done(function (response) {
+      if (response.respuesta) {
+        const btn = $(`button.toggle-estado[data-id="${id}"]`);
+        btn
+          .toggleClass("btn-success", nuevoEstado)
+          .toggleClass("btn-secondary", !nuevoEstado)
+          .text(nuevoEstado ? "Activo" : "Inactivo")
+          .attr("onclick", `cambiarEstado(${id}, ${!nuevoEstado})`);
+        showInfo("Cambios correctamente guardados");
+      } else {
+        showWarning("no se puede traer la información de menus");
+      }
+    })
+    .fail(function () {
+      showDanger("No se puede conectar con el servidor");
+    });
+}
+
+function abrirModal(id = null) {
+  if (id) {
+    const urls = [`empresa/${id}`];
+    fetchMultiple(
+      urls,
+      function (responses) {
+        const [emp] = responses.map((r) => (r.respuesta ? r.data : []));
+        if (emp) {
+          $("#empresaId").val(emp.id);
+          $("#nombre").val(emp.nombre);
+          $("#tipoEmpresa").val(emp.id_tipo_empresa);
+          $("#estado").prop("checked", emp.estado);
+        }
+        $("#modalEmpresa").modal("show");
+      },
+      function (err) {
+        console.error("Fallo global:", err);
+      }
+    );
+  } else {
+    // 👉 Aquí está la parte que faltaba
+    $("#formEmpresa")[0].reset();
+    $("#empresaId").val("");
+    $("#modalEmpresa").modal("show");
+  }
+}
+
+function guardarEmpresa(empresaData = null, empresaId = null) {
+    const id = empresaId ?? $("#empresaId").val();
+  const empresa = empresaData ?? {
+    nombre: $("#nombre").val(),
+    id_tipo_empresa: parseInt($("#tipoEmpresa").val()),
+    estado: $("#estado").is(":checked"),
+  };
+
+  const url = id ? `empresa/${id}` : "empresa";
+  const method = id ? "PUT" : "POST";
+
+  callApi(method, url, empresa)
+    .done(function (response) {
+      if (response.respuesta) {
+        showInfo("Cambios correctamente guardados");
+        $("#modalEmpresa").modal("hide");
+        cargarConsultas();
+      } else {
+        showWarning("No se puede guardar la información");
+      }
+    })
+    .fail(function () {
+      showDanger("No se puede conectar con el servidor");
+    });
+}
+
+$(document)
+  .off("click", ".guardar-fila")
+  .on("click", ".guardar-fila", function () {
+    const id = $(this).data("id");
+    const row = $(this).closest("tr");
+
+    const nombre = row.find("input").val();
+    const id_tipo_empresa = row.find("select").val();
+
+    const empresa = {
+      nombre,
+      id_tipo_empresa: parseInt(id_tipo_empresa),
+      // el estado no se modifica aquí
+    };
+
+    guardarEmpresa(empresa, id);
+  });

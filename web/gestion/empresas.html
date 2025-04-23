@@ -19,114 +19,58 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">Empresas   </h2>
-            <button class="btn btn-light" onclick="mostrarFilaNueva()">
+            <button class="btn btn-light" onclick="abrirModal()">
                 <i class="fa fa-plus"></i> Agregar
             </button>
         </div>
-        <table class="table table-bordered table-hover table-striped align-middle" id="menuTable">
-            <thead class="table-dark">
-                <tr>
-                    <th>Icono</th>
-                    <th>Nombre</th>
-                    <th>Ruta</th>
-                    <th>Tipo</th>
-                    <th>Orden</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
+        <table class="table table-striped mt-3">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Acciones</th>
+              </tr>
             </thead>
-            <tbody id="tableBody">
-                <!-- Filas dinámicas -->
-            </tbody>
-        </table>
+            <tbody id="tableBodyEmpresa"></tbody>
+          </table>
     </div>
 
-    <!-- Modal de edición -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form class="modal-content" id="editForm">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Editar Menú</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="id">
+<!-- Botón -->
 
-                    <!-- Dividir en dos columnas -->
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="nombre" class="form-label">Nombre:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" name="nombre" id="nombre" required>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="ruta" class="form-label">Ruta:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" name="ruta" id="ruta" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="tipo" class="form-label">Padre:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" name="padre" id="padre" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="tipo" class="form-label">Tipo:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" name="tipo" id="tipo" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="icono" class="form-label">Ícono:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" name="icono" id="icono" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="orden" class="form-label">Orden:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="number" class="form-control" name="orden" id="orden" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="estado" class="form-label">Estado:</label>
-                        </div>
-                        <div class="col-md-9">
-                            <select name="estado" id="estado" class="form-select" required>
-                                <option value="true">Activo</option>
-                                <option value="false">Inactivo</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+<!-- Modal -->
+<div class="modal fade" id="modalEmpresa" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formEmpresa">
+        <div class="modal-header">
+          <h5 class="modal-title">Empresa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-
+        <div class="modal-body">
+          <input type="hidden" id="empresaId">
+          <div class="mb-3">
+            <label>Nombre</label>
+            <input type="text" class="form-control" id="nombre" required>
+          </div>
+          <div class="mb-3">
+            <label>Tipo Empresa</label>
+            <select class="form-select" id="tipoEmpresa" required></select>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="estado" checked>
+            <label class="form-check-label">Activo</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">💾 Guardar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
 
-    <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-    </div>
     </form>
     </div>
     </div>
@@ -140,6 +84,6 @@
 
 
     <script src="../js/comun.js"></script>
-    <script src="../js/render/menu-general.js"></script></body>
+    <script src="../js/render/empresas.js"></script></body>
 
 </html>

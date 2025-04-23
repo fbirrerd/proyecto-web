@@ -29,7 +29,7 @@ def getDatosEmpresa(db: Session, UsuarioId: int):
         return None
   
 def get_all(db: Session) ->  List[EmpresaOut]:
-    return db.query(Empresa).all()
+    return db.query(Empresa).order_by(Empresa.nombre).all()
 
 def get_by_id(db: Session, empresa_id: int) ->  EmpresaOut:
     return db.query(Empresa).filter(Empresa.id == empresa_id).first()
@@ -59,5 +59,5 @@ def delete(db: Session, empresa_id: int) ->  EmpresaOut:
     return obj
 
 def get_lista(db: Session) ->  EmpresaList:
-    datos = db.query(Empresa).filter(Empresa.estado == True).all()
+    datos = db.query(Empresa).filter(Empresa.estado == True).order_by(Empresa.nombre).all()
     return [EmpresaList.from_orm(emp) for emp in datos]

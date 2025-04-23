@@ -22,9 +22,10 @@ def getArbolOrdenadoTabulado(data: List[MenuAcceso]) -> List:
                     # 'tipo': menu.tipo,
                     'nivel': nivel,
                     'hijos': tiene_hijos,
-                    'estado': menu.estado
+                    'estado': menu.estado,
+                    'descripcion': menu.descripcion
                 })
-                print(f"✅ Menú '{menu.nombre}' procesado con nivel {nivel} y {'con hijos' if tiene_hijos else 'sin hijos'}")
+                print(f"✅ Menú '{menu.nombre}' procesado con nivel {nivel} y {'con hijos' if tiene_hijos else 'sin hijos'}... descripcion {menu.descripcion} ")
             except Exception as e:
                 print(f"🔴 Error al procesar el menú con ID {menu.id}: {e}")
     

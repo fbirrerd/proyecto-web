@@ -3,8 +3,8 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class EmpresaBase(BaseModel):
-    nombre: str
-    id_tipo_empresa: int
+    nombre: Optional[str]
+    id_tipo_empresa: Optional[int]
     id_direccion: Optional[int] = None
     estado: Optional[bool] = True
 

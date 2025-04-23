@@ -18,10 +18,6 @@ $(document).ready(function () {
         console.log('No token found in localStorage');
     }
 
-
-
-
-
     function LoadEmpresas(empresasJSON) {
         const dropdownMenu = document.querySelector('.dropdown-menu');
 
@@ -67,7 +63,7 @@ function LoadMenu(menuJson, idPadre, idContainer) {
         let identificadorMenuHijo = `submenu-${nodo.id}`;
         if(tieneHijos(menuJson,nodo.id)){
             menuHTML += `<li>
-            <a href="#${identificadorMenuHijo}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+            <a href="#${identificadorMenuHijo}" title="${nodo.descripcion || ''}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
             <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
             </a>` 
             menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);         
@@ -75,7 +71,7 @@ function LoadMenu(menuJson, idPadre, idContainer) {
             // switch (nodo.tipo) {
             //     case "link":
             menuHTML += `<li>
-                <a onclick="abrirEnIframe('${nodo.url}',this.id)"  href="#" target="main-iframe" class="menu-link">
+                <a onclick="abrirEnIframe('${nodo.url}',this.id)" title="${nodo.descripcion || ''}"  href="#" target="main-iframe" class="menu-link">
                 <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
                 </a>`
             //             break;
@@ -89,7 +85,7 @@ function LoadMenu(menuJson, idPadre, idContainer) {
         }
     });
     menuHTML += `</ul>`;
-    console.log("html----", menuHTML);
+    //console.log("html----", menuHTML);
     document.getElementById(idContainer).innerHTML = menuHTML;
 }
 
@@ -107,7 +103,7 @@ function loadSubMenu(menuJson, idPadre, identificadorMenuHijo) {
 
         if(tieneHijos(menuJson,nodo.id)){
             menuHTML += `<li>
-            <a href="#${identificadorMenuHijo}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+            <a href="#${identificadorMenuHijo}" title="${nodo.descripcion || ''}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
             <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
             </a>` 
             menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);  
@@ -115,7 +111,7 @@ function loadSubMenu(menuJson, idPadre, identificadorMenuHijo) {
             // switch (nodo.tipo) {
             //     case "link":
             menuHTML += `<li>
-                <a onclick="abrirEnIframe('${nodo.url}',this)"  href="#" target="main-iframe" class="menu-link">
+                <a onclick="abrirEnIframe('${nodo.url}',this)" title="${nodo.descripcion || ''}" href="#" target="main-iframe" class="menu-link">
                 <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
                 </a>`
                         // break;
@@ -155,10 +151,10 @@ function getHijosOrdenados(menuJson, padreId) {
 
 function tieneHijos(menuJson, padreId) {
     try { 
-        console.log(`Se revisa si tiene hijos 
-            ${padreId} 
-            ${menuJson.filter(item => item.id_padre === padreId).length} 
-            ${menuJson.filter(item => item.id_padre === padreId).length > 0} `)
+        // console.log(`Se revisa si tiene hijos 
+        //     ${padreId} 
+        //     ${menuJson.filter(item => item.id_padre === padreId).length} 
+        //     ${menuJson.filter(item => item.id_padre === padreId).length > 0} `)
         // Verificamos si menuJson está vacío
         return menuJson.filter(item => item.id_padre === padreId).length > 0;
     } catch (error) {

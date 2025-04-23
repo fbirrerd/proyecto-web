@@ -27,8 +27,8 @@ def create_usuario(db: Session, usuario: UsuarioCreate):
     return db_usuario
 
 # Obtener todos los usuarios
-def get_usuarios(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Usuario).offset(skip).limit(limit).all()
+def get_all(db: Session):
+    return db.query(Usuario).order_by(Usuario.nombre).all()
 
 # Obtener un usuario por ID
 def get_usuario(db: Session, id_usuario: int):
