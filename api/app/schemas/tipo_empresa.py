@@ -26,3 +26,17 @@ class TipoEmpresaList(BaseModel):
 
     class Config:
         orm_mode = True
+        
+class TipoEmpresaFiltro(BaseModel):
+    id_tipo_empresa: int
+
+
+    class Config:
+        orm_mode = True        
+        
+class EmpresasOut(BaseModel):
+    id: int
+    nombre: str
+
+    class Config:
+        orm_mode = True                

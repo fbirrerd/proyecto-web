@@ -27,5 +27,12 @@ def obtener_nombres_empresa_usuario(db: Session = Depends(get_db)):
 def guardar_relacion(oCreate: EmpresaUsuarioCreate, db: Session = Depends(get_db)):
     return objRespuesta(
         respuesta = True,
-        data = setEmpresaUsuario(oCreate, db)
+        data = setEmpresaUsuario(db, oCreate)
+    )    
+
+@router.put("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
+def editar_relacion(oCreate: EmpresaUsuarioCreate, db: Session = Depends(get_db)):
+    return objRespuesta(
+        respuesta = True,
+        data = setEmpresaUsuario(db, oCreate)
     )    

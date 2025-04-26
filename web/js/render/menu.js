@@ -83,10 +83,11 @@ function llenarTabla() {
                 </select>
             `),
             // $("<td>").append(`<input type="number" class="form-control form-control-sm" style="width:50px" id="orden-${item.id}" value="${item.orden}">`),
-            $("<td>").append(`
-                <button class="btn btn-sm estado-toggle ${item.estado ? 'btn-success' : 'btn-secondary'}" data-id="${item.id}">
-                    ${item.estado ? 'Activo' : 'Inactivo'}
-                </button>
+            $("<td class='acciones-td  text-end'>").append(`
+                <button class="btn btn-sm ${item.estado ? 'btn-success' : 'btn-danger'} btn-estado" 
+                    data-id="${item.id}" title="${item.estado ? 'Desactivar' : 'Activar'}">
+                    <i class="fas ${item.estado ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
+                </button>                
                 <button class="btn btn-success btn-sm guardar-btn " data-id="${item.id}">
                     <i class="fas fa-save"></i>
                 </button>
@@ -100,37 +101,37 @@ function llenarTabla() {
     });
 }
 
-$(document).on("click", ".estado-toggle", function () {
-    const $btn = $(this);
-    const id = $btn.data("id");
-    const currentEstado = $btn.hasClass("btn-success");
+$("#tableBody").on("click", ".btn-estado", function () {
+    const id = $(this).data("id");
+    const row = $(this).closest("tr");
+    const estadoActual = $(this).hasClass("btn-success");
+  
+    const isActivo = this.classList.contains('btn-success');
+            
+    // Alternar clases
+    this.classList.toggle('btn-success', !isActivo);
+    this.classList.toggle('btn-danger', isActivo);
 
-    // Cambiar visual
-    $btn
-        .toggleClass("btn-success btn-secondary")
-        .text(currentEstado ? "Inactivo" : "Activo");
-
-    // Actualizar el hidden input si lo necesitas
-    $(`#estado-${id}`).val(!currentEstado);
-
-    // Actualizar directamente si deseas (opcional)
+    // Cambiar título
+    this.title = isActivo ? 'Activar' : 'Desactivar';
+  
     const params = {
         id: id,
-        estado: !currentEstado
+        estado: !estadoActual
     };
 
     callApi('PUT', 'menu/cambiar-estado', params)
-    .done(function(response) {
-        if (response.respuesta) {
-            showInfo("Estado actualizado con exito");          
-        } else {
-            showWarning("Hubo un error al intentar actualizar");            
-        }
-    })
-    .fail(function() {
-        showDanger("No se puede conectar con el servidor");          
-    });
-});
+        .done(function(response) {
+            if (response.respuesta) {
+                showInfo("Estado actualizado con exito");          
+            } else {
+                showWarning("Hubo un error al intentar actualizar");            
+            }
+        })
+        .fail(function() {
+            showDanger("No se puede conectar con el servidor");          
+        });
+  });
 
 // 🟢 GUARDAR cambios desde la fila
 $(document).on("click", ".guardar-btn", function () {

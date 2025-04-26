@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from app.models.models import TipoEmpresa
-from app.schemas.tipo_empresa import TipoEmpresaCreate, TipoEmpresaList, TipoEmpresaOut, TipoEmpresaUpdate
+from app.models.models import Empresa, TipoEmpresa
+from app.schemas.tipo_empresa import EmpresasOut, TipoEmpresaCreate, TipoEmpresaFiltro, TipoEmpresaList, TipoEmpresaOut, TipoEmpresaUpdate
 
 def get_all(db: Session) ->  list[TipoEmpresaOut]:
     return db.query(TipoEmpresa).order_by(TipoEmpresa.nombre).all()
@@ -51,3 +51,7 @@ def update(db: Session, id: int, data: TipoEmpresaUpdate) -> TipoEmpresaOut:
 def get_lista(db: Session) ->  TipoEmpresaList:
     datos = db.query(TipoEmpresa).filter(TipoEmpresa.estado == True).all()
     return [TipoEmpresaList.from_orm(emp) for emp in datos]
+
+def get_lista_empresas_x_tipo(id_tipo_empresa: int,db: Session) ->  EmpresasOut:
+    datos = db.query(Empresa).filter(Empresa.id_tipo_empresa==id_tipo_empresa).all()
+    return [EmpresasOut.from_orm(emp) for emp in datos]

@@ -74,7 +74,7 @@ async function fetchMultiple(endpoints = [], onSuccess = () => {}, onError = () 
 }
 
 
-function callApi(method, endpoint, params) {
+function  callApi(method, endpoint, params) {
   // Crear el elemento del mensaje de carga
   // Crear el elemento del icono de carga de Font Awesome
   const loadingIcon = document.createElement("i");

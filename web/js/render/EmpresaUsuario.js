@@ -29,20 +29,62 @@ function cargarTabla() {
   currentData.forEach(item => {
     const estadoClass = item.estado ? 'btn-success' : 'btn-secondary';
     const estadoTexto = item.estado ? 'Activo' : 'Inactivo';    
+    console.log(item);
     const row = `
       <tr>
         <td>${item.empresa_nombre || "Sin nombre"}</td>
         <td>${item.usuario_nombre || "Sin nombre"}</td>
-        <td>
-          <button class="btn btn-sm ${estadoClass}" onclick="cambiarEstado(${item.id_empresa}, ${item.id_usuario}, ${item.estado})">
-            ${estadoTexto}
-          </button>          
+        <td class="acciones-td  text-end">
+          <button class="btn btn-sm ${item.estado ? 'btn-success' : 'btn-danger'} btn-estado" 
+            data-id-empresa="${item.usuario_id}" data-id-usuario="${item.usuario_id}" title="${item.estado ? 'Desactivar' : 'Activar'}">
+            <i class="fas ${item.estado ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
+          </button> 
+     
           <button class="btn btn-sm btn-primary" onclick="editarEmpresaUsuario(${item.id_empresa}, ${item.id_usuario})">Editar</button>
         </td>
       </tr>`;
     $tbody.append(row);
   });
 }
+
+$("#tableBody").on("click", ".btn-estado", function () {
+  const id = $(this).data("id");
+  const row = $(this).closest("tr");
+  const estadoActual = $(this).hasClass("btn-success");
+
+
+  console.log()
+  console.log()
+  // id_empresa
+
+
+  const isActivo = this.classList.contains('btn-success');
+          
+  // Alternar clases
+  this.classList.toggle('btn-success', !isActivo);
+  this.classList.toggle('btn-danger', isActivo);
+
+  // Cambiar título
+  this.title = isActivo ? 'Activar' : 'Desactivar';
+
+  const params = {
+    id_empresa: $(this).data("id-empresa"),
+    id_usuario: $(this).data("id-usuario"),
+    estado: isActivo      
+  };
+
+  callApi('PUT', 'empresausuario', params)
+      .done(function(response) {
+          if (response.respuesta) {
+              showInfo("Estado actualizado con exito");          
+          } else {
+              showWarning("Hubo un error al intentar actualizar");            
+          }
+      })
+      .fail(function() {
+          showDanger("No se puede conectar con el servidor");          
+      });
+});
 
 function agregarFilaInline() {
   const empresaSelect = [`<option value="">Seleccione una empresa</option>`]
@@ -61,7 +103,7 @@ function agregarFilaInline() {
       <td>
         <select class="form-select form-select-sm" id="inline-usuario">${usuarioSelect}</select>
       </td>
-      <td>
+      <td class="acciones-td  text-end">
         <button class="btn btn-success btn-sm" onclick="guardarFilaInline()">Guardar</button>
         <button class="btn btn-secondary btn-sm" onclick="$('#fila-inline').remove()">Cancelar</button>
       </td>
@@ -83,7 +125,7 @@ function guardarFilaInline() {
   const payload = {
     id_empresa,
     id_usuario,
-    estado,
+    true,
     roles: []
   };
 

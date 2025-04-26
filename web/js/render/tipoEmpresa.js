@@ -7,6 +7,7 @@ function cargarTipos() {
           if (response.respuesta) {
             currentData = response.data;
             llenarTabla();
+            
           } else {
             showWarning("Error al cargar tipos de empresa");
           }
@@ -54,10 +55,11 @@ $(document).on('click', '.btn-editar', function () {
   const item = currentData.find(i => i.id === id);
 
   // Guardamos el ID en el botón para luego usarlo
+  
   $('#btnGuardarCambios').data('id', id);
   $('#inputNombreEditar').val(item.nombre);
   $('#inputEstadoEditar').val(item.estado.toString());
-  
+  verEmpresas(id);
   // Mostramos el modal
   const modal = new bootstrap.Modal(document.getElementById('modalEditar'));
   modal.show();
@@ -139,15 +141,38 @@ $("#tableBody").on("click", ".btn-estado", function () {
 });
 
 function verEmpresas(tipo) {
-  $("#empresasTipoList").html(`
-    <li class="list-group-item">Empresa 1 relacionada con: ${tipo}</li>
-    <li class="list-group-item">Empresa 2 relacionada con: ${tipo}</li>
-  `);
-  $("#empresasAsociadas").show();
-  $("#formularioTipoEmpresa").hide();
-  $("#modalTitulo").text("Empresas Asociadas");
-  new bootstrap.Modal(document.getElementById("modalTipoEmpresa")).show();
+  console.log(tipo);
+
+  // Llamada a la API con tipo en la URL directamente
+  callApi('GET', `tipoempresa/empresas/${tipo}`)
+    .done(function(response) {
+      $("#empresasTipoList").empty(); // Limpiar lista
+
+      if (response.respuesta && Array.isArray(response.data)) {
+        if (response.data.length === 0) {
+          // Mostrar mensaje si no hay empresas asociadas
+          const $msg = $("<li>")
+            .addClass("list-group-item bg-warning text-dark")
+            .text("No está asociada a ninguna empresa.");
+          $("#empresasTipoList").append($msg);
+        } else {
+          // Mostrar las empresas
+          $.each(response.data, function(index, empresa) {
+            const $li = $("<li>")
+              .addClass("list-group-item")
+              .html(`${empresa.nombre}`);
+            $("#empresasTipoList").append($li);
+          });
+        }
+      } else {
+        showWarning("No fue posible obtener las empresas asociadas.");
+      }
+    })
+    .fail(function() {
+      showDanger("No se pudo conectar con el servido  r.");
+    });
 }
+
 
 $(document).ready(() => {
   cargarTipos();
@@ -162,7 +187,7 @@ $('#btnNuevo').on('click', function () {
       <td>
         <input type="text" class="form-control form-control-sm nombre" placeholder="Nombre del tipo de empresa">
       </td>
-      <td>
+      <td class="acciones-td  text-end">
         <button class="btn btn-sm btn-success btn-guardar-nuevo me-2"><i class="fas fa-save"></i></button>
         <button class="btn btn-sm btn-secondary btn-cancelar-nuevo"><i class="fas fa-times"></i></button>
       </td>

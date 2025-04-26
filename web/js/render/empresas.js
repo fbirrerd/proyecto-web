@@ -60,12 +60,8 @@ function cargarEmpresas() {
           </select>
         </td>
         <td>
-            <button 
-            class="btn btn-sm toggle-estado ${
-              emp.estado ? "btn-success" : "btn-secondary"
-            }" 
-            data-id="${emp.id}"
-            onclick="cambiarEstado(${emp.id}, ${!emp.estado})">
+            <button class="btn btn-sm toggle-estado ${emp.estado ? "btn-success" : "btn-secondary"}" 
+            data-id="${emp.id}"onclick="cambiarEstado(${emp.id}, ${!emp.estado})">
                 ${emp.estado ? "Activo" : "Inactivo"}
             </button>
             <button class="btn btn-sm btn-primary guardar-fila" data-id="${emp.id}">

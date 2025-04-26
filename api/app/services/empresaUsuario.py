@@ -20,28 +20,34 @@ def getDatosEmpresaUsuario(db: Session):
         )
         .join(EmpresaUsuario, Usuario.id == EmpresaUsuario.id_usuario)
         .join(Empresa, Empresa.id == EmpresaUsuario.id_empresa)
-        .filter(EmpresaUsuario.estado == True)
         .all()
     )
     return [EmpresaUsuarioList.from_orm(r) for r in datos]
   
 def setEmpresaUsuario(db: Session, oCrear: EmpresaUsuarioCreate) -> EmpresaUsuarioOut:
-    # Verificar si ya existe la relación
+    # Buscar si ya existe la relación
     existe = db.query(EmpresaUsuario).filter_by(
-        id_empresa = oCrear.id_empresa,
-        id_usuario = oCrear.id_usuario
+        id_empresa=oCrear.id_empresa,
+        id_usuario=oCrear.id_usuario
     ).first()
 
-    nueva_relacion = EmpresaUsuario(
-        id_empresa = oCrear.id_empresa,
-        id_usuario = oCrear.id_usuario,
-        estado = oCrear.estado
-    )
-
-    db.add(nueva_relacion)
-    db.commit()
-    return [EmpresaUsuarioOut.from_orm(r) for r in nueva_relacion]
-  
+    if existe:
+        # Si existe, actualizar el estado
+        existe.estado = oCrear.estado
+        db.commit()
+        db.refresh(existe)
+        return EmpresaUsuarioOut.from_orm(existe)
+    else:
+        # Si no existe, crear una nueva relación
+        nueva_relacion = EmpresaUsuario(
+            id_empresa=oCrear.id_empresa,
+            id_usuario=oCrear.id_usuario,
+            estado=oCrear.estado
+        )
+        db.add(nueva_relacion)
+        db.commit()
+        db.refresh(nueva_relacion)
+        return EmpresaUsuarioOut.from_orm(nueva_relacion)
    
   
   
