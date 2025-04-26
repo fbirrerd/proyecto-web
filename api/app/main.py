@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
-from app.routes import auth, empresa, menus, usuario, rol, rolMenu,empresaUsuario, empresaUsuarioRol, tipoEmpresa
+from app.routes import auth, empresa, menus, usuario, rol, rolMenu,empresaUsuario, empresaUsuarioRol, tipoEmpresa, tipoMenu
 from app.config import ALLOWED_ORIGINS
 
 # Inicializar base de datos
@@ -33,6 +33,7 @@ app.include_router(rolMenu.router,  prefix="/api/v1/rolmenu")
 app.include_router(empresaUsuario.router,  prefix="/api/v1/empresausuario")
 app.include_router(empresaUsuarioRol.router,  prefix="/api/v1/empresausuariorol")
 app.include_router(tipoEmpresa.router,  prefix="/api/v1/tipoempresa")
+app.include_router(tipoMenu.router,  prefix="/api/v1/tipomenu")
 # app.include_router(menuEspecifico.router, prefix="/api/v1/menue")  # Activar si se usa
 
 @app.get("/")
