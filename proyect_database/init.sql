@@ -1,11 +1,70 @@
 
+
+
 -- =========================
 -- CREACIÓN DE USUARIO Y ROL
 -- =========================
-CREATE USER superuser WITH PASSWORD 'claveapp';
+CREATE USER superuser WITH PASSWORD 'correoapp';
 ALTER USER superuser WITH SUPERUSER;
-CREATE ROLE postgres WITH LOGIN PASSWORD 'PasswordPostgres';
-ALTER ROLE postgres CREATEDB;
+
+CREATE ROLE API_DB WITH LOGIN PASSWORD 'your_password_here';
+ALTER ROLE API_DB CREATEDB;
+CREATE ROLE CORREO_DB WITH LOGIN PASSWORD 'PasswordPostgres';
+ALTER ROLE CORREO_DB CREATEDB;
+
+
+CREATE DATABASE "CORREO_DB" OWNER superuser;
+
+-- =========================
+-- CONECTARSE A CORREO_DB
+-- =========================
+\connect "CORREO_DB"
+
+-- Crear tablas en CORREO_DB
+CREATE TABLE IF NOT EXISTS emails (
+    id SERIAL PRIMARY KEY,
+    recipient VARCHAR(255) NOT NULL,
+    cc TEXT,
+    bcc TEXT,
+    subject VARCHAR(255) NOT NULL,
+    body TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending',
+    error TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS email_templates (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(255) NOT NULL,
+    template_html TEXT NOT NULL,
+    parameters TEXT[] NOT NULL
+);
+-- =========================
+-- CREACIÓN DE USUARIO Y ROL
+-- =========================
+
+
+    INSERT INTO email_templates
+    (code, template_html, parameters)
+    VALUES('iglesia-bienvenida-1', '<!DOCTYPE html>
+    <html>
+    <head>
+        <title>¡Feliz Cumpleaños!</title>
+    </head>
+    <body>
+        <h1>¡Feliz cumpleaños, !#cumpleañero#!!</h1>
+        <p>!#saludo#!</p>
+        <br>
+        <p>Con cariño,</p>
+        <p>!#firma#!</p>
+    </body>
+    </html>
+    ', '{}');
+
+
+
+\connect "API_DB"
 
 -- =========================
 -- TABLAS GEOGRÁFICAS
@@ -317,20 +376,23 @@ INSERT INTO roles (nombre) VALUES
 ('Soporte'), ('Administrador'), ('Auditor'), ('Usuario');
 
 -- Menús
-INSERT INTO public.menus
-(nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden)
+INSERT INTO menus
+(nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden, estado)
 VALUES
-('Dashboard', 'home', 1, NULL, '/dashboard', 'Vista principal', 'token_dashboard', 1),
-('Gestión', 'folder', 1, NULL, '/gestion', 'Módulo de gestión', 'token_gestion', 2),
-('Tablas', 'table', 1, 2, '/gestion/tablas', 'Tablas base del sistema', 'token_tablas', 1),
-('Permisos', NULL, 1, 2, NULL, 'Gestionador de relaciones', NULL, NULL),
-('Usuarios', 'user', 1, 3, '/gestion/tablas/usuarios', 'Gestión de usuarios', 'token_usuarios', 2),
-('Menús', 'list', 1, 3, '/gestion/menus', 'Gestión de menús', 'token_menus', 3),
-('Roles', 'shield', 1, 3, '/gestion/rol', 'Gestión de roles', 'token_roles', 4),
-('Empresas', NULL, 1, 3, '/gestion/empresas', 'Mantener las empresas del sistem', NULL, 1),
-('Rol Menu', NULL, NULL, 8, '/gestion/RolMenu', NULL, NULL, NULL),
-('Empresa Usuario', NULL, NULL, 8, '/gestion/EmpresaUsuario', NULL, NULL, NULL),
-('Empresa Usuario Rol', NULL, NULL, 8, '/gestion/EmpresaUsuarioRol', NULL, NULL, NULL);
+('Dashboard', 'fa-solid fa-power-off fa-fw', 1, NULL, '/dashboard', 'Vista principal', 'token_dashboard', 1, true),
+('Gestión', 'fa-solid fa-compass fa-fw', 1, NULL, '/gestion', 'Módulo de gestión', 'token_gestion', 2, true),
+('Tablas', 'fa-solid fa-table fa-fw', 1, 2, '/gestion/tablas', 'Tablas base del sistema', 'token_tablas', 1, true),
+('Permisos', 'fa-solid fa-key fa-fw', 1, 2, NULL, 'Gestionador de relaciones', NULL, 3, true),
+('Usuarios', 'fa-solid fa-users fa-fw', 1, 3, '/gestion/usuarios', 'Gestión de usuarios', 'token_usuarios', 2, true),
+('Menús', 'fa-solid fa-sitemap fa-fw', 1, 3, '/gestion/menu', 'Gestión de menús', 'token_menus', 3, true),
+('Roles', 'fa-solid fa-users-line fa-fw', 1, 3, '/gestion/rol', 'Gestión de roles', 'token_roles', 4, true),
+('Empresas', 'fa-solid fa-hotel fa-fw', 1, 3, '/gestion/empresas', 'Mantener las empresas del sistem', NULL, 1, true),
+('Rol Menu', 'fa-solid fa-diagram-project fa-fw', 1, 4, '/gestion/rolMenu', NULL, NULL, NULL, true),
+('Empresa Usuario', 'fa-solid fa-building-user fa-fw', NULL, 4, '/gestion/empresaUsuario', NULL, NULL, NULL, true),
+('Tipo de Datos', 'fa-solid fa-check-to-slot fa-fw', 1, 2, '/gestion/tipoEmpresa', 'Gestión de Tipo de Empresas', NULL, 2, true),
+('Tipo de Empresas', 'fa-solid fa-landmark-flag fa-fw', 1, 11, '/gestion/tipoEmpresa', NULL, NULL, 1, true),
+('Tipo de Menu', 'fa-solid fa-user-tag fa-fw', 1, 11, '/gestion/tipoMenu', NULL, NULL, 2, true);
+
 
 -- Relación menú-rol
 INSERT INTO menu_rol (id_menu, id_rol) 
