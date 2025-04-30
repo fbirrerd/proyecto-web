@@ -1,5 +1,6 @@
+
 from fastapi import FastAPI
-from email_api.routes import email  # Asegúrate de que este import esté bien
+from routes import email, template  # Asegúrate de que este import esté bien
 
 app = FastAPI(
     title="Sistema de Correos",
@@ -8,7 +9,8 @@ app = FastAPI(
 )
 
 # Incluir el router de emails
-app.include_router(email.router, prefix="/api/v1/emails")
+app.include_router(email.router, prefix="/api/v1")
+app.include_router(template.router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():

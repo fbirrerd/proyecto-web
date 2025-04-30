@@ -109,4 +109,4 @@ async function buildTable() {
 
     $(document).ready(buildTable);
 
-    console.log("rol-menu.js cargado (versión con jQuery para UI).");
+    console.log("rolmenu.js cargado (versión con jQuery para UI).");

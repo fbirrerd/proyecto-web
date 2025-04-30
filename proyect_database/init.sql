@@ -1,16 +1,9 @@
 
-
-
 -- =========================
 -- CREACIÓN DE USUARIO Y ROL
 -- =========================
 CREATE USER superuser WITH PASSWORD 'correoapp';
 ALTER USER superuser WITH SUPERUSER;
-
-CREATE ROLE API_DB WITH LOGIN PASSWORD 'your_password_here';
-ALTER ROLE API_DB CREATEDB;
-CREATE ROLE CORREO_DB WITH LOGIN PASSWORD 'PasswordPostgres';
-ALTER ROLE CORREO_DB CREATEDB;
 
 
 CREATE DATABASE "CORREO_DB" OWNER superuser;
@@ -23,18 +16,20 @@ CREATE DATABASE "CORREO_DB" OWNER superuser;
 -- Crear tablas en CORREO_DB
 CREATE TABLE IF NOT EXISTS emails (
     id SERIAL PRIMARY KEY,
-    recipient VARCHAR(255) NOT NULL,
-    cc TEXT,
-    bcc TEXT,
-    subject VARCHAR(255) NOT NULL,
-    body TEXT NOT NULL,
+    de VARCHAR(255) NOT NULL,
+    para VARCHAR(255) NOT NULL,
+    concopia VARCHAR(255),
+    concopiaoculta VARCHAR(255),
+    asunto VARCHAR(255),
+    parametros TEXT NOT NULL,
+    cuerpoHtml TEXT,
     status VARCHAR(20) DEFAULT 'pending',
     error TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS email_templates (
+CREATE TABLE IF NOT EXISTS templates (
     id SERIAL PRIMARY KEY,
     code VARCHAR(255) NOT NULL,
     template_html TEXT NOT NULL,
@@ -45,7 +40,7 @@ CREATE TABLE IF NOT EXISTS email_templates (
 -- =========================
 
 
-    INSERT INTO email_templates
+    INSERT INTO templates
     (code, template_html, parameters)
     VALUES('iglesia-bienvenida-1', '<!DOCTYPE html>
     <html>
@@ -65,6 +60,7 @@ CREATE TABLE IF NOT EXISTS email_templates (
 
 
 \connect "API_DB"
+
 
 -- =========================
 -- TABLAS GEOGRÁFICAS
@@ -180,7 +176,6 @@ CREATE TABLE tipos_menu (
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO tipos_menu (nombre) VALUES ('general'), ('especifico');
 
 CREATE TABLE menus (
     id SERIAL PRIMARY KEY,
@@ -313,6 +308,35 @@ CREATE TABLE logs_acceso (
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabla principal de módulos
+CREATE TABLE modulos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    estado BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Relación N a N entre empresas y módulos
+CREATE TABLE empresa_modulo (
+    id_empresa INT NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
+    id_modulo INT NOT NULL REFERENCES modulos(id) ON DELETE CASCADE,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE,
+    estado BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_empresa, id_modulo)
+);
+
+-- Relación N a N entre módulos y menús
+CREATE TABLE modulo_menu (
+    id_modulo INT NOT NULL REFERENCES modulos(id) ON DELETE CASCADE,
+    id_menu INT NOT NULL REFERENCES menus(id) ON DELETE CASCADE,
+    PRIMARY KEY (id_modulo, id_menu)
+);
+
 
 -- =========================
 -- ÍNDICES
@@ -345,7 +369,7 @@ JOIN tipos_empresa te ON mte.id_tipo_empresa = te.id;
 
 -- Tipos de empresa
 INSERT INTO tipos_empresa (nombre) 
-VALUES ('Farmacia'), ('Librería'), ('Tecnologia'), ('Bodega');
+VALUES ('Farmacia'), ('Librería'), ('Tecnologia'), ('Bodega'), ('Venta'), ('Iglesia');
 
 -- Empresas
 INSERT INTO empresas (nombre, id_tipo_empresa) VALUES 
@@ -375,6 +399,9 @@ INSERT INTO usuarios (
 INSERT INTO roles (nombre) VALUES 
 ('Soporte'), ('Administrador'), ('Auditor'), ('Usuario');
 
+
+
+INSERT INTO tipos_menu (nombre) VALUES ('General'), ('Modulos');
 -- Menús
 INSERT INTO menus
 (nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden, estado)
@@ -393,6 +420,17 @@ VALUES
 ('Tipo de Empresas', 'fa-solid fa-landmark-flag fa-fw', 1, 11, '/gestion/tipoEmpresa', NULL, NULL, 1, true),
 ('Tipo de Menu', 'fa-solid fa-user-tag fa-fw', 1, 11, '/gestion/tipoMenu', NULL, NULL, 2, true);
 
+INSERT INTO menus
+(nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden, estado)
+VALUES
+('Laboratorios', 'fa-solid fa-check-to-slot fa-fw', 2, null, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1, true),
+('Farmacias', 'fa-solid fa-landmark-flag fa-fw', 2, null, '/vademecum/farmacias', NULL, NULL, 1, true),
+('Remedios', 'fa-solid fa-user-tag fa-fw', 2, null, '/vademecum/remdios', NULL, NULL, 3, true),
+('Vademecum', 'fa-solid fa-user-tag fa-fw', 2, null, '/vademecum/remdios', NULL, NULL, 4, true);
+
+
+
+
 
 -- Relación menú-rol
 INSERT INTO menu_rol (id_menu, id_rol) 
@@ -410,7 +448,11 @@ INSERT INTO empresa_usuario_rol
 (id_empresa, id_usuario, id_rol)
 VALUES(1, 1, 1);
 
-
+INSERT INTO modulos (nombre, descripcion)
+VALUES 
+('Ventas', 'Módulo para administrar procesos de ventas de productos y servicios'),
+('Vademecum', 'Módulo para generar y visualizar mantenedor de farmacias/remedios'), 
+('Agenda', 'Módulo para generar y visualizar manejo de contactos');
 
 INSERT INTO parametro_sistema
 (clave, valor, descripcion)
