@@ -80,8 +80,6 @@ def set_relaciones(db: Session, obj: ObjetoRelaciones) -> objRespuesta:
                     "estado": nueva_relacion.estado
                 })
 
-            print(f"Guardar: Rol {relacion.id_rol} - Menú {relacion.id_menu} - Estado {relacion.estado}")
-
         return objRespuesta(
             respuesta= True,
             data = { 

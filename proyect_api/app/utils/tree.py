@@ -1,8 +1,8 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 from app.schemas.menus import MenuAcceso
 
 
-def getArbolOrdenadoTabulado(data: List[MenuAcceso]) -> List:
+def getArbolOrdenadoTabulado(data: List[MenuAcceso]) -> List[Any]:
     # Ya son objetos MenuGeneral, no necesitamos convertirlos
     menus_con_nivel = []
 

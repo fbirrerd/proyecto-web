@@ -7,16 +7,13 @@ from app.services.acceso import crear_acceso
 from app.services.rol import getDatosRol
 from app.services.empresa import getDatosEmpresa
 from app.services.usuario import getDatosUsuarioXID
-from app.schemas.auth import UsuarioLogin
-from app.models.models import Acceso, Usuario
-
-
+from app.schemas.complejos import DatosAcceso
+from app.services.modulos import ListMenuXModulo
+from app.models.models import Acceso
 from app.utils.security import generar_jwt
 
 
 
-from app.schemas.complejos import AccesoDuracion, DatosAcceso
-from app.services.modulos import obtener_modulos_por_empresa
 
 
 def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , token: Optional[str] = None ) -> DatosAcceso:
@@ -25,12 +22,12 @@ def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , t
     if not oUsuario:
         raise Exception(f"Usuario no encontrado {userid}")
 
-    idUsuario = oUsuario.id
+    usuarioId = oUsuario.id
     minutosAcceso = oUsuario.duracion
     
     # raise Exception(f"minutosAcceso {minutosAcceso}")
     
-    lEmpresas = getDatosEmpresa(db, idUsuario);
+    lEmpresas = getDatosEmpresa(db, usuarioId);
     if not lEmpresas:
         raise Exception("Empresas no encontrada")
     
@@ -39,20 +36,20 @@ def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , t
     else:
         idEmpresaSeleccionada = empresaid;
 
-    lRoles = getDatosRol(db, idUsuario, idEmpresaSeleccionada);
-    lModulos = obtener_modulos_por_empresa(db, idEmpresaSeleccionada);
+    lRoles = getDatosRol(db, usuarioId, idEmpresaSeleccionada);
+    lModulos = ListMenuXModulo(db, idEmpresaSeleccionada, usuarioId);
 
     if not lEmpresas:
         raise Exception("Empresas no encontrada")
     
-    lMenus = getListMenuOrdenada(db, idUsuario, idEmpresaSeleccionada)
+    lMenus = getListMenuOrdenada(db, usuarioId, idEmpresaSeleccionada)
     
     # Se genera el Token
     if token == None:
-        newToken = generar_jwt(idUsuario, minutosAcceso)
+        newToken = generar_jwt(usuarioId, minutosAcceso)
         # raise Exception(newToken)
         db_acceso = Acceso(
-            id_usuario=idUsuario,
+            id_usuario=usuarioId,
             id_empresa=idEmpresaSeleccionada,
             token=newToken,
             fecha_ingreso=datetime.now(),

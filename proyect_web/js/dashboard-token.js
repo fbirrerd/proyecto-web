@@ -46,7 +46,7 @@ function cargarNombreEmpresa(empresaNombre) {
 
 function IniciarMenu(tokenData) {
     LoadMenu(tokenData.menus, null, "leftMenuContainer")
-    //LoadMenu(tokenData.menusEspecificos, "leftMenuEspecificoContainer")
+    LoadMenuModulo(tokenData.modulos, "leftMenuModulosContainer")
 }
 
 function LoadMenu(menuJson, idPadre, idContainer) {
@@ -54,7 +54,7 @@ function LoadMenu(menuJson, idPadre, idContainer) {
         return
     }
     let datos = getHijosOrdenados(menuJson, idPadre);
-    console.log(datos);
+    // console.log(datos);
     let menuHTML = `<ul class="list-unstyled components mb-5">`;
     datos.forEach(nodo => {
         let identificadorMenuHijo = `submenu-${nodo.id}`;
@@ -80,7 +80,7 @@ function loadSubMenu(menuJson, idPadre, identificadorMenuHijo) {
 
     let datos = getHijosOrdenados(menuJson, idPadre);
 
-    console.log("datos", identificadorMenuHijo, datos);
+    // console.log("datos", identificadorMenuHijo, datos);
     let menuHTML = `<ul class="collapse list-unstyled" id="${identificadorMenuHijo}">`
 
 
@@ -130,6 +130,48 @@ function tieneHijos(menuJson, padreId) {
     } catch (error) {
         return false; // Devolvemos un arreglo vacío en caso de error
     }
+}
+
+function LoadMenuModulo(menuJson, idContainer) {
+    if(menuJson==null){
+        return
+    }
+
+    
+    let menuHTML = `<ul class="list-unstyled">`;
+    menuJson.forEach(nodo => {
+        menuHTML += `<li>
+                        <a href="#${nodo.nombre}" title="${nodo.descripcion || ''}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+                        </a>`
+                        menuHTML += loadSubMenu(nodo.arbol, null, nodo.nombre); 
+                    // </li>`
+    });
+    menuHTML += `</ul>`;
+    console.log(menuHTML);
+    document.getElementById(idContainer).innerHTML = menuHTML;
+
+    // let datos = getHijosOrdenados(menuJson, idPadre);
+    // console.log(datos);
+    // let menuHTML = `<ul class="list-unstyled components mb-5">`;
+    // datos.forEach(nodo => {
+    //     let identificadorMenuHijo = `submenu-${nodo.id}`;
+    //     if(tieneHijos(menuJson,nodo.id)){
+    //         menuHTML += `<li>
+    //         <a href="#${identificadorMenuHijo}" title="${nodo.descripcion || ''}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+    //         <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+    //         </a>` 
+    //         menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);         
+    //     }else{
+    //         menuHTML += `<li>
+    //             <a onclick="abrirEnIframe('${nodo.url}',this.id)" title="${nodo.descripcion || ''}"  href="#" target="main-iframe" class="menu-link">
+    //             <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+    //             </a>`
+    //     }
+    // });
+    // menuHTML += `</ul>`;
+    // //console.log("html----", menuHTML);
+    // document.getElementById(idContainer).innerHTML = menuHTML;
 }
 
 function abrirEnIframe(url, linkElement) {

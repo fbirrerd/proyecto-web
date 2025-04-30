@@ -1,8 +1,11 @@
+from typing import Any, List
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 
 from app.models.models import EmpresaModulo, Modulo
-from app.schemas.modulos import ModuloCreate, ModuloUpdate
+from app.schemas.modulos import ModuloConArbol, ModuloCreate, ModuloNombre, ModuloUpdate
+from app.services.menus import getArbolMenuModulo
 
 def get_modulos(db: Session):
     return db.query(Modulo).all()
@@ -34,22 +37,49 @@ def delete_modulo(db: Session, modulo_id: int):
     return db_modulo
 
 
+def ListMenuXModulo(db: Session, empresaId: int, usuarioId: int) -> list[ModuloConArbol]:
+    lModulos = obtener_modulos_por_empresa(db, empresaId)
+    for modulo in lModulos:
+        print(modulo.id, modulo.nombre, modulo.descripcion)
+        lArbol = getArbolMenuModulo(db,modulo.id,empresaId, usuarioId)
+        modulo.arbol = lArbol
 
-
-def obtener_modulos_por_empresa(db: Session, empresa_id: int):
-    # Paso 1: Obtener los id_modulo
-    ids_modulos = db.query(EmpresaModulo.id_modulo).filter(EmpresaModulo.id_empresa == empresa_id).all()
+    return lModulos    
     
-    # Extraer solo los valores (porque .all() retorna una lista de tuplas)
-    lista_ids = [id[0] for id in ids_modulos]
 
-    # Paso 2: Consultar los módulos
-    moduloList = db.query(Modulo).filter(Modulo.id.in_(lista_ids)).all()
-    
-    # if not moduloList:
-    #     raise Exception("Empresas no encontrada")
-    
-    # Si hay empresas, las convertimos a Pydantic
-    modulos_pydantic_list = [Modulo.from_orm(mod) for mod in moduloList]
 
-    return modulos_pydantic_list
+# Asegúrate de importar tus modelos y esquemas Pydantic
+# Ejemplo:
+# from .models import EmpresaModulo, Modulo
+# from .schemas import ModuloConArbol
+
+def obtener_modulos_por_empresa(db: Session, empresa_id: int) -> list[ModuloConArbol]:
+    print(f"Obteniendo módulos para la empresa con ID: {empresa_id}")
+    try:
+        # Paso 1: Obtener los id_modulo de la empresa
+        ids_modulos = db.query(EmpresaModulo.id_modulo).filter(EmpresaModulo.id_empresa == empresa_id).all()
+        lista_ids = [id_tuple[0] for id_tuple in ids_modulos]
+
+        if not ids_modulos:
+            print(f"No se encontraron módulos asociados a la empresa con ID: {empresa_id}")
+            return []
+
+        # Paso 2: Consultar los módulos con esos IDs
+        modulos = db.query(Modulo).filter(Modulo.id.in_(lista_ids)).all()
+
+        if not modulos:
+            print(f"No se encontraron módulos con los IDs: {lista_ids}")
+            raise HTTPException(status_code=404, detail="No se encontraron módulos asociados.")
+
+        # Convertimos a esquema Pydantic (si tienes un schema definido)
+        modulos_pydantic = [ModuloConArbol.from_orm(mod) for mod in modulos]
+
+        return modulos_pydantic
+
+    except HTTPException as http_exc:
+        print(f"Error HTTP: {http_exc.detail}")
+        raise http_exc  
+    except Exception as e:
+        # Otros errores no controlados
+        print(f"Error inesperado al obtener módulos para la empresa {empresa_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Ocurrió un error inesperado: {str(e)}")

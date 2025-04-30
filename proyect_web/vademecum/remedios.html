@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vademécum Interactivo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="mb-4">Buscador de Medicamentos</h1>
+    <div class="form-group">
+        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o principio activo...">
+    </div>
+    <button id="btnMostrarFiltros" class="btn btn-outline-secondary mb-3">Mostrar más filtros</button>
+    <div id="filtrosAdicionales" class="row mb-3" style="display:none;">
+        <div class="col-md-4"><select id="filtroVia" class="form-control"><option value="">Vía</option></select></div>
+        <div class="col-md-4"><select id="filtroLaboratorio" class="form-control"><option value="">Laboratorio</option></select></div>
+        <div class="col-md-4"><select id="filtroDispensacion" class="form-control"><option value="">Dispensación</option></select></div>
+    </div>
+    <div id="searchResults" class="row"></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

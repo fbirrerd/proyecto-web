@@ -17,10 +17,16 @@ def crear_acceso(db: Session, acceso: AccesoCreate):
         fecha_vencimiento=acceso.fecha_vencimiento,
         token=acceso.token,
     )
-    db.add(nuevo_acceso)
-    db.commit()
-    db.refresh(nuevo_acceso)
-    return nuevo_acceso
+    try:
+        db.add(nuevo_acceso)
+        db.commit()
+        db.refresh(nuevo_acceso)
+        return nuevo_acceso
+    except Exception as e:
+        db.rollback()  # ← Esto es clave
+        print(f"❌ Error registrando el acceso: {e}")
+        # puedes también hacer logging aquí
+
 
 def actualizar_acceso(db: Session, acceso_id: int, acceso_actualizado: AccesoUpdate):
     acceso = db.query(Acceso).filter(Acceso.id == acceso_id).first()

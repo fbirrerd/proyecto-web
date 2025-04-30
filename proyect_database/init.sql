@@ -406,22 +406,42 @@ INSERT INTO roles (nombre) VALUES
 
 INSERT INTO tipos_menu (nombre) VALUES ('General'), ('Modulos');
 -- Menús
-INSERT INTO menus
-(nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden, estado)
+INSERT INTO menus (nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden)
 VALUES
-('Dashboard', 'fa-solid fa-power-off fa-fw', 1, NULL, '/dashboard', 'Vista principal', 'token_dashboard', 1, true),
-('Gestión', 'fa-solid fa-compass fa-fw', 1, NULL, '/gestion', 'Módulo de gestión', 'token_gestion', 2, true),
-('Tablas', 'fa-solid fa-table fa-fw', 1, 2, '/gestion/tablas', 'Tablas base del sistema', 'token_tablas', 1, true),
-('Permisos', 'fa-solid fa-key fa-fw', 1, 2, NULL, 'Gestionador de relaciones', NULL, 3, true),
-('Usuarios', 'fa-solid fa-users fa-fw', 1, 3, '/gestion/usuarios', 'Gestión de usuarios', 'token_usuarios', 2, true),
-('Menús', 'fa-solid fa-sitemap fa-fw', 1, 3, '/gestion/menu', 'Gestión de menús', 'token_menus', 3, true),
-('Roles', 'fa-solid fa-users-line fa-fw', 1, 3, '/gestion/rol', 'Gestión de roles', 'token_roles', 4, true),
-('Empresas', 'fa-solid fa-hotel fa-fw', 1, 3, '/gestion/empresas', 'Mantener las empresas del sistem', NULL, 1, true),
-('Rol Menu', 'fa-solid fa-diagram-project fa-fw', 1, 4, '/gestion/rolMenu', NULL, NULL, NULL, true),
-('Empresa Usuario', 'fa-solid fa-building-user fa-fw', NULL, 4, '/gestion/empresaUsuario', NULL, NULL, NULL, true),
-('Tipo de Datos', 'fa-solid fa-check-to-slot fa-fw', 1, 2, '/gestion/tipoEmpresa', 'Gestión de Tipo de Empresas', NULL, 2, true),
-('Tipo de Empresas', 'fa-solid fa-landmark-flag fa-fw', 1, 11, '/gestion/tipoEmpresa', NULL, NULL, 1, true),
-('Tipo de Menu', 'fa-solid fa-user-tag fa-fw', 1, 11, '/gestion/tipoMenu', NULL, NULL, 2, true);
+('Dashboard', 'fa-solid fa-power-off fa-fw', 1, NULL, '/dashboard', 'Vista principal', 'token_dashboard', 1),
+('Gestión', 'fa-solid fa-compass fa-fw', 1, NULL, '/gestion', 'Módulo de gestión', 'token_gestion', 2),
+('Tablas', 'fa-solid fa-table fa-fw', 1, 2, '/gestion/tablas', 'Tablas base del sistema', 'token_tablas', 1),
+('Permisos', 'fa-solid fa-key fa-fw', 1, 2, NULL, 'Gestionador de relaciones', NULL, 3),
+('Usuarios', 'fa-solid fa-users fa-fw', 1, 3, '/gestion/usuarios', 'Gestión de usuarios', 'token_usuarios', 2),
+('Menús', 'fa-solid fa-sitemap fa-fw', 1, 3, '/gestion/menu', 'Gestión de menús', 'token_menus', 3),
+('Roles', 'fa-solid fa-users-line fa-fw', 1, 3, '/gestion/rol', 'Gestión de roles', 'token_roles', 4),
+('Empresas', 'fa-solid fa-hotel fa-fw', 1, 3, '/gestion/empresas', 'Mantener las empresas del sistem', NULL, 1),
+('Rol Menu', 'fa-solid fa-diagram-project fa-fw', 1, 4, '/gestion/rolMenu', NULL, NULL, 1),
+('Empresa Usuario', 'fa-solid fa-building-user fa-fw', NULL, 4, '/gestion/empresaUsuario', NULL, NULL, 2),
+('Tipo de Datos', 'fa-solid fa-check-to-slot fa-fw', 1, 2, '/gestion/tipoEmpresa', 'Gestión de Tipo de Empresas', NULL, 2),
+('Tipo de Empresas', 'fa-solid fa-landmark-flag fa-fw', 1, 11, '/gestion/tipoEmpresa', NULL, NULL, 1),
+('Tipo de Menu', 'fa-solid fa-user-tag fa-fw', 1, 11, '/gestion/tipoMenu', NULL, NULL, 2),
+('Laboratorios', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1),
+('Farmacias', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1),
+('Remedios', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3),
+('Vademecum', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remedios', NULL, NULL, 4),
+('Modulos', NULL, 1, 2, '/gestion/modulos', NULL, NULL, 6),
+('Empresa Modulo', NULL, 1, 4, NULL, NULL, NULL, 1),
+('Empresa Usuario', NULL, 1, 4, NULL, NULL, NULL, 2),
+('Modulos Menu', NULL, 1, 4, NULL, NULL, NULL, 3),
+('Geo referencia', NULL, 1, NULL, NULL, NULL, NULL, 4),
+('Regiones', NULL, 1, 22, NULL, NULL, NULL, 5),
+('Provincias', NULL, 1, 22, NULL, NULL, NULL, 6),
+('Comunas', NULL, 1, 22, NULL, NULL, NULL, 7),
+('Direcciones', NULL, 1, 22, NULL, NULL, NULL, 8),
+('Contactos', NULL, 2, NULL, NULL, NULL, NULL, 9),
+('Hashtags', NULL, 2, NULL, NULL, NULL, NULL, 10),
+('Agenda', NULL, 2, NULL, NULL, NULL, NULL, 11),
+('Cumpleaños', NULL, 2, 29, NULL, NULL, NULL, 12),
+('Contactos', NULL, 2, 29, NULL, NULL, NULL, 13),
+('Correos', NULL, 2, 29, NULL, NULL, NULL, 14),
+('Pendientes', NULL, 2, 32, NULL, NULL, NULL, 15),
+('Log', NULL, 2, 32, NULL, NULL, NULL, 16);
 
 INSERT INTO menus
 (nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden, estado)
@@ -445,7 +465,8 @@ INSERT INTO menu_tipo_empresa (id_menu, id_tipo_empresa) VALUES (1, 1);
 
 INSERT INTO empresa_usuario (id_empresa, id_usuario)
 VALUES
-(1, 1);
+(1, 1),
+(2, 1);
 
 INSERT INTO empresa_usuario_rol
 (id_empresa, id_usuario, id_rol)
@@ -460,6 +481,21 @@ VALUES
 INSERT INTO parametro_sistema
 (clave, valor, descripcion)
 VALUES('valida_session', 'true', 'Se valida el tiempo de conexion de los usuarios');
+
+INSERT INTO modulo_menu (id_modulo, id_menu)
+VALUES
+(3, 27),
+(3, 28),
+(3, 29),
+(3, 30),
+(3, 31),
+(3, 32),
+(3, 33),
+(3, 34),
+(2, 14),
+(2, 15),
+(2, 16),
+(2, 17);
 
 -- =========================
 -- FIN DEL SCRIPT

@@ -1,7 +1,7 @@
-
 $(document).ready(function() {
   let remedios = [];
 
+  // Renderiza la lista de remedios
   function renderRemedios(lista) {
     $("#lista-remedios").empty();
     lista.forEach(r => {
@@ -28,6 +28,7 @@ $(document).ready(function() {
     });
   }
 
+  // Aplica los filtros en la lista de remedios
   function aplicarFiltros() {
     const nombre = $("#filtro-nombre").val().toLowerCase();
     const lab = $("#filtro-laboratorio").val().toLowerCase();
@@ -43,10 +44,12 @@ $(document).ready(function() {
     renderRemedios(filtrado);
   }
 
+  // Cargar los datos del archivo JSON
   $.getJSON("data/remedios.json", function(data) {
     remedios = data;
     renderRemedios(remedios);
 
+    // Añadir eventos de filtro
     $("input").on("input", aplicarFiltros);
   });
 });

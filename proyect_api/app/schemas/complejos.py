@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from app.schemas.menus import MenuAcceso
 from app.schemas.rol import RolAcceso
@@ -18,7 +18,7 @@ class DatosAcceso(BaseModel):
     empresas: List['EmpresaAcceso']
     empresaSeleccionada: Optional[int] 
     roles: Optional[List['RolAcceso']] 
-    modulos: Optional[List[any]] 
+    modulos: Optional[List[Any]] 
     # duracionAcceso: AccesoDuracion
 
 
