@@ -16,6 +16,7 @@ from app.utils.security import generar_jwt
 
 
 from app.schemas.complejos import AccesoDuracion, DatosAcceso
+from app.services.modulos import obtener_modulos_por_empresa
 
 
 def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , token: Optional[str] = None ) -> DatosAcceso:
@@ -39,6 +40,8 @@ def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , t
         idEmpresaSeleccionada = empresaid;
 
     lRoles = getDatosRol(db, idUsuario, idEmpresaSeleccionada);
+    lModulos = obtener_modulos_por_empresa(db, idEmpresaSeleccionada);
+
     if not lEmpresas:
         raise Exception("Empresas no encontrada")
     
@@ -73,6 +76,7 @@ def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , t
         token = newToken,
         # duracionAcceso = duracion, 
         usuario = oUsuario,
+        modulos = lModulos,
         empresas = lEmpresas,
         empresaSeleccionada = idEmpresaSeleccionada,
         roles = lRoles,

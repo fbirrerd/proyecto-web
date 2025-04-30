@@ -1,6 +1,6 @@
 from sqlalchemy import (
-    Column, DateTime, String, Integer, Boolean, Text, ForeignKey, TIMESTAMP,
-    Double, BigInteger, func
+    Column, Date, DateTime, String, Integer, Boolean, Text, ForeignKey, TIMESTAMP,
+    BigInteger, Float  , func
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -19,10 +19,12 @@ class Region(Base):
     codigo = Column(String(5), unique=True, nullable=False)
     nombre = Column(String(100), nullable=False)
     geom_wkt = Column(Text)
-    area_km2 = Column(Double)
+    area_km2 = Column(Float)
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
     estado = Column(Boolean, default=True)
+    
+    provincia = relationship("Provincia", back_populates="region")
 
 class Provincia(Base):
     __tablename__ = 'provincias'
@@ -32,10 +34,13 @@ class Provincia(Base):
     nombre = Column(String(100), nullable=False)
     id_region = Column(Integer, ForeignKey('regiones.id'))
     geom_wkt = Column(Text)
-    area_km2 = Column(Double)
+    area_km2 = Column(Float)
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
     estado = Column(Boolean, default=True)
+    
+    region = relationship("Region", back_populates="provincia")
+    comuna = relationship("Comuna", back_populates="provincia")
 
 class Comuna(Base):
     __tablename__ = 'comunas'
@@ -46,10 +51,12 @@ class Comuna(Base):
     id_providencia = Column(Integer, ForeignKey('provincias.id'))
     id_region = Column(Integer, ForeignKey('regiones.id'))
     geom_wkt = Column(Text)
-    area_km2 = Column(Double)
+    area_km2 = Column(Float)
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
     estado = Column(Boolean, default=True)
+
+    provincia = relationship("Provincia", back_populates="comuna")
 
 # =====================================
 # DIRECCIONES
@@ -66,15 +73,58 @@ class Direccion(Base):
     id_providencia = Column(Integer, ForeignKey('provincias.id'))
     id_region = Column(Integer, ForeignKey('regiones.id'))
     codigo_postal = Column(String(10))
-    latitud = Column(Double)
-    longitud = Column(Double)
+    latitud = Column(Float)
+    longitud = Column(Float)
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
     estado = Column(Boolean, default=True)
 
+    # Relación con Usuario
+    usuario = relationship("Usuario", back_populates="direccion")
+
 # =====================================
 # EMPRESAS Y USUARIOS
 # =====================================
+# Tabla intermedia: modulo_menu
+class ModuloMenu(Base):
+    __tablename__ = 'modulo_menu'
+
+    id_modulo = Column(Integer, ForeignKey('modulos.id', ondelete='CASCADE'), primary_key=True)
+    id_menu = Column(Integer, ForeignKey('menus.id', ondelete='CASCADE'), primary_key=True)
+    estado = Column(Boolean, default=True)
+    fecha_creacion = Column(TIMESTAMP, server_default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+
+
+# Tabla intermedia: empresa_modulo
+class EmpresaModulo(Base):
+    __tablename__ = 'empresa_modulo'
+
+    id_empresa = Column(Integer, ForeignKey('empresas.id', ondelete='CASCADE'), primary_key=True)
+    id_modulo = Column(Integer, ForeignKey('modulos.id', ondelete='CASCADE'), primary_key=True)
+    fecha_inicio = Column(Date, nullable=False)
+    fecha_fin = Column(Date)
+    estado = Column(Boolean, default=True)
+    fecha_creacion = Column(TIMESTAMP, server_default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+
+    empresa = relationship("Empresa", back_populates="modulo")
+    modulo = relationship("Modulo", back_populates="empresa")
+
+
+# Tabla principal: modulos
+class Modulo(Base):
+    __tablename__ = 'modulos'
+
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(100), nullable=False)
+    descripcion = Column(Text)
+    estado = Column(Boolean, default=True)
+    fecha_creacion = Column(TIMESTAMP, server_default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+
+    empresa = relationship("EmpresaModulo", back_populates="modulo", cascade="all, delete-orphan")
+    menu = relationship("ModuloMenu", backref="modulo", cascade="all, delete-orphan")
 
 class TipoEmpresa(Base):
     __tablename__ = 'tipos_empresa'
@@ -84,6 +134,13 @@ class TipoEmpresa(Base):
     estado = Column(Boolean, default=True)
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
+
+    # Relación bidireccional con Empresa
+    empresa = relationship("Empresa", back_populates="tipo_empresa")
+    # Relación con MenuTipoEmpresa
+    menu_tipo_empresa = relationship("MenuTipoEmpresa", back_populates="tipo_empresa")
+    
+    
 
 class Empresa(Base):
     __tablename__ = 'empresas'
@@ -95,6 +152,21 @@ class Empresa(Base):
     estado = Column(Boolean, default=True)
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
+
+    # Relación bidireccional con TipoEmpresa
+    tipo_empresa = relationship("TipoEmpresa", back_populates="empresa")
+
+    # Relación con EmpresaModulo
+    modulo = relationship("EmpresaModulo", back_populates="empresa")
+
+    # Relación con EmpresaUsuario
+    empresa_usuario = relationship("EmpresaUsuario", back_populates="empresa")    
+    
+    empresa_usuario_rol = relationship("EmpresaUsuarioRol", back_populates="empresa")
+    
+    configuracion = relationship("ConfiguracionEmpresa", back_populates="empresa")
+    
+    
 
 class Usuario(Base):
     __tablename__ = 'usuarios'
@@ -111,6 +183,13 @@ class Usuario(Base):
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
 
+    # Relación con Direccion
+    direccion = relationship("Direccion", back_populates="usuario")
+    
+    empresa_usuario = relationship("EmpresaUsuario", back_populates="usuario")
+    
+    empresa_usuario_rol = relationship("EmpresaUsuarioRol", back_populates="usuario")
+
 # =====================================
 # ROLES Y MENÚS
 # =====================================
@@ -124,6 +203,12 @@ class Rol(Base):
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
 
+    # Definir la relación con MenuRoles
+    menu_rol = relationship("MenuRol", back_populates="rol")
+    
+    empresa_usuario_rol = relationship("EmpresaUsuarioRol", back_populates="rol")
+    
+    
 class TipoMenu(Base):
     __tablename__ = 'tipos_menu'
 
@@ -132,6 +217,10 @@ class TipoMenu(Base):
     estado = Column(Boolean, default=True)
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
+    
+    # Relación con Menu
+    menu = relationship("Menu", back_populates="tipo_menu")  
+    
 
 class Menu(Base):
     __tablename__ = 'menus'
@@ -149,6 +238,15 @@ class Menu(Base):
     fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
     fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
 
+    # Relación con TipoMenu
+    tipo_menu = relationship("TipoMenu", back_populates="menu")
+
+    # Relación con MenuRoles
+    menu_rol = relationship("MenuRol", back_populates="menu")
+    
+    menu_tipo_empresa = relationship("MenuTipoEmpresa", back_populates="menu")
+    
+    
 class MenuRol(Base):
     __tablename__ = "menu_rol"
 
@@ -158,9 +256,12 @@ class MenuRol(Base):
     fecha_creacion = Column(TIMESTAMP, default=func.now())
     fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
 
-    # menu = relationship("Menu", back_populates="menu_roles")
-    # rol = relationship("Rol", back_populates="menu_roles")
+    # Relación con Menu
+    menu = relationship("Menu", back_populates="menu_rol")
 
+    # Relación con Rol
+    rol = relationship("Rol", back_populates="menu_rol")
+    
 # =====================================
 # RELACIONES EMPRESA-USUARIO-ROL
 # =====================================
@@ -174,8 +275,11 @@ class EmpresaUsuario(Base):
     fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
-    # empresa = relationship("Empresa", back_populates="empresa_usuarios")
-    # usuario = relationship("Usuario", back_populates="empresa_usuarios")
+    # Relación con Empresa
+    empresa = relationship("Empresa", back_populates="empresa_usuario")
+
+    # Relación con Usuario (si es necesario)
+    usuario = relationship("Usuario", back_populates="empresa_usuario")
 
 class EmpresaUsuarioRol(Base):
     __tablename__ = "empresa_usuario_rol"
@@ -187,9 +291,9 @@ class EmpresaUsuarioRol(Base):
     fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
-    # empresa = relationship("Empresa", back_populates="empresa_usuario_roles")
-    # usuario = relationship("Usuario", back_populates="empresa_usuario_roles")
-    # rol = relationship("Rol", back_populates="empresa_usuario_roles")
+    empresa = relationship("Empresa", back_populates="empresa_usuario_rol")
+    usuario = relationship("Usuario", back_populates="empresa_usuario_rol")
+    rol = relationship("Rol", back_populates="empresa_usuario_rol")
 
 # =====================================
 # CONFIGURACIÓN Y ACCESO
@@ -204,7 +308,7 @@ class ConfiguracionEmpresa(Base):
     fecha_creacion = Column(TIMESTAMP, default=func.now())
     fecha_modificacion = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
 
-    # empresa = relationship("Empresa", back_populates="configuraciones")
+    empresa = relationship("Empresa", back_populates="configuracion")
 
 class Auditoria(Base):
     __tablename__ = 'auditoria'
@@ -252,8 +356,10 @@ class MenuTipoEmpresa(Base):
     id_tipo_empresa = Column(Integer, ForeignKey("tipos_empresa.id", ondelete="CASCADE"), primary_key=True)
 
     # Relaciones opcionales (solo si necesitas navegar desde esta tabla a otras)
-    # menu = relationship("Menu", back_populates="menu_tipo_empresas")
-    # tipo_empresa = relationship("TipoEmpresa", back_populates="menu_tipo_empresas")
+    menu = relationship("Menu", back_populates="menu_tipo_empresa")
+    # Relación con TipoEmpresa
+    tipo_empresa = relationship("TipoEmpresa", back_populates="menu_tipo_empresa")
+
 
 # =====================================
 # PARÁMETROS DEL SISTEMA

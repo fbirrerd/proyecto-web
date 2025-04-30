@@ -1,208 +1,82 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Vademécum Farmacéutico</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #2a5d84;
-    }
-    .filters {
-      margin-bottom: 20px;
-    }
-    .filters input, .filters select {
-      margin-right: 10px;
-      padding: 5px;
-    }
-    .card {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      display: flex;
-      gap: 15px;
-      align-items: center;
-      background-color: #f9f9f9;
-    }
-    .card img {
-      width: 100px;
-      height: auto;
-      border-radius: 5px;
-    }
-  </style>
+  <title>Vademécum - Listado</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/vademecum.css">
 </head>
 <body>
-  <h1>Vademécum Farmacéutico</h1>
-
-  <div class="filters">
-    <input type="text" id="search" placeholder="Buscar por nombre o texto...">
-    <select id="ingredientFilter">
-      <option value="">Filtrar por ingrediente</option>
-    </select>
-    <select id="posologyFilter">
-      <option value="">Filtrar por posología</option>
-    </select>
-    <select id="effectFilter">
-      <option value="">Filtrar por efecto secundario</option>
-    </select>
+  <div class="container mt-4">
+    <h1 class="mb-4 text-center">Vademécum - Listado de Remedios</h1>
+    <div class="row mb-3 g-3">
+      <div class="col-md-3">
+        <input type="text" id="filtro-nombre" class="form-control" placeholder="Buscar por nombre...">
+      </div>
+      <div class="col-md-3">
+        <input type="text" id="filtro-laboratorio" class="form-control" placeholder="Buscar por laboratorio...">
+      </div>
+      <div class="col-md-3">
+        <input type="text" id="filtro-ingrediente" class="form-control" placeholder="Buscar por ingrediente...">
+      </div>
+      <div class="col-md-3">
+        <input type="text" id="filtro-via" class="form-control" placeholder="Buscar por vía de consumo...">
+      </div>
+    </div>
+    <div id="lista-remedios" class="row row-cols-1 row-cols-md-2 g-4"></div>
+    <h1 id="nombre"></h1>
+    <img id="foto" src="" alt="" class="img-fluid">
+    <p id="precio"></p>
+    <ul>
+      <li><strong>Uso:</strong> <span id="uso"></span></li>
+      <li><strong>Presentación:</strong> <span id="presentacion"></span></li>
+      <li><strong>Ingredientes:</strong> <span id="ingredientes"></span></li>
+      <li><strong>Gramaje:</strong> <span id="gramaje"></span></li>
+      <li><strong>Registro Sanitario:</strong> <span id="registro"></span></li>
+      <li><strong>Vía de consumo:</strong> <span id="via"></span></li>
+      <li><strong>Precauciones:</strong> <span id="precauciones"></span></li>
+      <li><strong>Contraindicaciones:</strong> <span id="contraindicaciones"></span></li>
+      <li><strong>Laboratorio:</strong> <span id="laboratorio"></span></li>
+    </ul>
+    
+    <h3>Remedios Similares</h3>
+    <div id="similares" class="row"></div>
+    
   </div>
 
-  <div id="productList"></div>
-
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="../js/vademecum/listado.js"></script>
   <script>
-    const productos = [
-      {
-        nombre: "Paracetamol Forte",
-        imagen: "https://via.placeholder.com/100x100.png?text=Paracetamol",
-        ingredientes: ["Paracetamol"],
-        posologia: "Cada 8 horas",
-        efectos: ["Somnolencia", "Náuseas"],
-        descripcion: "Alivia dolores y fiebre."
-      },
-      {
-        nombre: "Ibuprofeno Max",
-        imagen: "https://via.placeholder.com/100x100.png?text=Ibuprofeno",
-        ingredientes: ["Ibuprofeno"],
-        posologia: "Cada 12 horas",
-        efectos: ["Acidez", "Dolor estomacal"],
-        descripcion: "Antiinflamatorio y analgésico."
-      },
-      {
-        nombre: "Antigripal Plus",
-        imagen: "https://via.placeholder.com/100x100.png?text=Antigripal",
-        ingredientes: ["Paracetamol", "Cafeína", "Clorfenamina"],
-        posologia: "Cada 6 horas",
-        efectos: ["Somnolencia"],
-        descripcion: "Tratamiento para síntomas de resfrío."
-      },
-      {
-        nombre: "Omeprazol 20mg",
-        imagen: "https://via.placeholder.com/100x100.png?text=Omeprazol",
-        ingredientes: ["Omeprazol"],
-        posologia: "En ayunas",
-        efectos: ["Dolor de cabeza"],
-        descripcion: "Protector gástrico."
-      },
-      {
-        nombre: "Loratadina",
-        imagen: "https://via.placeholder.com/100x100.png?text=Loratadina",
-        ingredientes: ["Loratadina"],
-        posologia: "Una vez al día",
-        efectos: ["Boca seca"],
-        descripcion: "Antihistamínico para alergias."
-      },
-      {
-        nombre: "Amoxicilina 500mg",
-        imagen: "https://via.placeholder.com/100x100.png?text=Amoxicilina",
-        ingredientes: ["Amoxicilina"],
-        posologia: "Cada 8 horas",
-        efectos: ["Diarrea", "Urticaria"],
-        descripcion: "Antibiótico para infecciones bacterianas."
-      },
-      {
-        nombre: "Salbutamol Inhalador",
-        imagen: "https://via.placeholder.com/100x100.png?text=Salbutamol",
-        ingredientes: ["Salbutamol"],
-        posologia: "Inhalar cada 6 horas",
-        efectos: ["Palpitaciones", "Temblores"],
-        descripcion: "Broncodilatador para asma."
-      },
-      {
-        nombre: "Diclofenaco Sódico",
-        imagen: "https://via.placeholder.com/100x100.png?text=Diclofenaco",
-        ingredientes: ["Diclofenaco"],
-        posologia: "Cada 8 horas",
-        efectos: ["Dolor de estómago", "Mareos"],
-        descripcion: "Antiinflamatorio no esteroideo."
-      },
-      {
-        nombre: "Metformina XR",
-        imagen: "https://via.placeholder.com/100x100.png?text=Metformina",
-        ingredientes: ["Metformina"],
-        posologia: "Dos veces al día",
-        efectos: ["Malestar estomacal", "Diarrea"],
-        descripcion: "Control de glucosa en diabetes tipo 2."
-      },
-      {
-        nombre: "Cetirizina",
-        imagen: "https://via.placeholder.com/100x100.png?text=Cetirizina",
-        ingredientes: ["Cetirizina"],
-        posologia: "Una vez al día",
-        efectos: ["Somnolencia leve"],
-        descripcion: "Antialérgico para rinitis y urticaria."
-      }
-    ];
-
-    function renderProductos(lista) {
-      $("#productList").empty();
-      lista.forEach(p => {
-        $("#productList").append(`
-          <div class="card">
-            <img src="${p.imagen}" alt="${p.nombre}">
-            <div>
-              <h3>${p.nombre}</h3>
-              <p><strong>Ingredientes:</strong> ${p.ingredientes.join(", ")}</p>
-              <p><strong>Posología:</strong> ${p.posologia}</p>
-              <p><strong>Efectos secundarios:</strong> ${p.efectos.join(", ")}</p>
-              <p>${p.descripcion}</p>
+    document.addEventListener("DOMContentLoaded", function () {
+      fetch('data/remedios.json')
+        .then(response => response.json())
+        .then(data => cargarListado(data));
+    });
+  
+    function cargarListado(remedios) {
+      const contenedor = $("#lista-remedios");
+      contenedor.empty();
+      remedios.forEach(rem => {
+        contenedor.append(`
+          <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-2">
+                <img src="img/${rem.foto}" class="img-fluid rounded-start" alt="${rem.nombre}">
+              </div>
+              <div class="col-md-10">
+                <div class="card-body">
+                  <h5 class="card-title">${rem.nombre}</h5>
+                  <p class="card-text"><strong>Uso:</strong> ${rem.uso}</p>
+                  <p class="card-text"><strong>Precio:</strong> ${rem.precio}</p>
+                  <a href="detalle.html?id=${rem.id}" class="btn btn-primary">Ver detalles</a>
+                </div>
+              </div>
             </div>
           </div>
         `);
       });
     }
-
-    function poblarFiltros() {
-      const ingredientes = new Set();
-      const posologias = new Set();
-      const efectos = new Set();
-      const nombres = [];
-
-      productos.forEach(p => {
-        p.ingredientes.forEach(i => ingredientes.add(i));
-        posologias.add(p.posologia);
-        p.efectos.forEach(e => efectos.add(e));
-        nombres.push(p.nombre);
-      });
-
-      ingredientes.forEach(i => $("#ingredientFilter").append(`<option value="${i}">${i}</option>`));
-      posologias.forEach(p => $("#posologyFilter").append(`<option value="${p}">${p}</option>`));
-      efectos.forEach(e => $("#effectFilter").append(`<option value="${e}">${e}</option>`));
-      
-      $("#search").autocomplete({ source: nombres });
-    }
-
-    function filtrar() {
-      const texto = $("#search").val().toLowerCase();
-      const ing = $("#ingredientFilter").val();
-      const pos = $("#posologyFilter").val();
-      const efe = $("#effectFilter").val();
-
-      const filtrados = productos.filter(p => {
-        return (
-          (!texto || p.nombre.toLowerCase().includes(texto) || p.descripcion.toLowerCase().includes(texto)) &&
-          (!ing || p.ingredientes.includes(ing)) &&
-          (!pos || p.posologia === pos) &&
-          (!efe || p.efectos.includes(efe))
-        );
-      });
-
-      renderProductos(filtrados);
-    }
-
-    $(document).ready(() => {
-      poblarFiltros();
-      renderProductos(productos);
-
-      $("#search, #ingredientFilter, #posologyFilter, #effectFilter").on("input change", filtrar);
-    });
-  </script>
+  </script>  
 </body>
 </html>

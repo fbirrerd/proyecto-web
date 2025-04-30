@@ -334,6 +334,9 @@ CREATE TABLE empresa_modulo (
 CREATE TABLE modulo_menu (
     id_modulo INT NOT NULL REFERENCES modulos(id) ON DELETE CASCADE,
     id_menu INT NOT NULL REFERENCES menus(id) ON DELETE CASCADE,
+    estado BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    
     PRIMARY KEY (id_modulo, id_menu)
 );
 

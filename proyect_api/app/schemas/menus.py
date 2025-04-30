@@ -8,8 +8,8 @@ class MenuBase(BaseModel):
     icono: Optional[str] = None
     url: Optional[str] = None
     id_padre: Optional[int] = None
-    es_publico: Optional[bool] = False
-    estado: Optional[bool] = True
+    # es_publico: Optional[bool] = False
+    # estado: Optional[bool] = True
     descripcion: Optional[str]
     class Config:
         orm_mode = True  # Esto permite que Pydantic utilice objetos SQLAlchemy
@@ -40,7 +40,7 @@ class MenuOut(MenuBase):
 
 class MenuAcceso(MenuBase):
     id: Optional[int] = None
-    tipo: Optional[str] = None
+    # tipo: Optional[str] = None
     orden: Optional[int] = None 
     url: Optional[str] = None
     descripcion: Optional[str] = None

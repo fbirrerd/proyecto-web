@@ -1,0 +1,27 @@
+
+body {
+  background-color: #f9f9f9;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+h1, h2, h5 {
+  color: #2c3e50;
+}
+
+.card {
+  border-radius: 12px;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  color: #1a5276;
+}
+
+img {
+  max-height: 120px;
+  object-fit: contain;
+}
+
+input.form-control {
+  border-radius: 8px;
+}

@@ -29,7 +29,8 @@ def filtrarEspecial(db: Session, UsuarioId: int, EmpresaId: int) -> List[any]:
     
     MenuList = db.query(Menu).filter(
         and_(Menu.id.in_(menus_ids),
-             Menu.estado == True)).all() 
+             Menu.estado == True,
+             Menu.id_tipo_menu==1)).all() 
    
     # print(f" MenuList {MenuList.count} ")    
     
@@ -219,4 +220,27 @@ def editar_menu(db, id_menu, nombre=None, icono=None, url=None, id_padre=None, e
 #             respuesta=False,
 #             data={"error": str(e)}
 #         )
-    
+def getListMenuModulos(db: Session,UsuarioId: int, EmpresaId: int):
+    try:
+        # Obtener todos los registros de la tabla Menu
+        # menu_general_list=[]
+        if(EmpresaId and UsuarioId):
+            # print(f"::::::: UsuarioId: {UsuarioId} EmpresaId: {EmpresaId} :::::::")
+            menu_general_list = filtrarEspecial(db, UsuarioId, EmpresaId)
+        else:
+            menu_general_list = db.query(Menu).all()
+
+        # Verificar si la lista está vacía
+        if not menu_general_list:
+            raise ValueError("No se encontraron registros en Menu")
+
+        # Construir árbol ordenado y devolverlo como parte de la respuesta
+        menu_general_list = getArbolOrdenadoTabulado(menu_general_list)
+
+        return menu_general_list
+    except Exception as e:
+        # Captura de errores genéricos
+        return None
+        
+        
+        

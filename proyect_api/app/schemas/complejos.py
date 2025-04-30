@@ -18,7 +18,8 @@ class DatosAcceso(BaseModel):
     empresas: List['EmpresaAcceso']
     empresaSeleccionada: Optional[int] 
     roles: Optional[List['RolAcceso']] 
-    # duracionAcceso: any
+    modulos: Optional[List[any]] 
+    # duracionAcceso: AccesoDuracion
 
 
     class Config:
