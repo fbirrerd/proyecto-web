@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, date
 
+from app.schemas.modulo import ModuloRelacionCreate
+
 
 class EmpresaModuloBase(BaseModel):
     id_empresa: int
@@ -41,3 +43,7 @@ class EmpresaModuloOut(EmpresaModuloBase):
 
     class Config:
         orm_mode = True
+
+class EmpresaModuloRelacion(BaseModel):
+    id_empresa: int
+    modulos: list[ModuloRelacionCreate]

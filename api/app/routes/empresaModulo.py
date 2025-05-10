@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.schemas.respond import objRespuesta
 from app.database import SessionLocal
-from app.schemas.empresaModulo import EmpresaModuloCreate, EmpresaModuloUpdate
-from app.services.empresaModulo import create_empresa_modulo, get_empresa_modulo, get_empresas_modulo, update_empresa_modulo
+from app.schemas.empresaModulo import EmpresaModuloCreate, EmpresaModuloRelacion, EmpresaModuloUpdate
+from app.services.empresaModulo import create_empresa_modulo, create_relacion_empresa_modulo, get_empresa_modulo, get_empresas_modulo, get_empresas_modulo_X_empresa, update_empresa_modulo
 
 
 router = APIRouter(tags=["EmpresaModulo"])
@@ -33,7 +33,6 @@ def read_registers(db: Session = Depends(get_db)):
         data=datos
     )    
 
-
 @router.get("/{empresa_modulo_id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def read_register(empresa_modulo_id: int, db: Session = Depends(get_db)):
     db_role = get_empresa_modulo(db, empresa_modulo_id)
@@ -55,3 +54,19 @@ def obtener_lista_roles(db: Session = Depends(get_db)):
         respuesta=True,
         data=lista
     )
+    
+@router.get("/empresa/{empresa_id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
+def obtener_lista_roles(empresa_id: int, db: Session = Depends(get_db)):
+    lista = get_empresas_modulo_X_empresa(db, empresa_id)
+    return objRespuesta(
+        respuesta=True,
+        data=lista
+    )    
+
+@router.post("/guardar-relacion", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
+def set_rol(obj: EmpresaModuloRelacion, db: Session = Depends(get_db)):
+    datos = create_relacion_empresa_modulo(db,obj)
+    return  objRespuesta(
+        respuesta=True,
+        data=datos
+    ) 

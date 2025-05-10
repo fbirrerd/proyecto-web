@@ -1,6 +1,7 @@
 let currentData = [],
     tipoEmpresas = [],
-    modulos = [];
+    modulos = [],
+    modulosSeleccionados = [];
 
 $(document).ready(() => {
   cargarConsultas();
@@ -136,26 +137,39 @@ function abrirModal(id = null) {
 };
 
 
-function cargarModulos(){
+async function cargarModulos(){
   
   $("#modulosContainer").empty();
-    modulos.forEach(function (modulo) {
-      const checked = true; 
-      // modulosSeleccionados.includes(modulo.id) ? "checked" : "";
+    if($("#empresaId").val()){
+      const data = await getEmpresaModulo($("#empresaId").val());
+      console.log(data);
+      modulos.forEach(function (modulo) {
+        const checked =  data.find(item => item.id_modulo === modulo.id && item.estado === true) ? "checked" : "";
 
-      const html = `
-        <div class="col-md-6">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="modulos" value="${modulo.id}" id="modulo-${modulo.id}" ${checked}>
-            <label class="form-check-label" for="modulo-${modulo.id}">${modulo.nombre}</label>
+        const html = `
+          <div class="col-md-6">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="modulos" value="${modulo.id}" id="modulo-${modulo.id}" ${checked}>
+              <label class="form-check-label" for="modulo-${modulo.id}">${modulo.nombre}</label>
+            </div>
           </div>
-        </div>
-      `;
-      $("#modulosContainer").append(html);
-    });
+        `;
+        $("#modulosContainer").append(html);
+      });
+    }
 };
 
-
+async function getEmpresaModulo(empresa){
+  let datos = [];
+  await callApi('GET', `empresamodulo/empresa/${empresa}`, undefined)
+    .done(function(response) {
+        datos = response.data;
+    })
+    .fail(function() {
+        showDanger("No se puede conectar con el servidor");          
+    });
+    return datos;
+}
 
 function guardarEmpresa(empresaData = null, empresaId = null) {
     const id = empresaId ?? $("#empresaId").val();
@@ -171,6 +185,7 @@ function guardarEmpresa(empresaData = null, empresaId = null) {
   callApi(method, url, empresa)
     .done(function (response) {
       if (response.respuesta) {
+        guardarModulos()
         showInfo("Cambios correctamente guardados");
         $("#modalEmpresa").modal("hide");
         cargarConsultas();
@@ -182,6 +197,37 @@ function guardarEmpresa(empresaData = null, empresaId = null) {
       showDanger("No se puede conectar con el servidor");
     });
 }
+
+function guardarModulos(){
+  const modulosSeleccionados = [];
+
+  $("#modulosContainer input[type='checkbox']").each(function () {
+    modulosSeleccionados.push({
+      id_modulo: $(this).val(),
+      estado: $(this).is(":checked"),
+    });
+  });
+
+  let param = {
+    id_empresa: $("#empresaId").val(),
+    modulos: modulosSeleccionados
+  };
+  console.log("guardar", param);
+
+  callApi("POST", "empresamodulo/guardar-relacion", param)
+    .done(function (response) {
+      console.log(response)
+      if (response.respuesta) {
+
+      } else {
+
+      }
+    })
+    .fail(function () {
+      showDanger("No se puede conectar con el servidor");
+    });
+
+  }
 
 $(document)
   .off("click", ".guardar-fila")

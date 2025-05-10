@@ -48,3 +48,7 @@ class ModuloPermiso(BaseModel):
     nombre: str
     descripcion: str
     check: bool        
+    
+class ModuloRelacionCreate(BaseModel):
+    id_modulo: int
+    estado: bool
