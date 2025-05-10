@@ -10,7 +10,7 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./proyect_database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_DB}"]
       interval: 10s
@@ -37,7 +37,7 @@ services:
       - app_network
 
   web:
-    build: ./proyect_web
+    build: ./web
     container_name: web_app
     ports:
       - "8080:80"
@@ -45,14 +45,14 @@ services:
       - app_network
 
   api:
-    build: ./proyect_api
+    build: ./api
     container_name: api-app
     ports:
       - "${API_PORT:-8200}:8200"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
     volumes:
-      - ./proyect_api:/app
+      - ./api:/app
     depends_on:
       postgres:
         condition: service_healthy
@@ -60,55 +60,55 @@ services:
       - app_network
 
 
-  email_api:
-    build: ./email_api
-    container_name: api_email
-    ports:
-      - "${API_EMAIL_PORT:-8300}:8300"
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_EMAIL_DB}
-    volumes:
-      - ./email_api:/app
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - app_network
+  # email_api:
+  #   build: ./email_api
+  #   container_name: api_email
+  #   ports:
+  #     - "${API_EMAIL_PORT:-8300}:8300"
+  #   environment:
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_EMAIL_DB}
+  #   volumes:
+  #     - ./email_api:/app
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   networks:
+  #     - app_network
 
 
-  email_worker:
-    build: ./email_worker
-    container_name: email_worker
-    environment:
-      - REDIS_URL=redis://redis_db:6379
-    depends_on:
-      redis:
-        condition: service_healthy
-    networks:
-      - app_network
+  # email_worker:
+  #   build: ./email_worker
+  #   container_name: email_worker
+  #   environment:
+  #     - REDIS_URL=redis://redis_db:6379
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - app_network
 
-  mailserver:
-    image: mailserver/docker-mailserver:latest
-    container_name: mailserver
-    env_file: .env
-    hostname: mail
-    domainname: example.com    
-    ports:
-      - "25:25"
-      - "143:143"
-      - "587:587"
-      - "993:993"
-    volumes:
-      - mail_data:/var/mail
-      - ./config/:/tmp/docker-mailserver/
-    networks:
-      - app_network
+  # mailserver:
+  #   image: mailserver/docker-mailserver:latest
+  #   container_name: mailserver
+  #   env_file: .env
+  #   hostname: mail
+  #   domainname: example.com    
+  #   ports:
+  #     - "25:25"
+  #     - "143:143"
+  #     - "587:587"
+  #     - "993:993"
+  #   volumes:
+  #     - mail_data:/var/mail
+  #     - ./config/:/tmp/docker-mailserver/
+  #   networks:
+  #     - app_network
 
 volumes:
   postgres_data:
   postgres_email_data:  # Volumen separado para la base de datos de email
   redis_data:
-  mail_data:
+  # mail_data:
 
 networks:
   app_network:
