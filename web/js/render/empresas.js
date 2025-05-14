@@ -79,7 +79,7 @@ function cargarEmpresas() {
       </tr>
     `
   );
-  $("#tableBodyEmpresa").html(rows.join(""));
+  $("#tableBody").html(rows.join(""));
 }
 
 function cambiarEstado(id, nuevoEstado) {

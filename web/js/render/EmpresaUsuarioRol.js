@@ -49,7 +49,7 @@ async function buildTable() {
     await fetchMenus(); 
 
 
-    let html = '<table class="table table-striped table-bordered"><thead><tr><th>Menú</th>';
+    let html = '<table class="table table-striped mt-3"><thead><tr><th>Menú</th>';
     roles.forEach(role => {
       html += `<th class="vertical-text" style="
     writing-mode: vertical-rl; text-align: center;

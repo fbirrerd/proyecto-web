@@ -31,7 +31,7 @@
                 <th class="acciones-td">Acciones</th>
               </tr>
             </thead>
-            <tbody id="tableBodyEmpresa"></tbody>
+            <tbody id="tableBody"></tbody>
           </table>
     </div>
 
@@ -47,27 +47,46 @@
           <h5 class="modal-title">Empresa</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <div class="modal-body">
-          <input type="hidden" id="empresaId">
-          
-          <div class="mb-3">
-            <label>Nombre</label>
-            <input type="text" class="form-control" id="nombre" required>
-          </div>
+          <!-- Nav Tabs -->
+          <ul class="nav nav-tabs mb-3" id="empresaTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="datos-tab" data-bs-toggle="tab" data-bs-target="#datos" type="button" role="tab">Datos de la Empresa</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="modulos-tab" data-bs-toggle="tab" data-bs-target="#modulos" type="button" role="tab">Módulos Asociados</button>
+            </li>
+          </ul>
 
-          <div class="mb-3">
-            <label>Tipo Empresa</label>
-            <select class="form-select" id="tipoEmpresa" required></select>
-          </div>
+          <!-- Tab Content -->
+          <div class="tab-content" id="empresaTabsContent">
+            <!-- Tab 1: Datos de la empresa -->
+            <div class="tab-pane fade show active" id="datos" role="tabpanel">
+              <input type="hidden" id="empresaId">
 
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="estado" checked>
-            <label class="form-check-label">Activo</label>
-          </div>
+              <div class="mb-3">
+                <label>Nombre</label>
+                <input type="text" class="form-control" id="nombre" required>
+              </div>
 
-          <hr>
-          <h6 class="mb-2">Selecciona los módulos asociados</h6>
-          <div id="modulosContainer" class="row"></div>
+              <div class="mb-3">
+                <label>Tipo Empresa</label>
+                <select class="form-select" id="tipoEmpresa" required></select>
+              </div>
+
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="estado" checked>
+                <label class="form-check-label">Activo</label>
+              </div>
+            </div>
+
+            <!-- Tab 2: Módulos asociados -->
+            <div class="tab-pane fade" id="modulos" role="tabpanel">
+              <h6 class="mb-2">Selecciona los módulos asociados</h6>
+              <div id="modulosContainer" class="row"></div>
+            </div>
+          </div>
         </div>
 
         <div class="modal-footer">
@@ -79,9 +98,6 @@
   </div>
 </div>
 
-    </form>
-    </div>
-    </div>
 
 
     <!-- jQuery -->
