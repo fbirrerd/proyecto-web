@@ -16,6 +16,7 @@ def getDatosRol(db: Session, UsuarioId: int, EmpresaId: int):
              EmpresaUsuarioRol.estado == True)
     ).all()
     if not userEmpRolList:
+        print (f"Registro UsuarioRolEmpresa 3 no encontrada EmpresaUsuarioRol.id_usuario == {UsuarioId}, EmpresaUsuarioRol.id_empresa == {EmpresaId}, EmpresaUsuarioRol.estado == True ")
         raise Exception("Registro UsuarioRolEmpresa no encontrada ")
     
     roles_ids = [item.id_rol for item in userEmpRolList]

@@ -1,166 +1,267 @@
 let filaEnEdicion = false;
-let usuarios = [];
-let funcionalidades = 
 
-$(document).ready(function() {
-    fetchUsuarios();
-    $('#editForm').on('submit', guardarCambios);
+$(document).ready(function () {
+  fetchUsuarios();
+  $("#btnNuevo").click(function () {
+    limpiarFormulario();
+    disableTab(2);
+    disableTab(3);
+    $("#username").prop("disabled", false); // Bloquear
+    $("#modalUsuario").modal("show");
+  });
+  $(document).on("click", ".cambiar-clave-btn", function () {
+    const userId = $(this).data("id");
+    $('#modalCambiarClave input[name="userId"]').val(userId);
+    $("#modalCambiarClave").modal("show");
+  });
+  $("#openPopup").click(function () {
+    $("#password").val("")
+    $("#passwordPopup").fadeIn();
+  });
+  // Cerrar el popup
+  $("#closePopup").click(function () {
+    $("#passwordPopup").fadeOut();
+  });
+  // También puedes cerrar al presionar fuera del contenido
+  $("#passwordPopup").click(function (e) {
+    if (e.target.id === "passwordPopup") {
+      $("#passwordPopup").fadeOut();
+    }
+  });
+  // Cuando se hace clic en el botón editar
+  $("#tableBody").on("click", ".editar-usuario-btn", function () {
+    limpiarFormulario();
+    enableTab(2);
+    enableTab(3);
+
+    const userId = $(this).data("id");
+    const usuario = currentData.find((u) => u.id === userId);
+
+    if (!usuario) {
+      alert("Usuario no encontrado");
+      return;
+    }
+
+    // Cargar los datos en el formulario
+    $("#usuarioId").val(usuario.id);
+    $("#modalUsuario").modal("show");
+    $("#username").prop("disabled", true); // Bloquear
+    loadDatosUsuario(usuario.id);
+  });
+  $("#username").on("blur", function () {
+    const username = $(this).val().trim();
+    if (username !== "") {
+      $("#loading-icon").show(); // 👈 Mostrar ícono
+
+      callApi("GET", `usuario/login/${username}`, null)
+        .done(function (response) {
+          if (response.respuesta) {
+            $("#username").prop("disabled", true); // Bloquear
+            loadDatosUsuario(response.data.id);
+          } else {
+          }
+        })
+        .fail(function () {
+          showDanger("No se puede conectar con el servidor");
+        })
+        .always(function () {
+          $("#loading-icon").hide(); // 👈 Ocultar ícono al terminar
+        });
+    }
+  });
+  $("#toggleClave").on("click", function () {
+    const input = $("#nuevaClave");
+    const icon = $("#iconoClave");
+
+    if (input.attr("type") === "password") {
+      input.attr("type", "text");
+      icon.removeClass("fa-eye").addClass("fa-eye-slash");
+    } else {
+      input.attr("type", "password");
+      icon.removeClass("fa-eye-slash").addClass("fa-eye");
+    }
+  });
+  $("#tableBody").on("click", ".toggle-estado-btn", function () {
+  const $btn = $(this);
+  const id = $btn.data("id");
+  const estadoActual =
+    $btn.data("estado") === true || $btn.data("estado") === "true";
+  const nuevoEstado = !estadoActual;
+
+  const params = {
+    id: id,
+    estado: nuevoEstado,
+  };
+
+  callApi("PUT", "usuario/cambiar-estado", params)
+    .done(function (response) {
+      if (response.respuesta) {
+        showInfo("Estado actualizado con éxito");
+
+        // Actualiza visualmente el botón
+        $btn.data("estado", nuevoEstado); // Actualiza el data-estado
+        if (nuevoEstado) {
+          $btn
+            .removeClass("btn-danger")
+            .addClass("btn-success")
+            .html('<i class="bi bi-toggle-on"></i> Activo');
+        } else {
+          $btn
+            .removeClass("btn-success")
+            .addClass("btn-danger")
+            .html('<i class="bi bi-toggle-off"></i> Inactivo');
+        }
+      } else {
+        showWarning("Hubo un error al intentar actualizar");
+      }
+    })
+    .fail(function () {
+      showDanger("No se puede conectar con el servidor");
+    });
 });
 
+
+});
+
+function enableTab(num) {
+  const btn = document.getElementById(`tab${num}`);
+  btn.disabled = false;
+  btn.classList.add("unlocked-tab");
+  $(`tab${num}`).addClass("disabled-tab");
+}
+
+function disableTab(num) {
+  const btn = document.getElementById(`tab${num}`);
+  btn.disabled = true;
+  btn.classList.remove("active-tab", "unlocked-tab");
+  $(`tab${num}`).removeClass("disabled-tab");
+}
+
 function fetchUsuarios() {
-    let params;
-    callApi('GET', 'usuario', params)
-    .done(function(response) {
-        if (response.respuesta) {
-            console.log(response.data)
-            currentData = response.data;
-            llenarTabla();            
-        } else {
-            console.log(response.error);
-            $('#error-message').text(`Error en el login. Verifica tus credenciales. (${response.data.error})`).removeClass('d-none');
-        }
+  let params;
+  callApi("GET", "usuario", params)
+    .done(function (response) {
+      if (response.respuesta) {
+        currentData = response.data;
+        llenarTabla();
+      } else {
+        showDanger("Error en la consulta de la tabla");
+      }
     })
-    .fail(function() {
-        showDanger("No se puede conectar con el servidor"); 
+    .fail(function () {
+      showDanger("No se puede conectar con el servidor");
     });
 }
 
 function llenarTabla() {
-    const $tbody = $("#tableBody");
-    $tbody.empty(); // Limpiar la tabla antes de llenar
-    currentData.forEach(item => {
-        const $row = $("<tr>");
-        $row.append(
-            $("<td>").append(`<input type="text" class="form-control form-control-sm" id="nombre-${item.id}" value="${item.username}">`),
-            $("<td>").append(`<input type="text" class="form-control form-control-sm" id="nombre-${item.id}" value="${item.nombres}">`),
-            $("<td>").append(`<input type="text" class="form-control form-control-sm" id="nombre-${item.id}" value="${item.email}">`),
-            $("<td class='acciones-td  text-end'>").append(`
+  const $tbody = $("#tableBody");
+  $tbody.empty(); // Limpiar la tabla antes de llenar
+
+  currentData.forEach((item) => {
+    const $row = $("<tr>");
+    $row.append(
+      $("<td>").text(item.username),
+      $("<td>").text(item.nombres),
+      $("<td>").text(item.email),
+
+      // Columna de acciones
+      $("<td class='acciones-td text-end'>").append(`
                 <button 
-                    class="btn btn-sm toggle-estado-btn ${item.estado ? 'btn-success' : 'btn-secondary'}" 
+                    class="btn btn-sm toggle-estado-btn ${
+                      item.estado ? "btn-success" : "btn-secondary"
+                    }" 
                     data-id="${item.id}" 
                     data-estado="${item.estado}">
-                    ${item.estado ? 'Activo' : 'Inactivo'}
-                </button>                
-                <button class="btn btn-success btn-sm guardar-btn" data-id="${item.id}">
-                    <i class="fas fa-save"></i>
+                    <i class="fas ${
+                      item.estado ? "fa-toggle-on" : "fa-toggle-off"
+                    }"></i>
                 </button>
-                <button class="btn btn-warning btn-sm editar-btn" data-id="${item.id}">
+
+                <button class="btn btn-primary btn-sm cambiar-clave-btn" data-id="${
+                  item.id
+                }">
+                    <i class="fas fa-key"></i>
+                </button>
+
+                <button class="btn btn-warning btn-sm editar-usuario-btn" data-id="${
+                  item.id
+                }">
                     <i class="fas fa-edit"></i>
                 </button>
             `)
-        );
-        $tbody.append($row);
-    });
+    );
+
+    $tbody.append($row);
+  });
 }
 
-async function insertarUsuario() {
-    const nombre = $('#nuevoRolNombre').val();
-    if (!nombre) return alert('Ingresa un nombre');
-    let params = {
-        "nombre": nombre,
-        "estado": true
+function limpiarFormulario() {
+  const form = document.getElementById("formUsuario");
+  const elements = form.querySelectorAll("input, select, textarea");
+
+  elements.forEach((el) => {
+    if (el.tagName === "INPUT") {
+      if (el.type === "checkbox" || el.type === "radio") {
+        el.checked = false;
+      } else {
+        el.value = "";
       }
-    callApi('POST', 'rol', params)
-    .done(function(response) {
-        if (response.respuesta) {
-            return response.data;
-        } else {
-            console.log(response.error);
-            showWarning(`Error al guardar el Rol. (${response.data.error})`);
-        }
+    } else if (el.tagName === "SELECT") {
+      el.selectedIndex = 0;
+    } else if (el.tagName === "TEXTAREA") {
+      el.value = "";
+    }
+  });
+}
+
+//cargar datos de usuario
+function loadDatosUsuario(userid) {
+  // const urls = [`usuario/${usuario.id}`,`direccion/${usuario.id}`,`empresas/usuario/${usuario.id}`];
+  const urls = [`usuario/${userid}`];
+  fetchMultiple(
+    urls,
+    function (responses) {
+      // [usuarios,direccion,empresas] = responses.map((r) => (r.respuesta ? r.data : []));
+      [usuarios] = responses.map((r) => (r.respuesta ? r.data : []));
+
+      if (usuarios) {
+        $("#id").val(userid);
+        $("#username").val(usuarios.username);
+        $("#nombres").val(usuarios.nombres);
+        $("#apellidos").val(usuarios.apellidos);
+        $("#email").val(usuarios.email);
+        $("#username").val(usuarios.username);
+        $("#username").val(usuarios.username);
+        $("#username").val(usuarios.username);
+      }
+    },
+    function (err) {
+      console.error("Fallo global:", err);
+    }
+  );
+}
+
+$("#guardarClaveBtn").on("click", function () {
+  const userId = $('#modalCambiarClave input[name="userId"]').val();
+  const nuevaClave = $("#nuevaClave").val();
+  if (!nuevaClave) return alert("Debe ingresar una nueva clave");
+
+  // Actualiza en la base de datos (AJAX o fetch)
+  const params = {
+    id: userId,
+    password: nuevaClave,
+  };
+
+  callApi("PUT", "usuario/cambiar-password", params)
+    .done(function (response) {
+      if (response.respuesta) {
+        showInfo("Clave actualizado con exito");
+        $("#passwordPopup").fadeOut();
+      } else {
+        showWarning("Hubo un error al intentar actualizar");
+      }
     })
-    .fail(function() {
-        showDanger("No se puede conectar con el servidor"); 
-    });
-    $('#nuevoRolNombre').val('');
-    fetchRoles();
-}
-
-async function actualizarRol(id, nuevoRolNombre) {
-    await axios.put(`/roles/${id}`, { nombre: nuevoRolNombre });
-    fetchRoles();
-}
-
-$tbody.on("click", ".toggle-estado-btn", function () {
-    const $btn = $(this);
-    const id = $btn.data("id");
-    const estadoActual = $btn.data("estado") === true || $btn.data("estado") === "true";
-    const nuevoEstado = !estadoActual;
-
-    // Actualiza en la base de datos (AJAX o fetch)
-    $.ajax({
-        url: `/api/actualizar-estado/${id}`,
-        method: "PUT",
-        contentType: "application/json",
-        data: JSON.stringify({ estado: nuevoEstado }),
-        success: function () {
-            // Actualiza el botón visualmente
-            $btn
-                .data("estado", nuevoEstado)
-                .removeClass("btn-success btn-secondary")
-                .addClass(nuevoEstado ? "btn-success" : "btn-secondary")
-                .text(nuevoEstado ? "Activo" : "Inactivo");
-        },
-        error: function () {
-            alert("Error al actualizar el estado.");
-        }
-    });
+    .fail(function () {
+      showDanger("No se puede conectar con el servidor");
+    });  
 });
-
-$(document).on("click", ".editar-btn", function () {
-    const id = $(this).data("id");
-    const rol = currentData.find(r => m.id === id);
-
-    if (!menu) return;
-    // Mostrar el modal
-    const modal = new bootstrap.Modal(document.getElementById("editModal"));
-    modal.show();
-
-
-    rolSeleccionadoId = rolId;
-    $('#popup').show();
-  
-    const menus = fetchMenus()
-
-    const contenedor = $('#funcionalidadesLista');
-    contenedor.html(menus.map(m => `
-        <label><input type="checkbox" value="${m.id}"> ${m.nombre}</label><br>
-    `).join(''));
-    
-    
-});
-
-function fetchMenus() {
-    let params;
-    callApi('GET', 'menu-tree', params)
-    .done(function(response) {
-        if (response.respuesta) {
-            return response.data;
-        } else {
-            console.log(response.error);
-            $('#error-message').text(`Error en el login. Verifica tus credenciales. (${response.data.error})`).removeClass('d-none');
-        }
-    })
-    .fail(function() {
-        showDanger("No se puede conectar con el servidor"); 
-    });
-}
-
-function cerrarPopup() {
-    $('#overlay').hide();
-    $('#popup').hide();
-    rolSeleccionadoId = null;
-}
-
-async function guardarPermisos() {
-    const seleccionados = $('#funcionalidadesLista input:checked').map(function() {
-        return parseInt($(this).val());
-    }).get();
-    await axios.post(`/roles/${rolSeleccionadoId}/permisos`, { funcionalidades: seleccionados });
-    cerrarPopup();
-}
-
-function cancelarNuevoRol() {
-    $('#filaNueva').remove();
-    filaEnEdicion = false;
-}

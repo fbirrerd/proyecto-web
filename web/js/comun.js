@@ -1,4 +1,3 @@
-
 let API_URL = "http://localhost:8200/api/";
 let API_URL_VERSION = "v1/";
 
@@ -31,50 +30,60 @@ function mostrarAlerta({
 } = {}) {
   let alerta = document.getElementById("alerta");
 
-  // Si no existe, la crea
   if (!alerta) {
     alerta = document.createElement("div");
     alerta.id = "alerta";
     alerta.className = `alert alert-${tipo} alert-dismissible fade show`;
-    alerta.role = "alert";
+    alerta.setAttribute("role", "alert");
     alerta.style =
-      "display:none; position: fixed; top: 10px; right: 10px; z-index: 1050;";
+      "display: none; position: fixed; top: 10px; right: 10px; z-index: 1050; min-width: 300px;";
 
-    alerta.innerHTML = `
-                <span id="mensaje-alerta">${mensaje}</span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            `;
+    // Cuerpo de la alerta
+    const contenido = document.createElement("div");
+    contenido.innerHTML = `<span id="mensaje-alerta">${mensaje}</span>`;
+
+    // Botón de cerrar
+    const btnCerrar = document.createElement("button");
+    btnCerrar.type = "button";
+    btnCerrar.className = "btn-close";
+    btnCerrar.setAttribute("data-bs-dismiss", "alert");
+    btnCerrar.setAttribute("aria-label", "Cerrar");
+
+    // Añadir contenido y botón al contenedor
+    alerta.appendChild(contenido);
+    alerta.appendChild(btnCerrar);
 
     document.body.appendChild(alerta);
   } else {
-    // Reutiliza el contenedor, cambia contenido y clase
     alerta.className = `alert alert-${tipo} alert-dismissible fade show`;
     document.getElementById("mensaje-alerta").textContent = mensaje;
   }
 
-  // Mostrar la alerta
   alerta.style.display = "block";
 
-  // Ocultar después de la duración especificada
+  // Oculta la alerta después de `duracion` segundos
   setTimeout(() => {
     alerta.style.display = "none";
   }, duracion * 1000);
 }
 
-async function fetchMultiple(endpoints = [], onSuccess = () => {}, onError = () => {}) {
+async function fetchMultiple(
+  endpoints = [],
+  onSuccess = () => {},
+  onError = () => {}
+) {
   try {
-      const responses = await Promise.all(
-          endpoints.map(endpoint => callApi('GET', endpoint))
-      );
-      onSuccess(responses);
+    const responses = await Promise.all(
+      endpoints.map((endpoint) => callApi("GET", endpoint))
+    );
+    onSuccess(responses);
   } catch (err) {
-      onError(err);
-      showDanger("No se puede conectar con el servidor");
+    onError(err);
+    showDanger("No se puede conectar con el servidor");
   }
 }
 
-
-function  callApi(method, endpoint, params) {
+function callApi(method, endpoint, params) {
   // Crear el elemento del mensaje de carga
   // Crear el elemento del icono de carga de Font Awesome
   const loadingIcon = document.createElement("i");

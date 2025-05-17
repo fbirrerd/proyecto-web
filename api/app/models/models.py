@@ -384,7 +384,7 @@ class ParametroSistema(Base):
 class LogAcceso(Base):
     __tablename__ = "logs_acceso"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     id_usuario = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
     username = Column(String, nullable=False)
     exito = Column(Boolean, nullable=False)

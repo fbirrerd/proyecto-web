@@ -1,0 +1,11 @@
+body {
+  font-size: 12px;
+}
+
+
+  .nav-link.disabled-tab {
+    pointer-events: none;
+    background-color: #e0e0e0 !important;
+    color: #999 !important;
+    cursor: not-allowed;
+  }

@@ -1,5 +1,6 @@
 from typing import Any, List
 from fastapi import HTTPException
+from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
 
 
@@ -50,7 +51,17 @@ def obtener_modulos_por_empresa(db: Session, empresa_id: int) -> list[ModuloConA
     print(f"Obteniendo módulos para la empresa con ID: {empresa_id}")
     try:
         # Paso 1: Obtener los id_modulo de la empresa
-        ids_modulos = db.query(EmpresaModulo.id_modulo).filter(EmpresaModulo.id_empresa == empresa_id).all()
+        ids_modulos = db.query(EmpresaModulo.id_modulo).filter(
+            and_(
+                EmpresaModulo.id_empresa == empresa_id,
+                EmpresaModulo.fecha_inicio <= func.now(),
+                or_(
+                    EmpresaModulo.fecha_fin == None,
+                    EmpresaModulo.fecha_fin >= func.now()
+                ),
+                EmpresaModulo.estado == True
+            )
+        ).all()
         lista_ids = [id_tuple[0] for id_tuple in ids_modulos]
 
         if not ids_modulos:

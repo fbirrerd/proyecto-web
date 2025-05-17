@@ -38,11 +38,13 @@ def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , t
 
     lRoles = getDatosRol(db, usuarioId, idEmpresaSeleccionada);
     lModulos = ListMenuXModulo(db, idEmpresaSeleccionada, usuarioId);
+    # print(f"pasa por aca....2 ")
 
     if not lEmpresas:
         raise Exception("Empresas no encontrada")
     
     lMenus = getListMenuOrdenada(db, usuarioId, idEmpresaSeleccionada)
+    # print(f"pasa por aca....datetime.now() + timedelta(minutes=minutosAcceso) ")
     
     # Se genera el Token
     if token == None:
@@ -56,9 +58,10 @@ def getObjetoAcceso(db: Session, userid:int, empresaid: Optional[int] = None , t
             fecha_creacion=datetime.now(),
             fecha_vencimiento=datetime.now() + timedelta(minutes=minutosAcceso),
         )   
-        
+        # print(f"pasa por aca....4 ")
         crear_acceso(db, db_acceso)             
     else:
+        print(f"pasa por aca....5 ")
         newToken = token
 
     # duracion = AccesoDuracion(

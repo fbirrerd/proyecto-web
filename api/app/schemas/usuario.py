@@ -10,6 +10,8 @@ class UsuarioBase(BaseModel):
     email: str
     duracion: Optional[int] = 20
     estado: Optional[bool] = True
+    class Config:
+        orm_mode = True
 
 class UsuarioCreate(UsuarioBase):
     password: str
@@ -43,6 +45,34 @@ class UsuarioAcceso(UsuarioBase):
 class UsuarioList(BaseModel):
     id: int
     nombreCompleto: str
-
     class Config:
         orm_mode = True        
+        
+class UsuariosListado(BaseModel):
+    id: int
+    username: str
+    nombres: str
+    apellidos: Optional[str]
+    email: str
+    estado: Optional[bool] = True
+    class Config:
+        orm_mode = True     
+        
+class UsuarioId(BaseModel):
+    id: int
+    class Config:
+        orm_mode = True     
+
+class UsuarioCambioClave(BaseModel):
+    id: int
+    password: str 
+    class Config:
+        orm_mode = True     
+
+class UsuarioCambioEstado(BaseModel):
+    id: int 
+    estado: str
+    class Config:
+        orm_mode = True     
+           
+        

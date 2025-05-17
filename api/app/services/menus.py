@@ -15,7 +15,7 @@ def filtrarEspecial(db: Session, UsuarioId: int, EmpresaId: int, tipo: int,  mod
     ).all()
     
     if not EmpresaUsuarioRolList:
-        raise Exception("Registro UsuarioRolEmpresa no encontrada ")
+        return None
 
     roles_ids = [item.id_rol for item in EmpresaUsuarioRolList] 
     # print(f" roles_ids {roles_ids} ")
@@ -69,6 +69,7 @@ def getListMenuOrdenada(db: Session,UsuarioId: int, EmpresaId: int):
         return menu_general_list
     except Exception as e:
         # Captura de errores genéricos
+        print(f"Error getListaMenuOrdenada {str(e)}")
         return None
         
         
@@ -205,10 +206,10 @@ def getArbolMenuModulo(db: Session, ModuloId: int, EmpresaId: int, usuarioId: in
 
         menu_general_list = filtrarEspecial(db, usuarioId, EmpresaId, 2, ModuloId)
 
-        if not menu_general_list:
-            raise ValueError("No se encontraron registros en Menu")
+        # if not menu_general_list:
+        #     raise ValueError("No se encontraron registros en Menu")
 
-        print(f"✅ Menús visibles encontrados: {len(menu_general_list)}")
+        # print(f"✅ Menús visibles encontrados: {len(menu_general_list)}")
         for menu in menu_general_list[:10]:
             print(f"   - Menu ID: {menu.id}, Nombre: {menu.nombre}")
 

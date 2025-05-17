@@ -41,8 +41,11 @@ def validar_login_usuario(db: Session, user: UsuarioLogin, request: Request) -> 
             registrar_log_acceso(db, userObj.username, False, "Contraseña incorrecta", userObj.id, ip, user_agent)
             return objRespuesta(respuesta=False, data={'error': 'Usuario y clave inválidos'})
 
+        print(f"getObjetoAcceso 0")
         objAcceso = getObjetoAcceso(db, userObj.id)
+        print(f"getObjetoAcceso 1")
         registrar_log_acceso(db, userObj.username, True, "Login exitoso", userObj.id, ip, user_agent)
+        print(f"getObjetoAcceso 2")
 
         return objRespuesta(respuesta=True, data=objAcceso)
 
@@ -66,14 +69,25 @@ def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> 
                                     idUsuario,
                                     login.empresaid, 
                                     login.token)
-        registrar_log_acceso(db, objAcceso.username, True, "Cambio de empresa exitoso. Nueva empresa: " + login.empresaid, objAcceso.id, ip, user_agent)
-        # Si el usuario existe y la contraseña es correcta, retornar respuesta exitosa
+        print("hhhhhhhAhhhhhhhhh 1")
+        registrar_log_acceso(
+            db=db,
+            username=objAcceso.username,
+            exito=True,
+            mensaje=f"Cambio de empresa exitoso. Nueva empresa: {login.empresaid}",
+            usuario_id=objAcceso.id,
+            ip=ip,
+            user_agent=user_agent
+        )
+        print("hhhhhhhAhhhhhhhhh 2")
         return objRespuesta(
             respuesta=True,
             data=objAcceso
         )
 
     except Exception as e:
+        print("hhhhhhhAhhhhhhhhh 3")
+
         # Capturar cualquier excepción que ocurra durante el proceso
         return objRespuesta(
             respuesta=False,
@@ -124,34 +138,3 @@ def getIDUsuarioXToken(db: Session, token: str):
         return accesoObj.id_usuario
     else:
         return None       
-    
-# def recargarInfoUsuarioConectado(db: Session, userId: int, empresaId: int) -> objRespuesta:
-#     try:
-#         # Buscar el usuario con el nombre de usuario proporcionado
-#         userObj = db.query(Usuario).filter(Usuario.id == userId).first()
-
-#         # Si el usuario no existe, retornar respuesta de error
-#         if not userObj:
-#             return objRespuesta(
-#                 respuesta=False,
-#                 data={'error': 'Usuario no existe en la base de datos'}
-#             )
-
-
-#         # Armar el objeto de acceso (si está implementado)
-#         objAcceso = getObjetoAcceso(db, userObj.id, empresaId)
-
-#         # Si el usuario existe y la contraseña es correcta, retornar respuesta exitosa
-#         return objRespuesta(
-#             respuesta=True,
-#             data=objAcceso
-#         )
-
-#     except Exception as e:
-#         # Capturar cualquier excepción que ocurra durante el proceso
-#         print(f"Error durante la recarga de datos dhasboard: {e}")
-#         return objRespuesta(
-#             respuesta=False,
-#             data={'error': {"numero": 500, "mensaje": f'Ocurrió un error interno: {e}'}}
-#         )
-
