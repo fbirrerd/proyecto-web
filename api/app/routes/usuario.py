@@ -5,12 +5,12 @@ from app.schemas.usuario import UsuarioCambioClave, UsuarioCambioEstado, Usuario
 from app.services.usuario import (
     cambiar_clave,
     cambiar_estado,
-    create_usuario,
     delete_usuario,
     get_lista,
     get_usuario,
     get_usuario_x_login,
     get_usuarios,
+    salvar_usuario,
     update_usuario
 )
 from app.schemas.respond import objRespuesta
@@ -81,7 +81,7 @@ def obtener_usuario_por_id(usuario_id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=objRespuesta)
 def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     try:
-        result = create_usuario(db, usuario)
+        result = salvar_usuario(db, usuario)
         return objRespuesta(respuesta=True, data=result)
     except Exception as e:
         return objRespuesta(respuesta=False, data=f"Error al crear el usuario: {str(e)}")

@@ -52,10 +52,13 @@
           <!-- Nav Tabs -->
           <ul class="nav nav-tabs mb-3" id="empresaTabs" role="tablist">
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="datos-tab" data-bs-toggle="tab" data-bs-target="#datos" type="button" role="tab">Datos de la Empresa</button>
+              <button class="nav-link active" id="datos-tab" data-bs-toggle="tab" data-bs-target="#datos" type="button" role="tab">Información</button>
             </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="modulos-tab" data-bs-toggle="tab" data-bs-target="#modulos" type="button" role="tab">Módulos Asociados</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios" type="button" role="tab">Usuarios</button>
             </li>
           </ul>
 
@@ -85,6 +88,11 @@
             <div class="tab-pane fade" id="modulos" role="tabpanel">
               <h6 class="mb-2">Selecciona los módulos asociados</h6>
               <div id="modulosContainer" class="row"></div>
+            </div>
+            <!-- Tab 3: Usuarios -->
+            <div class="tab-pane fade" id="Usuarios" role="tabpanel">
+              <h6 class="mb-2">Usuarios pertenecientes a la Empresa</h6>
+              <div id="usuariosContainer" class="row"></div>
             </div>
           </div>
         </div>

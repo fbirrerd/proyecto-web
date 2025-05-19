@@ -1,6 +1,9 @@
 let filaEnEdicion = false;
 
 $(document).ready(function () {
+  //aca se bloquea la pestaña de direcciones
+  $("#tab2").addClass("disabled");
+
   fetchUsuarios();
   $("#btnNuevo").click(function () {
     limpiarFormulario();
@@ -31,7 +34,7 @@ $(document).ready(function () {
   // Cuando se hace clic en el botón editar
   $("#tableBody").on("click", ".editar-usuario-btn", function () {
     limpiarFormulario();
-    enableTab(2);
+    // enableTab(2);
     enableTab(3);
 
     const userId = $(this).data("id");
@@ -217,12 +220,12 @@ function limpiarFormulario() {
 //cargar datos de usuario
 function loadDatosUsuario(userid) {
   // const urls = [`usuario/${usuario.id}`,`direccion/${usuario.id}`,`empresas/usuario/${usuario.id}`];
-  const urls = [`usuario/${userid}`];
+  const urls = [`usuario/${userid}`,`empresa/list/all`,`empresausuario/usuario/${userid}`];
   fetchMultiple(
     urls,
     function (responses) {
       // [usuarios,direccion,empresas] = responses.map((r) => (r.respuesta ? r.data : []));
-      [usuarios] = responses.map((r) => (r.respuesta ? r.data : []));
+      [usuarios, empresas, empresaUsuario] = responses.map((r) => (r.respuesta ? r.data : []));
 
       if (usuarios) {
         $("#id").val(userid);
@@ -230,9 +233,27 @@ function loadDatosUsuario(userid) {
         $("#nombres").val(usuarios.nombres);
         $("#apellidos").val(usuarios.apellidos);
         $("#email").val(usuarios.email);
-        $("#username").val(usuarios.username);
-        $("#username").val(usuarios.username);
-        $("#username").val(usuarios.username);
+        $("#duracion").val(usuarios.duracion);
+      }
+
+      if(empresas){
+        const $contenedor = $("#listaEmpresas");
+        $contenedor.empty(); // Limpiar contenido anterior
+
+        empresas.forEach((empresa) => {
+          let checked= "";
+          if(empresaUsuario.some(eu => eu.id_empresa === empresa.id)){
+            checked= "checked";
+
+          }
+          
+          const checkboxHtml = `
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="empresa_${empresa.id}" value="${empresa.id}" ${checked}>
+            <label class="form-check-label" for="empresa_${empresa.id}">${empresa.nombre}</label>
+          </div>`;
+          $contenedor.append(checkboxHtml);
+        });
       }
     },
     function (err) {
@@ -265,3 +286,114 @@ $("#guardarClaveBtn").on("click", function () {
       showDanger("No se puede conectar con el servidor");
     });  
 });
+
+  function validarEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  }
+
+  function validarFormulario() {
+    let valido = true;
+
+    // Limpia errores previos
+    $(".form-control").removeClass("is-invalid");
+
+    const username = $("#username").val().trim();
+    const nombres = $("#nombres").val().trim();
+    const apellidos = $("#apellidos").val().trim();
+    const email = $("#email").val().trim();
+    const duracion = $("#duracion").val().trim();
+
+    if (username === "") {
+      $("#username").addClass("is-invalid");
+      valido = false;
+    }
+
+    if (nombres === "") {
+      $("#nombres").addClass("is-invalid");
+      valido = false;
+    }
+
+    if (apellidos === "") {
+      $("#apellidos").addClass("is-invalid");
+      valido = false;
+    }
+
+    if (duracion === "") {
+      $("#duracion").addClass("is-invalid");
+      valido = false;
+    }
+
+    if (email === "" || !validarEmail(email)) {
+      $("#email").addClass("is-invalid");
+      valido = false;
+    }
+
+    return valido;
+  }
+
+  // Puedes llamar esto al hacer clic en un botón guardar
+  $("#btnGuardar").click(function (e) {
+    e.preventDefault();
+
+    if (validarFormulario()) {
+      // Aquí puedes continuar con el submit o enviar por AJAX
+      console.log("Formulario válido, se puede enviar");
+      let params = {
+        username: $("#username").val().trim(),
+        nombres: $("#nombres").val().trim(),
+        apellidos: $("#apellidos").val().trim(),
+        email: $("#email").val().trim(),
+        duracion: $("#duracion").val()
+      }
+
+      console.log(params);
+
+      callApi("POST", "usuario", params)
+        .done(function (response) {
+          if (response.respuesta) {
+            let id = response.data.id;
+            let empresasSeleccionadas = [];
+
+            $('#listaEmpresas input[type="checkbox"]').each(function () {
+              empresasSeleccionadas.push({
+                id: $(this).val(),
+                checked: $(this).is(':checked')
+              });
+            });
+
+            let params = {
+              id: id,
+              empresas: empresasSeleccionadas
+            }
+
+
+            callApi("POST", "empresausuario/relacion-empresas", params)
+              .done(function (response) {
+                if (response.respuesta) {
+                  fetchUsuarios();
+                  showInfo("Usuario correctamente guardado");    
+                  $("#modalUsuario").modal("hide");
+                } else {
+                  console.log(response.error);
+                  showWarning(`Error al guardar la relacion empresas-usuarios. (${response.data.error})`);
+                }
+              })
+              .fail(function () {
+                showDanger("No se puede conectar con el servidor");
+              });
+          } else {
+            console.log(response.error);
+            showWarning(`Error al guardar el Usuario. (${response.data.error})`);
+          }
+        })
+        .fail(function () {
+          showDanger("No se puede conectar con el servidor");
+        });
+
+
+
+    } else {
+      console.warn("Formulario inválido");
+    }
+  });

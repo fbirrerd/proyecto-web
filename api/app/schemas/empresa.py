@@ -36,4 +36,10 @@ class EmpresaAcceso(EmpresaBase):
     id_direccion: Optional[int] = None    
 
     class Config:
-        orm_mode = True        
+        orm_mode = True       
+
+class UsuarioListado(BaseModel):
+    username: str
+    nombre: str
+    class Config:
+        orm_mode = True           

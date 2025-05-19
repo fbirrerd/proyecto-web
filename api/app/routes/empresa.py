@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.schemas.respond import objRespuesta
 from app.database import SessionLocal
 from app.schemas.empresa import EmpresaCreate, EmpresaOut, EmpresaUpdate
-from app.services.empresa import create, delete, get_all, get_by_id, get_lista, update
+from app.services.empresa import create, delete, get_all, get_by_id, get_lista, get_lista_usuarios, update
 
 router = APIRouter(tags=["Empresa"])
 
@@ -51,6 +51,16 @@ def actualizar_empresa(empresa_id: int, data: EmpresaUpdate, db: Session = Depen
     except Exception as e:
         return objRespuesta(respuesta=False, data=f"Error al actualizar empresa: {str(e)}")
 
+@router.put("estado/{empresa_id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
+def actualizar_empresa(empresa_id: int, data: EmpresaUpdate, db: Session = Depends(get_db)):
+    try:
+        actualizada = update_estado(db, empresa_id, data)
+        if not actualizada:
+            return objRespuesta(respuesta=False, data="Empresa no encontrada")
+        return objRespuesta(respuesta=True, data=actualizada)
+    except Exception as e:
+        return objRespuesta(respuesta=False, data=f"Error al actualizar empresa: {str(e)}")
+
 @router.delete("/{empresa_id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def eliminar_empresa(empresa_id: int, db: Session = Depends(get_db)):
     try:
@@ -66,5 +76,13 @@ def obtener_id_nombre_empresas(db: Session = Depends(get_db)):
     try:
         lista = get_lista(db)
         return objRespuesta(respuesta=True, data=lista)
+    except Exception as e:
+        return objRespuesta(respuesta=False, data=f"Error al listar empresas: {str(e)}")
+
+@router.get("/lista-usuarios-empresa/{empresa_id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
+def obtener_lista_usuarios_x_empresa(empresa_id:int, db: Session = Depends(get_db)):
+    try:
+        lista = get_lista_usuarios(db, empresa_id)
+        return objRespuesta(respuesta=True, data=lista) 
     except Exception as e:
         return objRespuesta(respuesta=False, data=f"Error al listar empresas: {str(e)}")

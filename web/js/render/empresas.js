@@ -43,52 +43,64 @@ function cargarTiposEmpresa() {
 
 function cargarEmpresas() {
   const rows = currentData.map(
-    (emp) => `
+    (item) => `
       <tr>
-        <td><input class="form-control form-control-sm" value="${
-          emp.nombre
-        }" onchange="editarCampo(${emp.id}, 'nombre', this.value)"></td>
+        <td><input class="form-control form-control-sm" value="${item.nombre}" 
+          onchange="editarCampo(${item.id}, 'nombre', this.value)"></td>
         <td>
           <select class="form-select form-select-sm" onchange="editarCampo(${
-            emp.id
+            item.id
           }, 'id_tipo_empresa', this.value)">
             ${tipoEmpresas
               .map(
                 (t) =>
                   `<option value="${t.id}" ${
-                    t.id === emp.id_tipo_empresa ? "selected" : ""
+                    t.id === item.id_tipo_empresa ? "selected" : ""
                   }>${t.nombre}</option>`
               )
               .join("")}
           </select>
         </td>
+        
         <td>
-            <button class="btn btn-sm toggle-estado ${emp.estado ? "btn-success" : "btn-secondary"}" 
-            data-id="${emp.id}"onclick="cambiarEstado(${emp.id}, ${!emp.estado})">
-                ${emp.estado ? "Activo" : "Inactivo"}
-            </button>
-            <button class="btn btn-sm btn-primary guardar-fila" data-id="${emp.id}">
-                <i class="fas fa-save"></i> 
-            </button>
-            <button class="btn btn-sm btn-warning" onclick="abrirModal(${
-              emp.id
-            })">
-                <i class="fas fa-pen"></i> 
-            </button>        
+          <!-- Botón tipo switch -->
+          <button class="btn btn-sm ${item.estado ? 'btn-success' : 'btn-danger'} btn-estado" 
+            data-id-empresa="${item.usuario_id}" data-id-usuario="${item.usuario_id}" title="${item.estado ? 'Desactivar' : 'Activar'}">
+            <i class="fas ${item.estado ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
+          </button>           
+          <!-- Botón guardar -->
+          <button class="btn btn-sm btn-primary guardar-fila" data-id="${item.id}">
+              <i class="fas fa-save"></i> 
+          </button>
+
+          <!-- Botón editar -->
+          <button class="btn btn-sm btn-warning" onclick="abrirModal(${item.id})">
+              <i class="fas fa-pen"></i> 
+          </button>
         </td>
       </tr>
     `
   );
   $("#tableBody").html(rows.join(""));
+
+  // Asigna eventos a los toggles
+  $(".toggle-switch").on("change", function () {
+    const id = $(this).data("id");
+    const nuevoEstado = $(this).is(":checked");
+    cambiarEstado(id, nuevoEstado);
+
+    // const label = $(this).siblings("label");
+    // label.text(nuevoEstado ? "Activo" : "Inactivo");
+  });
 }
 
+
 function cambiarEstado(id, nuevoEstado) {
-  const url = [`empresa/${id}`];
+  const url = `empresa/${id}`; // ✅ Aquí corregido (ya no es array)
 
   const empresa = {
-    estado: nuevoEstado,
+    estado: !!nuevoEstado, // ✅ Forzamos a booleano
   };
-
   let resultado = callApi("PUT", url, empresa)
     .done(function (response) {
       if (response.respuesta) {
@@ -110,18 +122,28 @@ function cambiarEstado(id, nuevoEstado) {
 
 function abrirModal(id = null) {
   if (id) {
-    const urls = [`empresa/${id}`];
+    const urls = [`empresa/${id}`,`empresa/lista-usuarios-empresa/${id}`];
     fetchMultiple(
       urls,
       function (responses) {
-        const [emp] = responses.map((r) => (r.respuesta ? r.data : []));
-        if (emp) {
+        const [empresas, usuarios] = responses.map((r) => (r.respuesta ? r.data : []));
+
+
+        const emp = empresas;
+        if (empresas) {
           $("#empresaId").val(emp.id);
           $("#nombre").val(emp.nombre);
           $("#tipoEmpresa").val(emp.id_tipo_empresa);
           $("#estado").prop("checked", emp.estado);
           cargarModulos();
         }
+
+        if(usuarios){
+          console.log(usuarios);
+        }
+
+
+
         $("#modalEmpresa").modal("show");
       },
       function (err) {

@@ -76,10 +76,10 @@
                 <a class="nav-link active" id="tab1" data-toggle="tab" href="#tabInformacion" role="tab" aria-controls="tabInformacion" aria-selected="true">Información</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" id="tab2" data-toggle="tab" href="#tabDireccion" role="tab" aria-controls="tabDireccion" aria-selected="false">Dirección</a>
+                <a class="nav-link" id="tab3" data-toggle="tab" href="#tabEmpresa" role="tab" aria-controls="tabEmpresa" aria-selected="false">Empresa</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" id="tab3" data-toggle="tab" href="#tabEmpresa" role="tab" aria-controls="tabEmpresa" aria-selected="false">Empresa</a>
+                <a class="nav-link" id="tab2" data-toggle="tab" href="#tabDireccion" role="tab" aria-controls="tabDireccion" aria-selected="false">Dirección</a>
               </li>
             </ul>
 
@@ -89,7 +89,7 @@
                 <div class="form-group">
                   <label for="username">Username</label>
                   <div class="input-group">
-                    <input type="text" id="username" class="form-control" placeholder="User Name">
+                    <input type="text" id="username" class="form-control" placeholder="Username">
                     <span class="input-group-text" id="loading-icon" style="display: none;">
                       <i class="fas fa-spinner fa-spin"></i> <!-- o "fa-search" si prefieres -->
                     </span>
@@ -106,6 +106,10 @@
                 <div class="form-group">
                   <label for="email">Email</label>
                   <input type="email" class="form-control" id="email" placeholder="Ingrese el email" />
+                </div>
+                <div class="form-group">
+                  <label for="duracion">Duración de Sesión (Minutos)</label>
+                  <input type="number" class="form-control" id="duracion" placeholder="Ingrese la duración" />
                 </div>
               </div>
 
@@ -146,17 +150,15 @@
               <div class="tab-pane fade" id="tabEmpresa" role="tabpanel">
                 <div class="form-group">
                   <label for="empresaSelect">Empresas</label>
-                  <select class="form-control" id="empresaSelect">
-                    <option value="">Selecciona una empresa</option>
-                    <option value="empresa1">Empresa 1</option>
-                    <option value="empresa2">Empresa 2</option>
-                  </select>
+                  <div id="listaEmpresas">
+                    <!-- Aquí se agregarán los checkboxes dinámicamente -->
+                  </div>
                 </div>
               </div>
 
               <!-- Botón guardar -->
               <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" id="btnGuardar"  class="btn btn-primary">Guardar</button>
               </div>
             </form>
           </div>

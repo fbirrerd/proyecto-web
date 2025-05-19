@@ -14,7 +14,7 @@ class UsuarioBase(BaseModel):
         orm_mode = True
 
 class UsuarioCreate(UsuarioBase):
-    password: str
+    password: Optional[str]
     id_direccion: Optional[int] = None
 
 class UsuarioUpdate(BaseModel):

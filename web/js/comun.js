@@ -4,7 +4,6 @@ let API_URL_VERSION = "v1/";
 function showInfo($mensaje) {
   mostrarAlerta({
     mensaje: $mensaje,
-    tipo: "success",
     duracion: 10,
   });
 }
@@ -25,7 +24,7 @@ function showDanger($mensaje) {
 
 function mostrarAlerta({
   mensaje = "Operación realizada",
-  tipo = "success", // success, danger, warning, info
+  tipo = "primary",
   duracion = 30,
 } = {}) {
   let alerta = document.getElementById("alerta");
@@ -33,35 +32,61 @@ function mostrarAlerta({
   if (!alerta) {
     alerta = document.createElement("div");
     alerta.id = "alerta";
-    alerta.className = `alert alert-${tipo} alert-dismissible fade show`;
     alerta.setAttribute("role", "alert");
-    alerta.style =
-      "display: none; position: fixed; top: 10px; right: 10px; z-index: 1050; min-width: 300px;";
+    alerta.style = `
+      display: none;
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1050;
+      min-width: 300px;
+      padding: 1rem 1.5rem;
+      border: 1px solid transparent;
+      border-radius: 0.375rem;
+      background-color: ${tipo === "success" ? "#d1e7dd" :
+                         tipo === "danger" ? "#f8d7da" :
+                         tipo === "warning" ? "#fff3cd" :
+                         "#cff4fc"};
+      color: ${tipo === "success" ? "#0f5132" :
+               tipo === "danger" ? "#842029" :
+               tipo === "warning" ? "#664d03" :
+               "#055160"};
+    `;
 
-    // Cuerpo de la alerta
-    const contenido = document.createElement("div");
-    contenido.innerHTML = `<span id="mensaje-alerta">${mensaje}</span>`;
+    // Contenido de mensaje
+    const contenido = document.createElement("span");
+    contenido.id = "mensaje-alerta";
+    contenido.textContent = mensaje;
 
-    // Botón de cerrar
-    const btnCerrar = document.createElement("button");
-    btnCerrar.type = "button";
-    btnCerrar.className = "btn-close";
-    btnCerrar.setAttribute("data-bs-dismiss", "alert");
+    // Botón de cierre sin usar clase
+    const btnCerrar = document.createElement("span");
+    btnCerrar.textContent = "×";
+    btnCerrar.setAttribute("role", "button");
     btnCerrar.setAttribute("aria-label", "Cerrar");
+    btnCerrar.style = `
+      float: right;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+      margin-left: 1rem;
+    `;
 
-    // Añadir contenido y botón al contenedor
-    alerta.appendChild(contenido);
+    // Al hacer clic oculta la alerta
+    btnCerrar.onclick = () => {
+      alerta.style.display = "none";
+    };
+
+    // Agrega al DOM
     alerta.appendChild(btnCerrar);
-
+    alerta.appendChild(contenido);
     document.body.appendChild(alerta);
   } else {
-    alerta.className = `alert alert-${tipo} alert-dismissible fade show`;
     document.getElementById("mensaje-alerta").textContent = mensaje;
   }
 
   alerta.style.display = "block";
 
-  // Oculta la alerta después de `duracion` segundos
   setTimeout(() => {
     alerta.style.display = "none";
   }, duracion * 1000);

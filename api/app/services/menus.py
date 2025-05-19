@@ -202,7 +202,7 @@ def getArbolMenuModulo(db: Session, ModuloId: int, EmpresaId: int, usuarioId: in
         if EmpresaId is None or usuarioId is None:
             raise ValueError("Faltan EmpresaId o usuarioId")
 
-        print(f"🔍 Consultando menús para EmpresaId={EmpresaId}, UsuarioId={usuarioId}, ModuloId={ModuloId}")
+        # print(f"🔍 Consultando menús para EmpresaId={EmpresaId}, UsuarioId={usuarioId}, ModuloId={ModuloId}")
 
         menu_general_list = filtrarEspecial(db, usuarioId, EmpresaId, 2, ModuloId)
 
@@ -210,17 +210,17 @@ def getArbolMenuModulo(db: Session, ModuloId: int, EmpresaId: int, usuarioId: in
         #     raise ValueError("No se encontraron registros en Menu")
 
         # print(f"✅ Menús visibles encontrados: {len(menu_general_list)}")
-        for menu in menu_general_list[:10]:
-            print(f"   - Menu ID: {menu.id}, Nombre: {menu.nombre}")
+        # for menu in menu_general_list[:10]:
+        #     print(f"   - Menu ID: {menu.id}, Nombre: {menu.nombre}")
 
         menu_general_list = getArbolOrdenadoTabulado(menu_general_list)
-        print(f"🌳 Árbol de menús generado: {len(menu_general_list)} elementos")
+        # print(f"🌳 Árbol de menús generado: {len(menu_general_list)} elementos")
 
 
 
         # menu_general_list = [menu for menu in menu_general_list if menu.id in menus_ids]
         
-        print(f"✅ Menús filtrados finales: {len(menu_general_list)}")
+        # print(f"✅ Menús filtrados finales: {len(menu_general_list)}")
         # for menu in menu_general_list[:10]:
         #     print(f"   - Menu Final ID: {menu.id}, Nombre: {menu.nombre}")
 

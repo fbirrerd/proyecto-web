@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 # Esquema para la clase EmpresaUsuario
 class EmpresaUsuarioBase(BaseModel):
@@ -35,3 +35,11 @@ class EmpresaUsuarioList(BaseModel):
 
     class Config:
         orm_mode = True              
+        
+class EmpresaCheck(BaseModel):
+    id: int
+    checked: bool
+
+class AsignacionEmpresas(BaseModel):
+    id: int  # ID del usuario
+    empresas: List[EmpresaCheck]        
