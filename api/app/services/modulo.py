@@ -5,13 +5,13 @@ from sqlalchemy.orm import Session
 
 
 from app.models.models import EmpresaModulo, Modulo
-from app.schemas.modulo import ModuloConArbol, ModuloCreate,  ModuloUpdate
+from app.schemas.modulo import ModuloBase, ModuloConArbol, ModuloCreate,  ModuloUpdate
 from app.services.menus import getArbolMenuModulo
 
-def get_modulos(db: Session):
+def get_modulos(db: Session) -> List[ModuloBase]:
     return db.query(Modulo).all()
 
-def get_modulo(db: Session, modulo_id: int):
+def get_modulo(db: Session, modulo_id: int) -> ModuloBase:
     return db.query(Modulo).filter(Modulo.id == modulo_id).first()
 
 def create_modulo(db: Session, modulo: ModuloCreate):
@@ -21,7 +21,7 @@ def create_modulo(db: Session, modulo: ModuloCreate):
     db.refresh(db_modulo)
     return db_modulo
 
-def update_modulo(db: Session, modulo_id: int, modulo: ModuloUpdate):
+def update_modulo(db: Session, modulo_id: int, modulo: ModuloUpdate) -> ModuloBase:
     db_modulo = get_modulo(db, modulo_id)
     if db_modulo:
         for key, value in modulo.dict(exclude_unset=True).items():
@@ -30,7 +30,7 @@ def update_modulo(db: Session, modulo_id: int, modulo: ModuloUpdate):
         db.refresh(db_modulo)
     return db_modulo
 
-def delete_modulo(db: Session, modulo_id: int):
+def delete_modulo(db: Session, modulo_id: int) -> ModuloBase:
     db_modulo = get_modulo(db, modulo_id)
     if db_modulo:
         db.delete(db_modulo)

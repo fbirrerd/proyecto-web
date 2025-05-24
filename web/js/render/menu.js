@@ -179,9 +179,8 @@ $(document).on("click", ".guardar-btn", function () {
   callApi("PUT", "menu/generales", params)
     .done(function (response) {
       if (response.respuesta) {
-        currentData = response.data;
         showInfo("Estado actualizado con exito");
-        llenarTabla();
+        fetchitems();
       } else {
         showWarning("Hubo un error al intentar actualizar");
       }
@@ -343,6 +342,7 @@ function guardarCambios(e) {
     .then((res) => res.json())
     .then(() => {
       editModal.hide();
+      $("#filtroGeneral").val("");
       fetchitems();
     });
 }
@@ -394,7 +394,7 @@ function aplicarFiltroTabla() {
             if (index === 0 || index === 3  ) return; // omitir la primera td
 
             const celda = $(this);
-            console.log(celda.text())
+            // console.log(celda.text())
 
             textoFila += " " + normalizarTexto(celda.text());
 

@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Column, Date, DateTime, String, Integer, Boolean, Text, ForeignKey, TIMESTAMP,
+    CHAR, Column, Date, DateTime, String, Integer, Boolean, Text, ForeignKey, TIMESTAMP,
     BigInteger, Float  , func
 )
 from sqlalchemy.ext.declarative import declarative_base
@@ -8,80 +8,102 @@ from datetime import datetime
 
 Base = declarative_base()
 
-# =====================================
-# TABLAS GEOGRÁFICAS
-# =====================================
-
 class Region(Base):
     __tablename__ = 'regiones'
-
     id = Column(Integer, primary_key=True)
-    codigo = Column(String(5), unique=True, nullable=False)
     nombre = Column(String(100), nullable=False)
-    geom_wkt = Column(Text)
-    area_km2 = Column(Float)
-    fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
-    fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
+    codigo = Column(String(10))
     estado = Column(Boolean, default=True)
-    
-    provincia = relationship("Provincia", back_populates="region")
 
 class Provincia(Base):
     __tablename__ = 'provincias'
-
     id = Column(Integer, primary_key=True)
-    codigo = Column(String(5), unique=True, nullable=False)
     nombre = Column(String(100), nullable=False)
+    codigo = Column(String(10))
     id_region = Column(Integer, ForeignKey('regiones.id'))
-    geom_wkt = Column(Text)
-    area_km2 = Column(Float)
-    fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
-    fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
     estado = Column(Boolean, default=True)
-    
-    region = relationship("Region", back_populates="provincia")
-    comuna = relationship("Comuna", back_populates="provincia")
+    region = relationship('Region')
 
 class Comuna(Base):
     __tablename__ = 'comunas'
-
     id = Column(Integer, primary_key=True)
-    codigo = Column(String(10), unique=True, nullable=False)
     nombre = Column(String(100), nullable=False)
-    id_providencia = Column(Integer, ForeignKey('provincias.id'))
-    id_region = Column(Integer, ForeignKey('regiones.id'))
-    geom_wkt = Column(Text)
-    area_km2 = Column(Float)
-    fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
-    fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
+    codigo = Column(String(10))
+    id_provincia = Column(Integer, ForeignKey('provincias.id'))
+    estado = Column(Boolean, default=True)
+    provincia = relationship('Provincia')
+
+class Nacionalidad(Base):
+    __tablename__ = 'nacionalidad'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(100), nullable=False)
+    gentilicio_nac = Column(String(100), nullable=False)
+    iso_nac = Column(CHAR(3), nullable=False)
     estado = Column(Boolean, default=True)
 
-    provincia = relationship("Provincia", back_populates="comuna")
+class EstadoCivil(Base):
+    __tablename__ = 'estado_civil'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(100), nullable=False)
+    estado = Column(Boolean, default=True)
 
-# =====================================
-# DIRECCIONES
-# =====================================
+class Profesion(Base):
+    __tablename__ = 'profesiones'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(100), unique=True, nullable=False)
+    estado = Column(Boolean, default=True)
+
+class NivelEducacional(Base):
+    __tablename__ = 'niveles_educacionales'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(100), unique=True, nullable=False)
+    estado = Column(Boolean, default=True)
 
 class Direccion(Base):
     __tablename__ = 'direcciones'
-
     id = Column(Integer, primary_key=True)
     calle = Column(String(150), nullable=False)
     numero = Column(String(20))
     complemento = Column(String(100))
     id_comuna = Column(Integer, ForeignKey('comunas.id'))
-    id_providencia = Column(Integer, ForeignKey('provincias.id'))
+    id_provincia = Column(Integer, ForeignKey('provincias.id'))
     id_region = Column(Integer, ForeignKey('regiones.id'))
     codigo_postal = Column(String(10))
     latitud = Column(Float)
     longitud = Column(Float)
-    fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
-    fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
+    fecha_creacion = Column(DateTime, default=func.now())
+    fecha_modificacion = Column(DateTime, default=func.now(), onupdate=func.now())
     estado = Column(Boolean, default=True)
 
-    # Relación con Usuario
-    usuario = relationship("Usuario", back_populates="direccion")
+class Persona(Base):
+    __tablename__ = 'personas'
+    id = Column(Integer, primary_key=True)
+    run_rut = Column(String(12), unique=True)
+    pasaporte = Column(String(20))
+    nombres = Column(String(100), nullable=False)
+    apellidos = Column(String(100))
+    fecha_nacimiento = Column(Date)
+    sexo = Column(CHAR(1))
+    email = Column(String(150), unique=True)
+    telefono = Column(String(20))
+    telefono_secundario = Column(String(20))
+    id_direccion = Column(Integer, ForeignKey('direcciones.id'))
+    id_estado_civil = Column(Integer, ForeignKey('estado_civil.id'))
+    id_nacionalidad = Column(Integer, ForeignKey('nacionalidad.id'))
+    id_profesion = Column(Integer, ForeignKey('profesiones.id'))
+    id_nivel_educacional = Column(Integer, ForeignKey('niveles_educacionales.id'))
+    estado = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
+class FotoPersona(Base):
+    __tablename__ = 'fotos_personas'
+    id = Column(Integer, primary_key=True)
+    id_persona = Column(Integer, ForeignKey('personas.id', ondelete='CASCADE'))
+    url_foto = Column(String(250), nullable=False)
+    es_principal = Column(Boolean, default=False)
+    estado = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=func.now())
 # =====================================
 # EMPRESAS Y USUARIOS
 # =====================================
@@ -170,25 +192,20 @@ class Empresa(Base):
 
 class Usuario(Base):
     __tablename__ = 'usuarios'
-
     id = Column(Integer, primary_key=True)
-    username = Column(String(255), nullable=False, unique=True)
-    nombres = Column(String(100), nullable=False)
-    apellidos = Column(String(100), nullable=False)
-    email = Column(String(255), nullable=False, unique=True)
+    username = Column(String(50), unique=True, nullable=False)
+    nombre = Column(String(255), nullable=False)
+    email = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
-    id_direccion = Column(Integer, ForeignKey('direcciones.id', ondelete='SET NULL'))
     duracion = Column(Integer, default=20)
     estado = Column(Boolean, default=True)
-    fecha_creacion = Column(TIMESTAMP, default=datetime.utcnow)
-    fecha_modificacion = Column(TIMESTAMP, default=datetime.utcnow)
-
-    # Relación con Direccion
+    fecha_creacion = Column(DateTime, default=func.now())
+    fecha_modificacion = Column(DateTime, default=func.now(), onupdate=func.now())
+     # Relación con Direccion
     direccion = relationship("Direccion", back_populates="usuario")
-    
     empresa_usuario = relationship("EmpresaUsuario", back_populates="usuario")
-    
-    empresa_usuario_rol = relationship("EmpresaUsuarioRol", back_populates="usuario")
+    empresa_usuario_rol = relationship("EmpresaUsuarioRol", back_populates="usuario")   
+
 
 # =====================================
 # ROLES Y MENÚS

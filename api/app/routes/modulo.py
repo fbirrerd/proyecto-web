@@ -17,13 +17,7 @@ def get_db():
     finally:
         db.close()
         
-@router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
-def set_rol(rol: ModuloCreate, db: Session = Depends(get_db)):
-    datos = create_modulo(db,rol)
-    return  objRespuesta(
-        respuesta=True,
-        data=datos
-    )    
+  
 
 @router.get("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def read_roles(db: Session = Depends(get_db)):
@@ -41,6 +35,13 @@ def read_rol(modulo_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Role not found")
     return db_role
 
+@router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
+def set_rol(rol: ModuloCreate, db: Session = Depends(get_db)):
+    datos = create_modulo(db,rol)
+    return  objRespuesta(
+        respuesta=True,
+        data=datos
+    )  
 @router.put("/{modulo_id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def update_rol(modulo_id: int, obj: ModuloUpdate, db: Session = Depends(get_db)):
     db_role = update_modulo(db, modulo_id, obj)
