@@ -7,6 +7,14 @@ from app.models.models import LogAcceso
 from sqlalchemy.orm import Session
 
 
+import logging
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
+
+# Configuración básica del logger (ajústalo según tu proyecto)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 def registrar_log_acceso(
     db: Session,
     username: str,
@@ -16,19 +24,34 @@ def registrar_log_acceso(
     ip: str = None,
     user_agent: str = None
 ):
-    log = LogAcceso(
-        username=username,
-        exito=exito,
-        mensaje=mensaje,
-        ip=ip,
-        user_agent=user_agent,
-        id_usuario=usuario_id
-    )
+    print(f"registrar_log_acceso")
+    try:        
+        if not username:
+            raise ValueError("El username no puede ser vacío.")
+        if not mensaje:
+            raise ValueError("El mensaje no puede ser vacío.")
+        
+        log = LogAcceso(
+            username=username,
+            exito=exito,
+            mensaje=mensaje,
+            ip=ip,
+            user_agent=user_agent,
+            id_usuario=usuario_id
+        )
+        print(log)
+        db.add(log)
+        db.commit()
+        db.refresh(log)
 
-    # Forma recomendada para depurar: mostrar los atributos clave
-    print(f"log creado: username={log.username}, exito={log.exito}, mensaje={log.mensaje}, ip={log.ip}, user_agent={log.user_agent}, id_usuario={log.id_usuario}")
+        logger.info(
+            f"LogAcceso registrado: username='{username}', exito={exito}, "
+            f"id_usuario={usuario_id}, ip='{ip}', user_agent='{user_agent}', mensaje='{mensaje}'"
+        )
+        return log
 
-    db.add(log)
-    db.commit()
-    db.refresh(log)
-    return log
+    except (SQLAlchemyError, ValueError) as e:
+        print(f"ERROR:   registrar_log_acceso")
+        db.rollback()
+        logger.error(f"Error al registrar log de acceso: {e}")
+        return None

@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.schemas.respond import objRespuesta
-from app.schemas.menus import MenuEstadoUpdate, MenuUpdate
-from app.services.menus import actualizar_estado, actualizar_menu, get_lista_menu, getListMenuOrdenada
+from app.schemas.menus import MenuEstadoUpdate, MenuFiltroPlus, MenuUpdate
+from app.services.menus import actualizar_estado, actualizar_menu, get_lista_menu, getListMenuOrdenada, getListMenus
 from app.database import SessionLocal
 
 router = APIRouter(tags=["Menu"])
@@ -22,6 +22,8 @@ def obtener_menus_generales(db: Session = Depends(get_db)):
         return objRespuesta(respuesta=True, data=data)
     except Exception as e:
         return objRespuesta(respuesta=False, data=f"Error al obtener menús: {str(e)}")
+
+
 
 @router.put("/generales", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def actualizar_datos_menu(menu: MenuUpdate, db: Session = Depends(get_db)):
@@ -51,3 +53,12 @@ def cambiar_estado_menu(menu: MenuEstadoUpdate, db: Session = Depends(get_db)):
         )
     except Exception as e:
         return objRespuesta(respuesta=False, data=f"Error al cambiar estado del menú: {str(e)}")
+    
+@router.post("/lista", response_model=objRespuesta)
+def obtener_menus_x_tipo(param: MenuFiltroPlus, db: Session = Depends(get_db)):  
+    try:
+        data = getListMenus(db,param)
+        return objRespuesta(respuesta=True, data=data)
+    except Exception as e:
+        return objRespuesta(respuesta=False, data=f"Error al obtener menús: {str(e)}")
+

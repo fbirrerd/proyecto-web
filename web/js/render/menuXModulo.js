@@ -10,13 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function fetchitems() {
-  const params = {
-    id_tipo_menu: 1,
-    solo_activos: false,
-    ordenado: true
-  };
-
-  callApi("POST", "menu/lista", params)
+  let params;
+  callApi("GET", "menu/generales", params)
     .done(function (response) {
       if (response.respuesta) {
         currentData = response.data;

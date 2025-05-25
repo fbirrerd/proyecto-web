@@ -54,25 +54,28 @@ function LoadMenu(menuJson, idPadre, idContainer) {
         return
     }
     let datos = getHijosOrdenados(menuJson, idPadre);
-    // console.log(datos);
-    let menuHTML = `<ul class="list-unstyled components mb-5">`;
-    datos.forEach(nodo => {
-        let identificadorMenuHijo = `submenu-${nodo.id}`;
-        if(tieneHijos(menuJson,nodo.id)){
-            menuHTML += `<li>
-            <a href="#${identificadorMenuHijo}" title="${nodo.descripcion || ''}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="menu-principal">
-            <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
-            </a>` 
-            menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);         
-        }else{
-            menuHTML += `<li>
-                <a onclick="abrirEnIframe('${nodo.url}',this.id)" title="${nodo.descripcion || ''}"  href="#" target="main-iframe" class="menu-link">
+    let menuHTML = "";
+    if(datos.length!=0){
+        menuHTML = `<ul class="list-unstyled components mb-5">`;
+        datos.forEach(nodo => {
+            let identificadorMenuHijo = `submenu-${nodo.id}`;
+            if(tieneHijos(menuJson,nodo.id)){
+                menuHTML += `<li>
+                <a href="#${identificadorMenuHijo}" title="${nodo.descripcion || ''}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="menu-principal">
                 <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
-                </a>`
-        }
-    });
-    menuHTML += `</ul>`;
-    //console.log("html----", menuHTML);
+                </a>` 
+                menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);         
+            }else{
+                menuHTML += `<li>
+                    <a onclick="abrirEnIframe('${nodo.url}',this.id)" title="${nodo.descripcion || ''}"  href="#" target="main-iframe" class="menu-link">
+                    <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
+                    </a>`
+            }
+        });
+        menuHTML += `</ul>`;
+        //console.log("html----", menuHTML);
+        
+    }
     document.getElementById(idContainer).innerHTML = menuHTML;
 }
 

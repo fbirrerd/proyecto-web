@@ -6,7 +6,8 @@
 CREATE TABLE regiones (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    codigo VARCHAR(10),
+    abreviatura VARCHAR(10),
+    capital VARCHAR(100),
     estado BOOLEAN DEFAULT TRUE
 );
 
@@ -44,7 +45,7 @@ CREATE TABLE estado_civil (
 );
 
 -- 🟡 Tabla: profesiones
-CREATE TABLE profesiones (
+CREATE TABLE profesion (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) UNIQUE NOT NULL,
     estado BOOLEAN DEFAULT TRUE
@@ -62,7 +63,7 @@ CREATE TABLE niveles_educacionales (
 -- =========================
 -- TABLA DE DIRECCIONES
 -- =========================
-CREATE TABLE direcciones (
+CREATE TABLE direccion (
     id SERIAL PRIMARY KEY,
     calle VARCHAR(150) NOT NULL,
     numero VARCHAR(20),
@@ -78,37 +79,7 @@ CREATE TABLE direcciones (
     estado BOOLEAN DEFAULT TRUE
 );
 
--- 🧑 Tabla: personas
-CREATE TABLE personas (
-    id SERIAL PRIMARY KEY,
-    run_rut VARCHAR(12) UNIQUE,
-    pasaporte VARCHAR(20),
-    nombres VARCHAR(100) NOT NULL,
-    apellidos VARCHAR(100),
-    fecha_nacimiento DATE,
-    sexo CHAR(1) CHECK (sexo IN ('M', 'F', 'O')),
-    email VARCHAR(150) UNIQUE,
-    telefono VARCHAR(20),
-    telefono_secundario VARCHAR(20),
-    id_direccion INTEGER REFERENCES direcciones(id),
-    id_estado_civil INTEGER REFERENCES estado_civil(id),
-    id_nacionalidad INTEGER REFERENCES nacionalidades(id),
-    id_profesion INTEGER REFERENCES profesiones(id),
-    id_nivel_educacional INTEGER REFERENCES niveles_educacionales(id),
-    estado BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now()
-);
 
--- 🖼️ Tabla: fotos_personas
-CREATE TABLE fotos_personas (
-    id SERIAL PRIMARY KEY,
-    id_persona INTEGER REFERENCES personas(id) ON DELETE CASCADE,
-    url_foto VARCHAR(250) NOT NULL,
-    es_principal BOOLEAN DEFAULT FALSE,
-    estado BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT now()
-);
 
 -- =========================
 -- TABLAS DE EMPRESAS Y USUARIOS
@@ -125,7 +96,7 @@ CREATE TABLE empresas (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     id_tipo_empresa INT REFERENCES tipos_empresa(id) ON DELETE CASCADE,
-    id_direccion INT REFERENCES direcciones(id) ON DELETE SET NULL,
+    id_direccion INT REFERENCES direccion(id) ON DELETE SET NULL,
     estado BOOLEAN DEFAULT TRUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -134,7 +105,7 @@ CREATE TABLE empresas (
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    nombre VARCHAR(255) NOT NULL,
+    nombres VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     "password" VARCHAR(255) NOT NULL,
     duracion INT DEFAULT 20, -- Minutos de sesión u otro uso
@@ -324,6 +295,39 @@ CREATE TABLE modulo_menu (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    
     PRIMARY KEY (id_modulo, id_menu)
+);
+
+
+-- 🧑 Tabla: personas
+CREATE TABLE personas (
+    id SERIAL PRIMARY KEY,
+    run_rut VARCHAR(12) UNIQUE,
+    pasaporte VARCHAR(20),
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100),
+    fecha_nacimiento DATE,
+    sexo CHAR(1) CHECK (sexo IN ('M', 'F', 'O')),
+    email VARCHAR(150) UNIQUE,
+    telefono VARCHAR(20),
+    telefono_secundario VARCHAR(20),
+    id_direccion INTEGER REFERENCES direccion(id),
+    id_estado_civil INTEGER REFERENCES estado_civil(id),
+    id_nacionalidad INTEGER REFERENCES nacionalidad(id),
+    id_profesion INTEGER REFERENCES profesion(id),
+    id_nivel_educacional INTEGER REFERENCES niveles_educacionales(id),
+    estado BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP DEFAULT now()
+);
+
+-- 🖼️ Tabla: fotos_personas
+CREATE TABLE fotos_personas (
+    id SERIAL PRIMARY KEY,
+    id_persona INTEGER REFERENCES personas(id) ON DELETE CASCADE,
+    url_foto VARCHAR(250) NOT NULL,
+    es_principal BOOLEAN DEFAULT FALSE,
+    estado BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT now()
 );
 
 
@@ -578,8 +582,88 @@ INSERT INTO nacionalidad (nombre, gentilicio_nac, iso_nac) VALUES
 ('Zimbabue', 'ZIMBABUENSE', 'ZWE');
 
 
-Script comunas, regiones, provincias Junio 2022
-INSERT INTO `comunas` (`id`,`comuna`,`id_provincia`)
+-- Script comunas, regiones, provincias Junio 2022
+INSERT INTO regiones (id,nombre,abreviatura,capital)
+VALUES
+	(1,'Arica y Parinacota','AP','Arica'),
+	(2,'Tarapacá','TA','Iquique'),
+	(3,'Antofagasta','AN','Antofagasta'),
+	(4,'Atacama','AT','Copiapó'),
+	(5,'Coquimbo','CO','La Serena'),
+	(6,'Valparaiso','VA','valparaíso'),
+	(7,'Metropolitana de Santiago','RM','Santiago'),
+	(8,'Libertador General Bernardo O''Higgins','OH','Rancagua'),
+	(9,'Maule','MA','Talca'),
+	(10,'Ñuble','NB','Chillán'),
+	(11,'Biobío','BI','Concepción'),
+	(12,'La Araucanía','IAR','Temuco'),
+	(13,'Los Ríos','LR','Valdivia'),
+	(14,'Los Lagos','LL','Puerto Montt'),
+	(15,'Aysén del General Carlos Ibáñez del Campo','AI','Coyhaique'),
+	(16,'Magallanes y de la Antártica Chilena','MG','Punta Arenas');
+
+INSERT INTO provincias (id,nombre,id_region)
+VALUES
+	(1,'Arica',1),
+	(2,'Parinacota',1),
+	(3,'Iquique',2),
+	(4,'El Tamarugal',2),
+	(5,'Tocopilla',3),
+	(6,'El Loa',3),
+	(7,'Antofagasta',3),
+	(8,'Chañaral',4),
+	(9,'Copiapó',4),
+	(10,'Huasco',4),
+	(11,'Elqui',5),
+	(12,'Limarí',5),
+	(13,'Choapa',5),
+ 	(14,'Petorca',6),
+	(15,'Los Andes',6),
+ 	(16,'San Felipe de Aconcagua',6),
+ 	(17,'Quillota',6),
+	(18,'Valparaiso',6),
+	(19,'San Antonio',6),
+	(20,'Isla de Pascua',6),
+	(21,'Marga Marga',6),
+	(22,'Chacabuco',7),
+	(23,'Santiago',7),
+	(24,'Cordillera',7),
+	(25,'Maipo',7),
+	(26,'Melipilla',7),
+	(27,'Talagante',7),
+	(28,'Cachapoal',8),
+	(29,'Colchagua',8),
+	(30,'Cardenal Caro',8),
+	(31,'Curicó',9),
+	(32,'Talca',9),
+ 	(33,'Linares',9),
+	(34,'Cauquenes',9),
+	(35,'Diguillín',10),
+	(36,'Itata',10),
+	(37,'Punilla',10),
+	(38,'Bio Bío',11),
+	(39,'Concepción',11),
+	(40,'Arauco',11),
+	(41,'Malleco',12),
+	(42,'Cautín',12),
+	(43,'Valdivia',13),
+	(44,'Ranco',13),
+	(45,'Osorno',14),
+	(46,'Llanquihue',14),
+	(47,'Chiloé',14),
+	(48,'Palena',14),
+	(49,'Coyhaique',15),
+	(50,'Aysén',15),
+	(51,'General Carrera',15),
+	(52,'Capitán Prat',15),
+	(53,'Última Esperanza',16),
+	(54,'Magallanes',16),
+	(55,'Tierra del Fuego',16),
+	(56,'Antártica Chilena',16);
+
+
+
+INSERT INTO comunas (id,nombre,id_provincia)
 VALUES
 	(1,'Arica',1),
 	(2,'Camarones',1),
@@ -914,7 +998,7 @@ VALUES
 	(331,'Río Ibáñez',51),
 	(332,'Chile Chico',51),
 	(333,'Cochrane',52),
-	(334,'O\'Higgins',52),
+	(334,'O''Higgins',52),
 	(335,'Tortel',52),
 	(336,'Natales',53),
 	(337,'Torres del Paine',53),
@@ -928,83 +1012,7 @@ VALUES
 	(345,'Cabo de Hornos',56),
 	(346,'Antártica',56);
 
-INSERT INTO `provincias` (`id`,`provincia`,`id_region`)
-VALUES
-	(1,'Arica',1),
-	(2,'Parinacota',1),
-	(3,'Iquique',2),
-	(4,'El Tamarugal',2),
-	(5,'Tocopilla',3),
-	(6,'El Loa',3),
-	(7,'Antofagasta',3),
-	(8,'Chañaral',4),
-	(9,'Copiapó',4),
-	(10,'Huasco',4),
-	(11,'Elqui',5),
-	(12,'Limarí',5),
-	(13,'Choapa',5),
- 	(14,'Petorca',6),
-	(15,'Los Andes',6),
- 	(16,'San Felipe de Aconcagua',6),
- 	(17,'Quillota',6),
-	(18,'Valparaiso',6),
-	(19,'San Antonio',6),
-	(20,'Isla de Pascua',6),
-	(21,'Marga Marga',6),
-	(22,'Chacabuco',7),
-	(23,'Santiago',7),
-	(24,'Cordillera',7),
-	(25,'Maipo',7),
-	(26,'Melipilla',7),
-	(27,'Talagante',7),
-	(28,'Cachapoal',8),
-	(29,'Colchagua',8),
-	(30,'Cardenal Caro',8),
-	(31,'Curicó',9),
-	(32,'Talca',9),
- 	(33,'Linares',9),
-	(34,'Cauquenes',9),
-	(35,'Diguillín',10),
-	(36,'Itata',10),
-	(37,'Punilla',10),
-	(38,'Bio Bío',11),
-	(39,'Concepción',11),
-	(40,'Arauco',11),
-	(41,'Malleco',12),
-	(42,'Cautín',12),
-	(43,'Valdivia',13),
-	(44,'Ranco',13),
-	(45,'Osorno',14),
-	(46,'Llanquihue',14),
-	(47,'Chiloé',14),
-	(48,'Palena',14),
-	(49,'Coyhaique',15),
-	(50,'Aysén',15),
-	(51,'General Carrera',15),
-	(52,'Capitán Prat',15),
-	(53,'Última Esperanza',16),
-	(54,'Magallanes',16),
-	(55,'Tierra del Fuego',16),
-	(56,'Antártica Chilena',16);
 
-INSERT INTO `regiones` (`id`,`region`,`abreviatura`,`capital`)
-VALUES
-	(1,'Arica y Parinacota','AP','Arica'),
-	(2,'Tarapacá','TA','Iquique'),
-	(3,'Antofagasta','AN','Antofagasta'),
-	(4,'Atacama','AT','Copiapó'),
-	(5,'Coquimbo','CO','La Serena'),
-	(6,'Valparaiso','VA','valparaíso'),
-	(7,'Metropolitana de Santiago','RM','Santiago'),
-	(8,'Libertador General Bernardo O\'Higgins','OH','Rancagua'),
-	(9,'Maule','MA','Talca'),
-	(10,'Ñuble','NB','Chillán'),
-	(11,'Biobío','BI','Concepción'),
-	(12,'La Araucanía','IAR','Temuco'),
-	(13,'Los Ríos','LR','Valdivia'),
-	(14,'Los Lagos','LL','Puerto Montt'),
-	(15,'Aysén del General Carlos Ibáñez del Campo','AI','Coyhaique'),
-	(16,'Magallanes y de la Antártica Chilena','MG','Punta Arenas');
 
 
 -- Tipos de empresa
@@ -1040,44 +1048,45 @@ INSERT INTO roles (nombre) VALUES
 
 
 INSERT INTO tipos_menu (nombre) VALUES ('General'), ('Modulos');
+
 -- Menús
 INSERT INTO menus
-(nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden, estado, fecha_creacion, fecha_modificacion)
+(nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden)
 VALUES
-('Dashboard', 'fa-solid fa-dashboard', 1, NULL, '/dashboard', 'Vista principal', 'token_dashboard', 1, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Gestión', 'fa-solid fa-briefcase', 1, NULL, '/gestion', 'Módulo de gestión', 'token_gestion', 2, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Tablas', 'fa-solid fa-table', 1, 2, '/gestion/tablas', 'Tablas base del sistema', 'token_tablas', 1, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Permisos', 'fa-solid fa-lock', 1, 2, NULL, 'Gestionador de relaciones', NULL, 3, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Usuarios', 'fa-solid fa-users', 1, 3, '/gestion/usuarios', 'Gestión de usuarios', 'token_usuarios', 2, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Menús', 'fa-solid fa-bars', 1, 3, '/gestion/menu', 'Gestión de menús', 'token_menus', 3, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Roles', 'fa-solid fa-user-tag', 1, 3, '/gestion/rol', 'Gestión de roles', 'token_roles', 4, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Empresas', 'fa-solid fa-building', 1, 3, '/gestion/empresas', 'Mantener las empresas del sistem', NULL, 1, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Rol Menu', 'fa-solid fa-link', 1, 4, '/gestion/rolMenu', NULL, NULL, 1, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Empresa Usuario', 'fa-solid fa-diagram-project', NULL, 4, '/gestion/empresaUsuario', NULL, NULL, 2, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Tipo de Datos', 'fa-solid fa-database', 1, 2, '/gestion/tipoEmpresa', 'Gestión de Tipo de Empresas', NULL, 2, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Tipo de Empresas', 'fa-solid fa-industry', 1, 11, '/gestion/tipoEmpresa', NULL, NULL, 1, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Tipo de Menu', 'fa-solid fa-sitemap', 1, 11, '/gestion/tipoMenu', NULL, NULL, 2, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Laboratorios', 'fa-solid fa-flask', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Farmacias', 'fa-solid fa-prescription-bottle-medical', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('4', '', 2, NULL, '', NULL, NULL, 3, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Vademecum', 'fa-solid fa-book-medical', 2, NULL, '/vademecum/remedios', NULL, NULL, 4, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Modulos', 'fa-solid fa-puzzle-piece', 1, 3, '/gestion/modulo', NULL, NULL, 6, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Empresa Modulo', 'fa-solid fa-layer-group', 1, 4, NULL, NULL, NULL, 1, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Empresa Usuario', 'fa-solid fa-user-tie', 1, 4, NULL, NULL, NULL, 2, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Modulos Menu', 'fa-solid fa-list', 1, 4, NULL, NULL, NULL, 3, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390'),
-('Geo referencia', 'fa-solid fa-map-location-dot', 1, NULL, NULL, NULL, NULL, 4, true, '2025-05-17 01:21:25.390', '2025-05-17 01:21:25.390');
-
-INSERT INTO menus
-(nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden, estado)
-VALUES
-('Laboratorios', 'fa-solid fa-check-to-slot fa-fw', 2, null, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1, true),
-('Farmacias', 'fa-solid fa-landmark-flag fa-fw', 2, null, '/vademecum/farmacias', NULL, NULL, 1, true),
-('Remedios', 'fa-solid fa-user-tag fa-fw', 2, null, '/vademecum/remdios', NULL, NULL, 3, true),
-('Vademecum', 'fa-solid fa-user-tag fa-fw', 2, null, '/vademecum/remdios', NULL, NULL, 4, true);
-
-
-
-
+('Dashboard', 'fa-solid fa-dashboard', 1, NULL, '/dashboard', 'Vista principal', 'token_dashboard', 1),
+('Gestión', 'fa-solid fa-briefcase', 1, NULL, '/gestion', 'Módulo de gestión', 'token_gestion', 2),
+('Tablas', 'fa-solid fa-table', 1, 2, '/gestion/tablas', 'Tablas base del sistema', 'token_tablas', 1),
+('Permisos', 'fa-solid fa-lock', 1, 2, NULL, 'Gestionador de relaciones', NULL, 3),
+('Usuarios', 'fa-solid fa-users', 1, 3, '/gestion/usuarios', 'Gestión de usuarios', 'token_usuarios', 2),
+('Menús', 'fa-solid fa-bars', 1, 3, '/gestion/menu', 'Gestión de menús', 'token_menus', 3),
+('Roles', 'fa-solid fa-user-tag', 1, 3, '/gestion/rol', 'Gestión de roles', 'token_roles', 4),
+('Empresas', 'fa-solid fa-building', 1, 3, '/gestion/empresas', 'Mantener las empresas del sistem', NULL, 1),
+('Rol Menu', 'fa-solid fa-link', 1, 4, '/gestion/rolMenu', NULL, NULL, 1),
+('Empresa Usuario', 'fa-solid fa-diagram-project', NULL, 4, '/gestion/empresaUsuario', NULL, NULL, 2),
+('Tipo de Datos', 'fa-solid fa-database', 1, 2, '/gestion/tipoEmpresa', 'Gestión de Tipo de Empresas', NULL, 2),
+('Tipo de Empresas', 'fa-solid fa-industry', 1, 11, '/gestion/tipoEmpresa', NULL, NULL, 1),
+('Tipo de Menu', 'fa-solid fa-sitemap', 1, 11, '/gestion/tipoMenu', NULL, NULL, 2),
+('Modulos', 'fa-solid fa-puzzle-piece', 1, 3, '/gestion/modulo', NULL, NULL, 6),
+('Empresa Modulo', 'fa-solid fa-layer-group', 1, 4, NULL, NULL, NULL, 1),
+('Empresa Usuario', 'fa-solid fa-user-tie', 1, 4, NULL, NULL, NULL, 2),
+('Modulos Menu', 'fa-solid fa-list', 1, 4, NULL, NULL, NULL, 3),
+('Geo referencia', 'fa-solid fa-map-location-dot', 1, NULL, NULL, NULL, NULL, 4),
+('Laboratorios', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1),
+('Farmacias', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1),
+('Remedios', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3),
+('Vademecum', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 4),
+('Regions', 'fa-solid fa-user-tie', 1, 4, NULL, NULL, NULL, 2),
+('Provincias', 'fa-solid fa-list', 1, 4, NULL, NULL, NULL, 3),
+('Comunas', 'fa-solid fa-map-location-dot', 1, NULL, NULL, NULL, NULL, 4),
+('test1', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1),
+('test2', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1),
+('test3', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3),
+('test4', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1),
+('test5', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1),
+('test6', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3),
+('test7', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1),
+('test8', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1),
+('test9', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3);
 
 -- Relación menú-rol
 INSERT INTO menu_rol (id_menu, id_rol) 

@@ -18,7 +18,6 @@ def salvar_usuario(db: Session, usuario: UsuarioCreate) -> UsuarioOut:
     if db_usuario:
         # Actualiza campos
         db_usuario.nombres = usuario.nombres
-        db_usuario.apellidos = usuario.apellidos
         db_usuario.email = usuario.email
         db_usuario.duracion = usuario.duracion
     else:
@@ -26,7 +25,6 @@ def salvar_usuario(db: Session, usuario: UsuarioCreate) -> UsuarioOut:
         db_usuario = Usuario(
             username=usuario.username,
             nombres=usuario.nombres,
-            apellidos=usuario.apellidos,
             email=usuario.email,
             password="cambiar",
             duracion=usuario.duracion,

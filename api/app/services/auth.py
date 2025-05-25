@@ -1,3 +1,4 @@
+import logging
 from fastapi import Request
 from app.services.logAcceso import registrar_log_acceso
 from app.services.complejos import getObjetoAcceso
@@ -8,6 +9,9 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from sqlalchemy import and_, or_
 from app.schemas.respond import objRespuesta
+
+
+logger = logging.getLogger(__name__)
 
 # Función utilitaria para obtener IP y user-agent
 def obtener_info_cliente(request: Request):
@@ -59,42 +63,63 @@ def validar_login_usuario(db: Session, user: UsuarioLogin, request: Request) -> 
 
 
 def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> objRespuesta:
+    """
+    Valida el token de empresa y registra el acceso.
+
+    Args:
+        db (Session): Sesión de base de datos.
+        login (LoginReload): Objeto con datos de login (incluye token y empresaid).
+        request (Request): Objeto de solicitud para obtener IP y user-agent.
+
+    Returns:
+        objRespuesta: Respuesta estructurada con éxito o error.
+    """
     try:
+        # Obtener datos del cliente
         ip, user_agent = obtener_info_cliente(request)
-        # Buscar el usuario con el nombre de usuario proporcionado
-        idUsuario = getIDUsuarioXToken(db, login.token)
 
+        # Obtener ID del usuario a partir del token
+        id_usuario = getIDUsuarioXToken(db, login.token)
+        if not id_usuario:
+            logger.warning(f"Token inválido: {login.token}")
+            return objRespuesta(
+                respuesta=False,
+                data={'error': {"numero": 401, "mensaje": "Token inválido"}}
+            )
 
-        objAcceso = getObjetoAcceso(db, 
-                                    idUsuario,
-                                    login.empresaid, 
-                                    login.token)
-        print("hhhhhhhAhhhhhhhhh 1")
+        # Obtener objeto de acceso con permisos/empresa
+        obj_acceso = getObjetoAcceso(db, id_usuario, login.empresaid, login.token)
+        if not obj_acceso:
+            logger.warning(f"Acceso denegado: id_usuario={id_usuario}, empresaid={login.empresaid}")
+            return objRespuesta(
+                respuesta=False,
+                data={'error': {"numero": 403, "mensaje": "Acceso denegado a la empresa"}}
+            )
+
+        # Registrar el log de acceso exitoso
+        mensaje_log = f"Cambio de empresa exitoso. Nueva empresa: {login.empresaid}"
         registrar_log_acceso(
-            db=db,
-            username=objAcceso.username,
+            db,
+            username=obj_acceso.username,
             exito=True,
-            mensaje=f"Cambio de empresa exitoso. Nueva empresa: {login.empresaid}",
-            usuario_id=objAcceso.id,
+            mensaje=mensaje_log,
+            usuario_id=obj_acceso.usuario.id,
             ip=ip,
             user_agent=user_agent
         )
-        print("hhhhhhhAhhhhhhhhh 2")
+        logger.info(f"Usuario {obj_acceso.username} cambió exitosamente a empresa {login.empresaid}")
+
         return objRespuesta(
             respuesta=True,
-            data=objAcceso
+            data=obj_acceso
         )
 
     except Exception as e:
-        print("hhhhhhhAhhhhhhhhh 3")
-
-        # Capturar cualquier excepción que ocurra durante el proceso
+        logger.exception(f"Error al validar token de empresa: {e}")
         return objRespuesta(
             respuesta=False,
-            data={'error': {"numero": 500, "mensaje": f'Ocurrió un error interno: {e}'}}
+            data={'error': {"numero": 500, "mensaje": "Ocurrió un error interno. Contacte al administrador."}}
         )
-
-
 def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Request) -> objRespuesta:
     ip, user_agent = obtener_info_cliente(request)
     userObj = db.query(Usuario).filter(

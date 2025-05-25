@@ -8,24 +8,6 @@ from app.schemas.empresa import EmpresaAcceso
 from app.schemas.usuario import UsuarioAcceso
 
 
-# Clase que representa los datos de acceso del usuario
-class DatosAcceso(BaseModel):
-    username: str
-    email: str
-    token: str
-    usuario: UsuarioAcceso
-    menus: Optional[List['MenuAcceso']]
-    empresas: List['EmpresaAcceso']
-    empresaSeleccionada: Optional[int] 
-    roles: Optional[List['RolAcceso']] 
-    modulos: Optional[List[Any]] 
-    # duracionAcceso: AccesoDuracion
-
-
-    class Config:
-        orm_mode = True
-
-
 # Clase que representa la duración del acceso
 class AccesoDuracion(BaseModel):
     inicio: datetime
@@ -36,32 +18,18 @@ class AccesoDuracion(BaseModel):
         orm_mode = True
 
 
-# Clase que representa la información de la empresa
-class AccesoEmpresas(BaseModel):
-    id: int
-    nombre: str
+# Clase que representa los datos de acceso del usuario
+class DatosAcceso(BaseModel):
+    username: str
+    email: str
+    token: str
+    usuario: UsuarioAcceso
+    menus: Optional[List[MenuAcceso]] = None
+    empresas: List[EmpresaAcceso]
+    empresaSeleccionada: Optional[int] = None
+    roles: Optional[List[RolAcceso]] = None
+    modulos: Optional[List[Any]] = None
+    duracionAcceso: AccesoDuracion
 
     class Config:
         orm_mode = True
-
-
-# Clase que representa la información del rol
-class AccesoRoles(BaseModel):
-    id: int
-    nombre: str
-
-    class Config:
-        orm_mode = True
-
-
-# Clase que representa el menú de acceso
-class AccesoMenu(BaseModel):
-    nombre: str
-    url: str
-
-    class Config:
-        orm_mode = True
-
-
-# Actualizar las referencias para resolver Forward References
-DatosAcceso.update_forward_refs()

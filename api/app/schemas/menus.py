@@ -41,7 +41,8 @@ class MenuOut(MenuBase):
 class MenuAcceso(MenuBase):
     id: Optional[int] = None
     # tipo: Optional[str] = None
-    orden: Optional[int] = None 
+    orden: Optional[int] = None
+    id_tipo_menu: Optional[int] = None
     url: Optional[str] = None
     descripcion: Optional[str] = None
 
@@ -60,3 +61,10 @@ class MenuInput(BaseModel):
     estado: bool
     roles: List[int]  # ← esto es nuevo        
         
+class MenuFiltroPlus(BaseModel):
+    id_tipo_menu: int    
+    id_usuario: Optional[int] = None    
+    id_empresa: Optional[int] = None    
+    id_modulo: Optional[int] = None        
+    solo_activos: Optional[bool] = False        
+    ordenado: Optional[bool] = False        

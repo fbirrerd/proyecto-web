@@ -93,7 +93,7 @@ def get_lista_usuarios(db: Session, empresa_id: int) -> List[UsuarioListado]:
         return [
             UsuarioListado(
                 username=u.username,
-                nombre=f"{u.nombres} {u.apellidos}"
+                nombre=f"{u.nombres} "
             ) for u in usuarios
         ]
     except Exception as e:

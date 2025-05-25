@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 def getDatosEmpresaUsuario(db: Session):
     datos = (
         db.query(
-            func.concat(Usuario.nombres, ' ', Usuario.apellidos).label("usuario_nombre"),
+            Usuario.nombres.label("usuario_nombre"),
             Empresa.nombre.label("empresa_nombre"),
             Usuario.id.label("usuario_id"),
             Empresa.id.label("empresa_id"),

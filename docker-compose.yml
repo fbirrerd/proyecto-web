@@ -59,51 +59,6 @@ services:
     networks:
       - app_network
 
-
-  # email_api:
-  #   build: ./email_api
-  #   container_name: api_email
-  #   ports:
-  #     - "${API_EMAIL_PORT:-8300}:8300"
-  #   environment:
-  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_EMAIL_DB}
-  #   volumes:
-  #     - ./email_api:/app
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   networks:
-  #     - app_network
-
-
-  # email_worker:
-  #   build: ./email_worker
-  #   container_name: email_worker
-  #   environment:
-  #     - REDIS_URL=redis://redis_db:6379
-  #   depends_on:
-  #     redis:
-  #       condition: service_healthy
-  #   networks:
-  #     - app_network
-
-  # mailserver:
-  #   image: mailserver/docker-mailserver:latest
-  #   container_name: mailserver
-  #   env_file: .env
-  #   hostname: mail
-  #   domainname: example.com    
-  #   ports:
-  #     - "25:25"
-  #     - "143:143"
-  #     - "587:587"
-  #     - "993:993"
-  #   volumes:
-  #     - mail_data:/var/mail
-  #     - ./config/:/tmp/docker-mailserver/
-  #   networks:
-  #     - app_network
-
 volumes:
   postgres_data:
   postgres_email_data:  # Volumen separado para la base de datos de email
