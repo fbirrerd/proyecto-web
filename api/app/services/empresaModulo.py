@@ -42,7 +42,7 @@ def get_empresas_modulo_X_empresa(db: Session, id_empresa: int) -> list[EmpresaM
     return db.query(EmpresaModulo).filter(
         EmpresaModulo.id_empresa == id_empresa).all()
 
-def create_relacion_empresa_modulo(db: Session, relacion: EmpresaModuloRelacion)  -> EmpresaModuloOut:
+def create_relacion_empresa_modulo(db: Session, relacion: EmpresaModuloRelacion) -> EmpresaModuloOut:
     try:
         for modulo in relacion.modulos:
             existente = db.query(EmpresaModulo).filter_by(
@@ -50,21 +50,28 @@ def create_relacion_empresa_modulo(db: Session, relacion: EmpresaModuloRelacion)
                 id_modulo=modulo.id_modulo
             ).first()
 
-            if existente:
-                # Si ya existe, actualiza el estado
-                existente.estado = modulo.estado
+            if modulo.estado is False:
+                if existente:
+                    # If state is False and record exists, delete it
+                    db.delete(existente)
             else:
-                # Si no existe, crea uno nuevo
-                newobj = EmpresaModulo(
-                    id_empresa=relacion.id_empresa,
-                    id_modulo=modulo.id_modulo,
-                    estado=modulo.estado,
-                    fecha_inicio=func.now()
-                )
-                db.add(newobj)
+                if existente:
+                    # If state is True and record exists, update it
+                    existente.estado = modulo.estado
+                    existente.fecha_fin = None # Clear fecha_fin if reactivating
+                else:
+                    # If state is True and record doesn't exist, create it
+                    newobj = EmpresaModulo(
+                        id_empresa=relacion.id_empresa,
+                        id_modulo=modulo.id_modulo,
+                        estado=modulo.estado,
+                        fecha_inicio=func.now()
+                    )
+                    db.add(newobj)
+
         db.commit()
-        return true
+        return EmpresaModuloOut(message="Relaciones de empresa módulo procesadas exitosamente.")
     except Exception as e:
         db.rollback()
-        raise Exception(f"Error al insertar o actualizar: {str(e)}")
+        raise Exception(f"Error al procesar relaciones: {str(e)}")
 

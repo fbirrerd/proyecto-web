@@ -20,7 +20,7 @@ def registrar_log_acceso(
     username: str,
     exito: bool,
     mensaje: str,
-    usuario_id: int = None,
+    id_usuario: int = None,
     ip: str = None,
     user_agent: str = None
 ):
@@ -37,7 +37,7 @@ def registrar_log_acceso(
             mensaje=mensaje,
             ip=ip,
             user_agent=user_agent,
-            id_usuario=usuario_id
+            id_usuario=id_usuario
         )
         print(log)
         db.add(log)
@@ -46,7 +46,7 @@ def registrar_log_acceso(
 
         logger.info(
             f"LogAcceso registrado: username='{username}', exito={exito}, "
-            f"id_usuario={usuario_id}, ip='{ip}', user_agent='{user_agent}', mensaje='{mensaje}'"
+            f"id_usuario={id_usuario}, ip='{ip}', user_agent='{user_agent}', mensaje='{mensaje}'"
         )
         return log
 

@@ -17,14 +17,14 @@ def salvar_usuario(db: Session, usuario: UsuarioCreate) -> UsuarioOut:
 
     if db_usuario:
         # Actualiza campos
-        db_usuario.nombres = usuario.nombres
+        db_usuario.nombre_mostrar = usuario.nombre_mostrar
         db_usuario.email = usuario.email
         db_usuario.duracion = usuario.duracion
     else:
         # Inserta nuevo
         db_usuario = Usuario(
             username=usuario.username,
-            nombres=usuario.nombres,
+            nombnombre_mostrarres=usuario.nombre_mostrar,
             email=usuario.email,
             password="cambiar",
             duracion=usuario.duracion,
@@ -85,7 +85,7 @@ def get_usuarios(db: Session) -> List[UsuariosListado]:
         UsuariosListado(
             id=o.id,
             username=o.username,
-            nombres=f"{o.nombres} {o.apellidos}",
+            nombre_mostrar=f"{o.nombre_mostrar}",
             email=o.email,
             estado=o.estado
         ) for o in lista

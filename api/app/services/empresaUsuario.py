@@ -1,5 +1,6 @@
 
 
+from typing import Any, Dict, List
 from sqlalchemy import and_, func
 from app.schemas.empresaUsuario import AsignacionEmpresas, EmpresaUsuarioCreate, EmpresaUsuarioList, EmpresaUsuarioOut
 from app.models.models import Empresa, EmpresaUsuario, Usuario
@@ -61,44 +62,50 @@ def getDatosEmpresaUsuario_idEmpresa(idEmpresa:int, db: Session):
              EmpresaUsuario.estado==True)).all()
     return datos
   
-def generar_relaciones(data: AsignacionEmpresas, db: Session):
+
+def generar_relaciones(data: AsignacionEmpresas, db: Session) -> List[Dict[str, Any]]:
     id_usuario = data.id
-    relaciones_guardadas = []
+    relaciones_procesadas = [] # Changed from relaciones_guardadas for clarity
 
     for empresa in data.empresas:
         id_empresa = int(empresa.id)
         estado = empresa.checked
         existente = db.query(EmpresaUsuario).filter(
-            and_(EmpresaUsuario.id_usuario == id_usuario, 
+            and_(EmpresaUsuario.id_usuario == id_usuario,
                  EmpresaUsuario.id_empresa == id_empresa)
         ).first()
 
-        if existente:
-            if existente.estado != estado:
-                existente.estado = estado
-                # existente.fecha_modificacion = 
+        if estado is False: # If the incoming state is False, we intend to delete
+            if existente:
+                db.delete(existente)
+                db.commit() # Commit immediately after deletion
+                # No need to append deleted items to relaciones_procesadas unless specifically required
+        else: # If the incoming state is True
+            if existente:
+                if existente.estado != estado: # Only update if the state has changed
+                    existente.estado = estado
+                    # existente.fecha_modificacion = datetime.now() # Uncomment if you have this column and want to manage it manually
+                    db.commit()
+                    db.refresh(existente)
+                relaciones_procesadas.append({
+                    "id_usuario": id_usuario,
+                    "id_empresa": id_empresa,
+                    "estado": estado
+                })
+            else: # If it doesn't exist and the state is True, create a new one
+                nueva_relacion = EmpresaUsuario(
+                    estado=estado,
+                    id_empresa=id_empresa,
+                    id_usuario=id_usuario
+                )
+                db.add(nueva_relacion)
                 db.commit()
-                db.refresh(existente)
-            relaciones_guardadas.append({
-                "id_usuario": id_usuario,
-                "id_empresa": id_empresa,
-                "estado": estado
-            })
-        else:
-            nueva_relacion = EmpresaUsuario(
-                estado=estado,
-                id_empresa=id_empresa,
-                id_usuario=id_usuario
-            )
-            db.add(nueva_relacion)
-            db.commit()
-            db.refresh(nueva_relacion)
+                db.refresh(nueva_relacion)
 
-            relaciones_guardadas.append({
-                "id_usuario": nueva_relacion.id_usuario,
-                "id_empresa": nueva_relacion.id_empresa,
-                "estado": nueva_relacion.estado
-            })
-    
-        return relaciones_guardadas
-  
+                relaciones_procesadas.append({
+                    "id_usuario": nueva_relacion.id_usuario,
+                    "id_empresa": nueva_relacion.id_empresa,
+                    "estado": nueva_relacion.estado
+                })
+
+    return relaciones_procesadas

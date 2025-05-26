@@ -9,7 +9,8 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from sqlalchemy import and_, or_
 from app.schemas.respond import objRespuesta
-
+from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -45,12 +46,8 @@ def validar_login_usuario(db: Session, user: UsuarioLogin, request: Request) -> 
             registrar_log_acceso(db, userObj.username, False, "Contraseña incorrecta", userObj.id, ip, user_agent)
             return objRespuesta(respuesta=False, data={'error': 'Usuario y clave inválidos'})
 
-        print(f"getObjetoAcceso 0")
         objAcceso = getObjetoAcceso(db, userObj.id)
-        print(f"getObjetoAcceso 1")
         registrar_log_acceso(db, userObj.username, True, "Login exitoso", userObj.id, ip, user_agent)
-        print(f"getObjetoAcceso 2")
-
         return objRespuesta(respuesta=True, data=objAcceso)
 
     except Exception as e:
@@ -122,19 +119,38 @@ def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> 
         )
 def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Request) -> objRespuesta:
     ip, user_agent = obtener_info_cliente(request)
-    userObj = db.query(Usuario).filter(
-        and_(
+
+    # Validar datos básicos
+    if not user.username or not user.email or not user.password:
+        return objRespuesta(
+            respuesta=False,
+            error='Faltan datos obligatorios (username, email o password)',
+            status_code=400
+        )
+
+    try:
+        userObj = db.query(Usuario).filter(
             Usuario.username == user.username,
             Usuario.email == user.email
-        )
-    ).first()
+        ).first()
 
-    if userObj:
+        if not userObj:
+            return objRespuesta(
+                respuesta=False,
+                error='No se encuentra el usuario',
+                status_code=404
+            )
+
+        # Actualizar contraseña y fecha
         userObj.password = get_password_hash(user.password)
-        userObj.fecha_modificacion = datetime.now(timezone.utc) # 👈 Asegura que se actualice la fecha
-        registrar_log_acceso(db, userObj.username, True, "Cambio de clave exitoso", userObj.id, ip, user_agent)
+        userObj.fecha_modificacion = datetime.now(timezone.utc)
+
+        # Guardar cambios
         db.commit()
         db.refresh(userObj)
+
+        # Registrar log
+        registrar_log_acceso(db,userObj.username,True,"Cambio de clave exitoso",userObj.id,ip,user_agent)
 
         return objRespuesta(
             respuesta=True,
@@ -145,13 +161,16 @@ def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Reque
                 "mensaje": "Cambio de clave OK"
             }
         )
-    else:
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        print(f"error ....: {str(e)}")
+        registrar_log_acceso(db,user.username,False,f"Error al cambiar clave: {str(e)}",None,ip,user_agent)
         return objRespuesta(
             respuesta=False,
-            error='No se encuentra el usuario',
-            status_code=401
+            error='Error interno al intentar cambiar la clave',
+            status_code=500
         )
-        
         
 def getIDUsuarioXToken(db: Session, token: str):
     accesoObj = db.query(Acceso).filter(

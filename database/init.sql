@@ -102,13 +102,56 @@ CREATE TABLE empresas (
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE dashboard_inicial (
+    id SERIAL PRIMARY KEY,
+    pagina VARCHAR(100) NOT NULL,
+    estado BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 🧑 Tabla: personas
+CREATE TABLE personas (
+    id SERIAL PRIMARY KEY,
+    run_rut VARCHAR(12) UNIQUE,
+    pasaporte VARCHAR(20),
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100),
+    fecha_nacimiento DATE,
+    sexo CHAR(1) CHECK (sexo IN ('M', 'F', 'O')),
+    email VARCHAR(150) UNIQUE,
+    telefono VARCHAR(20),
+    telefono_secundario VARCHAR(20),
+    id_direccion INTEGER REFERENCES direccion(id),
+    id_estado_civil INTEGER REFERENCES estado_civil(id),
+    id_nacionalidad INTEGER REFERENCES nacionalidad(id),
+    id_profesion INTEGER REFERENCES profesion(id),
+    id_nivel_educacional INTEGER REFERENCES niveles_educacionales(id),
+    estado BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP DEFAULT now()
+);
+
+-- 🖼️ Tabla: fotos_personas
+CREATE TABLE fotos_personas (
+    id SERIAL PRIMARY KEY,
+    id_persona INTEGER REFERENCES personas(id) ON DELETE CASCADE,
+    url_foto VARCHAR(250) NOT NULL,
+    es_principal BOOLEAN DEFAULT FALSE,
+    estado BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT now()
+);
+
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    nombres VARCHAR(255) NOT NULL,
+    nombre_mostrar VARCHAR(200) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     "password" VARCHAR(255) NOT NULL,
     duracion INT DEFAULT 20, -- Minutos de sesión u otro uso
+    pagina_inicio VARCHAR(255) NOT NULL,
+    id_dashboard INT REFERENCES dashboard_inicial(id) ON DELETE SET NULL,
+    id_persona INT REFERENCES personas(id) ON DELETE SET NULL,
     estado BOOLEAN DEFAULT TRUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -298,37 +341,7 @@ CREATE TABLE modulo_menu (
 );
 
 
--- 🧑 Tabla: personas
-CREATE TABLE personas (
-    id SERIAL PRIMARY KEY,
-    run_rut VARCHAR(12) UNIQUE,
-    pasaporte VARCHAR(20),
-    nombres VARCHAR(100) NOT NULL,
-    apellidos VARCHAR(100),
-    fecha_nacimiento DATE,
-    sexo CHAR(1) CHECK (sexo IN ('M', 'F', 'O')),
-    email VARCHAR(150) UNIQUE,
-    telefono VARCHAR(20),
-    telefono_secundario VARCHAR(20),
-    id_direccion INTEGER REFERENCES direccion(id),
-    id_estado_civil INTEGER REFERENCES estado_civil(id),
-    id_nacionalidad INTEGER REFERENCES nacionalidad(id),
-    id_profesion INTEGER REFERENCES profesion(id),
-    id_nivel_educacional INTEGER REFERENCES niveles_educacionales(id),
-    estado BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now()
-);
 
--- 🖼️ Tabla: fotos_personas
-CREATE TABLE fotos_personas (
-    id SERIAL PRIMARY KEY,
-    id_persona INTEGER REFERENCES personas(id) ON DELETE CASCADE,
-    url_foto VARCHAR(250) NOT NULL,
-    es_principal BOOLEAN DEFAULT FALSE,
-    estado BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT now()
-);
 
 
 -- =========================
@@ -1029,16 +1042,18 @@ INSERT INTO empresas (nombre, id_tipo_empresa) VALUES
 -- Usuarios
 INSERT INTO usuarios (
     username,
-    nombres,
+    nombre_mostrar,
     email,
     "password",
-    duracion
+    duracion,
+	pagina_inicio
 ) VALUES (
     'admin',
     'Administrador Principal',
     'fbirrer@gmail.com',
     'cambiar',  -- ¡Reemplazar por una contraseña hasheada en producción!
-    30
+    30,
+	'inicio.html'
 );
 
 -- Roles
@@ -1050,43 +1065,41 @@ INSERT INTO roles (nombre) VALUES
 INSERT INTO tipos_menu (nombre) VALUES ('General'), ('Modulos');
 
 -- Menús
-INSERT INTO menus
-(nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden)
-VALUES
-('Dashboard', 'fa-solid fa-dashboard', 1, NULL, '/dashboard', 'Vista principal', 'token_dashboard', 1),
-('Gestión', 'fa-solid fa-briefcase', 1, NULL, '/gestion', 'Módulo de gestión', 'token_gestion', 2),
-('Tablas', 'fa-solid fa-table', 1, 2, '/gestion/tablas', 'Tablas base del sistema', 'token_tablas', 1),
-('Permisos', 'fa-solid fa-lock', 1, 2, NULL, 'Gestionador de relaciones', NULL, 3),
-('Usuarios', 'fa-solid fa-users', 1, 3, '/gestion/usuarios', 'Gestión de usuarios', 'token_usuarios', 2),
-('Menús', 'fa-solid fa-bars', 1, 3, '/gestion/menu', 'Gestión de menús', 'token_menus', 3),
-('Roles', 'fa-solid fa-user-tag', 1, 3, '/gestion/rol', 'Gestión de roles', 'token_roles', 4),
-('Empresas', 'fa-solid fa-building', 1, 3, '/gestion/empresas', 'Mantener las empresas del sistem', NULL, 1),
-('Rol Menu', 'fa-solid fa-link', 1, 4, '/gestion/rolMenu', NULL, NULL, 1),
-('Empresa Usuario', 'fa-solid fa-diagram-project', NULL, 4, '/gestion/empresaUsuario', NULL, NULL, 2),
-('Tipo de Datos', 'fa-solid fa-database', 1, 2, '/gestion/tipoEmpresa', 'Gestión de Tipo de Empresas', NULL, 2),
-('Tipo de Empresas', 'fa-solid fa-industry', 1, 11, '/gestion/tipoEmpresa', NULL, NULL, 1),
-('Tipo de Menu', 'fa-solid fa-sitemap', 1, 11, '/gestion/tipoMenu', NULL, NULL, 2),
-('Modulos', 'fa-solid fa-puzzle-piece', 1, 3, '/gestion/modulo', NULL, NULL, 6),
-('Empresa Modulo', 'fa-solid fa-layer-group', 1, 4, NULL, NULL, NULL, 1),
-('Empresa Usuario', 'fa-solid fa-user-tie', 1, 4, NULL, NULL, NULL, 2),
-('Modulos Menu', 'fa-solid fa-list', 1, 4, NULL, NULL, NULL, 3),
-('Geo referencia', 'fa-solid fa-map-location-dot', 1, NULL, NULL, NULL, NULL, 4),
-('Laboratorios', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1),
-('Farmacias', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1),
-('Remedios', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3),
-('Vademecum', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 4),
-('Regions', 'fa-solid fa-user-tie', 1, 4, NULL, NULL, NULL, 2),
-('Provincias', 'fa-solid fa-list', 1, 4, NULL, NULL, NULL, 3),
-('Comunas', 'fa-solid fa-map-location-dot', 1, NULL, NULL, NULL, NULL, 4),
-('test1', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1),
-('test2', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1),
-('test3', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3),
-('test4', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1),
-('test5', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1),
-('test6', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3),
-('test7', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1),
-('test8', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1),
-('test9', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3);
+INSERT INTO menus (nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden, estado) VALUES
+('Dashboard', 'fa-solid fa-dashboard', 1, NULL, '/dashboard', 'Vista principal', 'token_dashboard', 1, true),
+('Gestión', 'fa-solid fa-atom', 1, NULL, '/gestion', 'Módulo de gestión', 'token_gestion', 2, true),
+('Tablas', 'fa-solid fa-table', 1, 2, '/gestion/tablas', 'Tablas base del sistema', 'token_tablas', 1, true),
+('Permisos', 'fa-solid fa-lock', 1, 2, NULL, 'Gestionador de relaciones', NULL, 3, true),
+('Usuarios', 'fa-solid fa-users', 1, 3, '/gestion/usuarios', 'Usuarios del sistema', NULL, 2, true),
+('Menús Generales', 'fa-solid fa-bars', 1, 3, '/gestion/menu', 'Menus generales del sistema', NULL, 4, true),
+('Roles', 'fa-solid fa-user-shield', 1, 3, '/gestion/rol', 'Roles del sistema', NULL, 3, true),
+('Empresas', 'fa-solid fa-building', 1, 3, '/gestion/empresas', 'Empresas del sistema', NULL, 1, true),
+('Rol Menu', 'fa-solid fa-link', 1, 4, '/gestion/rolMenu', NULL, NULL, 1, true),
+('Empresa Usuario', 'fa-solid fa-diagram-project', NULL, 4, '/gestion/empresaUsuario', NULL, NULL, 2, true),
+('Tipo de Datos', 'fa-solid fa-database', 1, 2, '/gestion/tipoEmpresa', 'Gestión de Tipo de Empresas', NULL, 2, true),
+('Tipo de Empresas', 'fa-solid fa-industry', 1, 11, '/gestion/tipoEmpresa', NULL, NULL, 1, true),
+('Tipo de Menu', 'fa-solid fa-list', 1, 11, '/gestion/tipoMenu', NULL, NULL, 2, true),
+('Modulos', 'fa-solid fa-puzzle-piece', 1, 3, '/gestion/modulo', 'Modulos del sistema', NULL, 6, true),
+('Empresa Modulo', 'fa-solid fa-layer-group', 1, 4, NULL, NULL, NULL, 1, true),
+('Empresa Usuario', 'fa-solid fa-user-tie', 1, 4, NULL, NULL, NULL, 2, true),
+('Modulos Menu', 'fa-solid fa-list', 1, 4, NULL, NULL, NULL, 3, true),
+('Geo referencia', 'fa-solid fa-map-location-dot', 1, 2, NULL, NULL, NULL, 4, true),
+('Laboratorios', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1, true),
+('Farmacias', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1, true),
+('Remedios', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3, true),
+('Vademecum', 'fa-solid fa-book-medical', 2, NULL, '/vademecum/remdios', NULL, NULL, 4, true),
+('Regiones', 'fa-solid fa-globe', 1, 18, '/modulo-georeferencia/regiones', NULL, NULL, 2, true),
+('Provincias', 'fa-solid fa-map', 1, 18, '/modulo-georeferencia/provincias', NULL, NULL, 3, true),
+('Comunas', 'fa-solid fa-location-dot', 1, 18, '/modulo-georeferencia/comunas', NULL, NULL, 4, true),
+('Menus X Modulo', 'fa-solid fa-sitemap', 1, 3, '/gestion/menusxmodulo', 'Menus por Modulos', NULL, 5, true),
+('Nacionaliad', 'fa-solid fa-flag', 1, 3, '/gestion/nacionalidad', 'Nacionalidades del sistema', NULL, 7, true),
+('test3', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3, true),
+('test4', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1, true),
+('test5', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1, true),
+('test6', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3, true),
+('test7', 'fa-solid fa-check-to-slot fa-fw', 2, NULL, '/vademecum/laboratorios', 'Gestión de Tipo de Empresas', NULL, 1, true),
+('test8', 'fa-solid fa-landmark-flag fa-fw', 2, NULL, '/vademecum/farmacias', NULL, NULL, 1, true),
+('test9', 'fa-solid fa-user-tag fa-fw', 2, NULL, '/vademecum/remdios', NULL, NULL, 3, true);
 
 -- Relación menú-rol
 INSERT INTO menu_rol (id_menu, id_rol) 

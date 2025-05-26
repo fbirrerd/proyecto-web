@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 from sqlalchemy.orm import Session
 
-from app.services.menus import getListMenuOrdenada
+from app.schemas.menus import MenuFiltroPlus
+from app.services.menus import getListMenuOrdenada, getListMenus
 from app.services.acceso import crear_acceso
 from app.services.rol import getDatosRol
 from app.services.empresa import getDatosEmpresa
@@ -35,7 +36,15 @@ def getObjetoAcceso(db: Session, userid: int, empresaid: Optional[int] = None, t
         lModulos = ListMenuXModulo(db, idEmpresaSeleccionada, userid)
 
         # Obtener menús ordenados
-        lMenus = getListMenuOrdenada(db, userid, idEmpresaSeleccionada)
+        
+        obj = MenuFiltroPlus(
+            id_tipo_menu=1,    
+            id_usuario=userid,    
+            id_empresa=idEmpresaSeleccionada,    
+            solo_activos=True,     
+            ordenado=True          
+        )
+        lMenus = getListMenus(db, obj)
 
         # Generar token si no viene proporcionado
         if token is None:

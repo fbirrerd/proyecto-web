@@ -14,6 +14,10 @@ $(document).ready(function () {
         LoadEmpresas(empresas)
         IniciarMenu(data);
 
+        console.log(data.duracionAcceso.minutos);
+
+        iniciarContador(data.duracionAcceso.minutos); 
+
     } else {
         console.log('No token found in localStorage');
     }
@@ -166,5 +170,37 @@ function abrirEnIframe(url, linkElement) {
     $("ul li").removeClass("activo");
     $(linkElement).parent().addClass("activo");
 }
+
+function iniciarContador(minutos) {
+    let tiempoRestante = minutos * 60; // convierte a segundos
+
+    const intervalo = setInterval(() => {
+        let horas = Math.floor(tiempoRestante / 3600);
+        let minutosMostrados = Math.floor((tiempoRestante % 3600) / 60);
+        let segundos = tiempoRestante % 60;
+
+        // formatea con ceros a la izquierda
+        horas = horas < 10 ? '0' + horas : horas;
+        minutosMostrados = minutosMostrados < 10 ? '0' + minutosMostrados : minutosMostrados;
+        segundos = segundos < 10 ? '0' + segundos : segundos;
+
+        $('#contador-sesion').text(`${horas}:${minutosMostrados}:${segundos}`);
+
+        if (tiempoRestante <= 0) {
+            clearInterval(intervalo);
+            cerrarSesion();
+        }
+
+        tiempoRestante--;
+    }, 1000);
+}
+
+    function cerrarSesion() {
+        localStorage.removeItem("dataSystem"); // Borra el localStorage
+        window.location.href = 'index.html'; // Redirige a index.html
+    }
+
+
+
 
 console.log("dashboard-token.js cargado (versión con jQuery para UI).");

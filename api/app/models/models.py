@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Column, Integer, String, Boolean, Date, DateTime, ForeignKey, Text, Float, BigInteger, UniqueConstraint
+    CHAR, TIMESTAMP, Column, Integer, String, Boolean, Date, DateTime, ForeignKey, Text, Float, BigInteger, UniqueConstraint, func
 )
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime
@@ -101,18 +101,69 @@ class Empresa(Base):
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_modificacion = Column(DateTime, default=datetime.utcnow)
 
+class Persona(Base):
+    __tablename__ = "personas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    run_rut = Column(String(12), unique=True, nullable=True)
+    pasaporte = Column(String(20), nullable=True)
+    nombres = Column(String(100), nullable=False)
+    apellidos = Column(String(100), nullable=True)
+    fecha_nacimiento = Column(Date, nullable=True)
+    sexo = Column(CHAR(1), nullable=True)
+    email = Column(String(150), unique=True, nullable=True)
+    telefono = Column(String(20), nullable=True)
+    telefono_secundario = Column(String(20), nullable=True)
+    id_direccion = Column(Integer, ForeignKey("direccion.id"), nullable=True)
+    id_estado_civil = Column(Integer, ForeignKey("estado_civil.id"), nullable=True)
+    id_nacionalidad = Column(Integer, ForeignKey("nacionalidad.id"), nullable=True)
+    id_profesion = Column(Integer, ForeignKey("profesion.id"), nullable=True)
+    id_nivel_educacional = Column(Integer, ForeignKey("niveles_educacionales.id"), nullable=True)
+    estado = Column(Boolean, default=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+
+    fotos = relationship("FotoPersona", back_populates="persona")
+    usuario = relationship("Usuario", back_populates="persona", uselist=False)
+
+class FotoPersona(Base):
+    __tablename__ = "fotos_personas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    id_persona = Column(Integer, ForeignKey("personas.id", ondelete="CASCADE"))
+    url_foto = Column(String(250), nullable=False)
+    es_principal = Column(Boolean, default=False)
+    estado = Column(Boolean, default=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+    persona = relationship("Persona", back_populates="fotos")
+
+class DashboardInicial(Base):
+    __tablename__ = "dashboard_inicial"
+
+    id = Column(Integer, primary_key=True, index=True)
+    pagina = Column(String(100), nullable=False)
+    estado = Column(Boolean, default=True)
+    fecha_creacion = Column(DateTime, default=func.now())
+    fecha_modificacion = Column(DateTime, default=func.now(), onupdate=func.now())
 
 class Usuario(Base):
-    __tablename__ = 'usuarios'
-    id = Column(Integer, primary_key=True)
-    username = Column(String(50), nullable=False, unique=True)
-    nombres = Column(String(255), nullable=False)
-    email = Column(String(255), nullable=False, unique=True)
+    __tablename__ = "usuarios"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, nullable=False)
+    nombre_mostrar = Column(String(200), unique=True, nullable=False)
+    email = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     duracion = Column(Integer, default=20)
+    pagina_inicio = Column(String(255), nullable=False)
+    id_dashboard = Column(Integer, ForeignKey("dashboard_inicial.id", ondelete="SET NULL"), nullable=True)
+    id_persona = Column(Integer, ForeignKey("personas.id", ondelete="SET NULL"), nullable=True)
     estado = Column(Boolean, default=True)
-    fecha_creacion = Column(DateTime, default=datetime.utcnow)
-    fecha_modificacion = Column(DateTime, default=datetime.utcnow)
+    fecha_creacion = Column(TIMESTAMP, server_default=func.now())
+    fecha_modificacion = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+
+    persona = relationship("Persona", back_populates="usuario")
 
 
 class Rol(Base):
@@ -279,35 +330,3 @@ class ModuloMenu(Base):
     estado = Column(Boolean, default=True)
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_modificacion = Column(DateTime, default=datetime.utcnow)
-
-
-class Persona(Base):
-    __tablename__ = 'personas'
-    id = Column(Integer, primary_key=True)
-    run_rut = Column(String(12), unique=True)
-    pasaporte = Column(String(20))
-    nombres = Column(String(100), nullable=False)
-    apellidos = Column(String(100))
-    fecha_nacimiento = Column(Date)
-    sexo = Column(String(1))
-    email = Column(String(150), unique=True)
-    telefono = Column(String(20))
-    telefono_secundario = Column(String(20))
-    id_direccion = Column(Integer, ForeignKey('direccion.id'))
-    id_estado_civil = Column(Integer, ForeignKey('estado_civil.id'))
-    id_nacionalidad = Column(Integer, ForeignKey('nacionalidad.id'))
-    id_profesion = Column(Integer, ForeignKey('profesion.id'))
-    id_nivel_educacional = Column(Integer, ForeignKey('niveles_educacionales.id'))
-    estado = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow)
-
-
-class FotoPersona(Base):
-    __tablename__ = 'fotos_personas'
-    id = Column(Integer, primary_key=True)
-    id_persona = Column(Integer, ForeignKey('personas.id', ondelete='CASCADE'))
-    url_foto = Column(String(250), nullable=False)
-    es_principal = Column(Boolean, default=False)
-    estado = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)

@@ -5,7 +5,7 @@ from typing import Optional
 
 class UsuarioBase(BaseModel):
     username: str
-    nombres: str
+    nombre_mostrar: str
 
     email: str
     duracion: Optional[int] = 20
@@ -18,7 +18,7 @@ class UsuarioCreate(UsuarioBase):
     id_direccion: Optional[int] = None
 
 class UsuarioUpdate(BaseModel):
-    nombres: Optional[str]
+    nombre_mostrar: Optional[str]
     email: Optional[str]
     duracion: Optional[int]
     estado: Optional[bool]
@@ -34,7 +34,7 @@ class UsuarioOut(UsuarioBase):
 class UsuarioAcceso(UsuarioBase):
     id: int
     username: str
-    nombres: str
+    nombre_mostrar: str
     email: str
     id_direccion: Optional[int] = None
     class Config:
@@ -49,7 +49,7 @@ class UsuarioList(BaseModel):
 class UsuariosListado(BaseModel):
     id: int
     username: str
-    nombres: str
+    nombre_mostrar: str
     email: str
     estado: Optional[bool] = True
     class Config:

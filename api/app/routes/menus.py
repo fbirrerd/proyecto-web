@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.schemas.respond import objRespuesta
 from app.schemas.menus import MenuEstadoUpdate, MenuFiltroPlus, MenuUpdate
-from app.services.menus import actualizar_estado, actualizar_menu, get_lista_menu, getListMenuOrdenada, getListMenus
+from app.services.menus import actualizar_estado, actualizar_menu, getListMenuOrdenada, getListMenus
 from app.database import SessionLocal
 
 router = APIRouter(tags=["Menu"])
