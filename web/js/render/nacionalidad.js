@@ -32,7 +32,7 @@ function llenarTabla() {
         const $row = $("<tr>");
         $row.append(
             $("<td>").append(`<input type="text" class="form-control form-control-sm" id="nombre-${item.id}" value="${item.nombre}">`),
-            $("<td class='acciones-td text-end'>").append(`
+            $("<td class='acciones text-end'>").append(`
                 <button 
                     class="btn btn-sm ${item.estado ? 'btn-success' : 'btn-danger'} btn-estado" 
                     data-id="${item.id}"
@@ -52,7 +52,7 @@ function llenarTabla() {
 $("#tableBody").on("click", ".guardar-btn", function () {
     const row = $(this).closest("tr");
     const id = row.data("id");
-    const nombre = row.find(".nombre").val().trim();
+    const nombre = row.find(".nombre").val();
 
     const params = {
         nombre: nombre
@@ -102,7 +102,7 @@ function mostrarFilaNueva() {
     const $fila = $(`
         <tr id="filaNueva">
             <td><input type="text" class="form-control" id="nuevaNacionalidadNombre" placeholder="Nombre de la nacionalidad"></td>
-            <td class="acciones-td text-end">
+            <td class="acciones text-end">
                 <button class="btn btn-success btn-sm me-2" onclick="insertarNacionalidad()"><i class="fa fa-check"></i> Guardar</button>
                 <button class="btn btn-secondary btn-sm" onclick="cancelarNuevaNacionalidad()"><i class="fa fa-times"></i> Cancelar</button>
             </td>

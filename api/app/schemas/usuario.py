@@ -6,21 +6,23 @@ from typing import Optional
 class UsuarioBase(BaseModel):
     username: str
     nombre_mostrar: str
-
     email: str
     duracion: Optional[int] = 20
+    pagina_inicio: str
+    id_dashboard: Optional[int]
+    id_persona: Optional[int]
     estado: Optional[bool] = True
-    class Config:
-        orm_mode = True
 
 class UsuarioCreate(UsuarioBase):
-    password: Optional[str]
-    id_direccion: Optional[int] = None
+    password: str
 
 class UsuarioUpdate(BaseModel):
     nombre_mostrar: Optional[str]
     email: Optional[str]
     duracion: Optional[int]
+    pagina_inicio: Optional[str]
+    id_dashboard: Optional[int]
+    id_persona: Optional[int]
     estado: Optional[bool]
 
 class UsuarioOut(UsuarioBase):

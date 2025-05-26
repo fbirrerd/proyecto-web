@@ -172,7 +172,15 @@ function abrirEnIframe(url, linkElement) {
 }
 
 function iniciarContador(minutos) {
-    let tiempoRestante = minutos * 60; // convierte a segundos
+    let tiempoRestante;
+
+    // Si ya hay tiempo guardado en sessionStorage, úsalo
+    if (localStorage.getItem('tiempoRestante')) {
+        tiempoRestante = parseInt(localStorage.getItem('tiempoRestante'));
+    } else {
+        tiempoRestante = minutos * 60; // convierte a segundos
+        localStorage.setItem('tiempoRestante', tiempoRestante);
+    }
 
     const intervalo = setInterval(() => {
         let horas = Math.floor(tiempoRestante / 3600);
@@ -188,15 +196,18 @@ function iniciarContador(minutos) {
 
         if (tiempoRestante <= 0) {
             clearInterval(intervalo);
+            localStorage.removeItem('tiempoRestante'); // limpia el almacenamiento
             cerrarSesion();
+        } else {
+            tiempoRestante--;
+            localStorage.setItem('tiempoRestante', tiempoRestante);
         }
-
-        tiempoRestante--;
     }, 1000);
 }
 
     function cerrarSesion() {
         localStorage.removeItem("dataSystem"); // Borra el localStorage
+        localStorage.removeItem("tiempoRestante"); // Borra el localStorage
         window.location.href = 'index.html'; // Redirige a index.html
     }
 

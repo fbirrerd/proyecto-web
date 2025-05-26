@@ -1,14 +1,12 @@
 let filaEnEdicion = false;
+disableTab(4);
 
 $(document).ready(function () {
   //aca se bloquea la pestaña de direcciones
-  $("#tab2").addClass("disabled");
 
   fetchUsuarios();
   $("#btnNuevo").click(function () {
     limpiarFormulario();
-    disableTab(2);
-    disableTab(3);
     $("#username").prop("disabled", false); // Bloquear
     $("#modalUsuario").modal("show");
   });
@@ -52,7 +50,7 @@ $(document).ready(function () {
     loadDatosUsuario(usuario.id);
   });
   $("#username").on("blur", function () {
-    const username = $(this).val().trim();
+    const username = $(this).val();
     if (username !== "") {
       $("#loading-icon").show(); // 👈 Mostrar ícono
 
@@ -127,17 +125,29 @@ $(document).ready(function () {
 });
 
 function enableTab(num) {
-  const btn = document.getElementById(`tab${num}`);
-  btn.disabled = false;
-  btn.classList.add("unlocked-tab");
-  $(`tab${num}`).addClass("disabled-tab");
+    const btn = $(`#tab${num}`);
+
+    // Usar jQuery para quitar 'disabled' atributo
+    btn.prop('disabled', false);
+    
+    // Manejo de clases con jQuery
+    btn.addClass("unlocked-tab");
+    btn.removeClass("disabled");
+    // Si quieres agregar más clases específicas:
+    // btn.addClass("enabled-tab");
 }
 
 function disableTab(num) {
-  const btn = document.getElementById(`tab${num}`);
-  btn.disabled = true;
-  btn.classList.remove("active-tab", "unlocked-tab");
-  $(`tab${num}`).removeClass("disabled-tab");
+    const btn = $(`#tab${num}`);
+
+    // Usar jQuery para agregar 'disabled' atributo
+    btn.prop('disabled', true);
+    
+    // Manejo de clases con jQuery
+    btn.removeClass("active-tab unlocked-tab");
+    btn.addClass("disabled");
+    // Si quieres agregar más clases específicas:
+    // btn.addClass("disabled-tab");
 }
 
 function fetchUsuarios() {
@@ -168,7 +178,7 @@ function llenarTabla() {
       $("<td>").text(item.email),
 
       // Columna de acciones
-      $("<td class='acciones-td text-end'>").append(`
+      $("<td class='acciones text-end'>").append(`
                 <button 
                     class="btn btn-sm toggle-estado-btn ${
                       item.estado ? "btn-success" : "btn-secondary"
@@ -224,16 +234,22 @@ function loadDatosUsuario(userid) {
   fetchMultiple(
     urls,
     function (responses) {
-      // [usuarios,direccion,empresas] = responses.map((r) => (r.respuesta ? r.data : []));
       [usuarios, empresas, empresaUsuario] = responses.map((r) => (r.respuesta ? r.data : []));
+
+
+      console.log("Usuario")
+      console.log(usuarios)
+
 
       if (usuarios) {
         $("#id").val(userid);
         $("#username").val(usuarios.username);
-        $("#nombres").val(usuarios.nombres);
-        $("#apellidos").val(usuarios.apellidos);
+        $("#nombres").val(usuarios.nombre_mostrar);
         $("#email").val(usuarios.email);
         $("#duracion").val(usuarios.duracion);
+        $("#pagina_inicio").val(usuarios.pagina_inicio);
+        $("#id_dashboard").val(usuarios.id_dashboard);
+        $("#id_persona").val(usuarios.id_persona);
       }
 
       if(empresas){
@@ -298,11 +314,10 @@ $("#guardarClaveBtn").on("click", function () {
     // Limpia errores previos
     $(".form-control").removeClass("is-invalid");
 
-    const username = $("#username").val().trim();
-    const nombres = $("#nombres").val().trim();
-    const apellidos = $("#apellidos").val().trim();
-    const email = $("#email").val().trim();
-    const duracion = $("#duracion").val().trim();
+    const username = $("#username").val();
+    const nombres = $("#nombres").val();
+    const email = $("#email").val();
+    const duracion = $("#duracion").val();
 
     if (username === "") {
       $("#username").addClass("is-invalid");
@@ -311,11 +326,6 @@ $("#guardarClaveBtn").on("click", function () {
 
     if (nombres === "") {
       $("#nombres").addClass("is-invalid");
-      valido = false;
-    }
-
-    if (apellidos === "") {
-      $("#apellidos").addClass("is-invalid");
       valido = false;
     }
 
@@ -339,11 +349,11 @@ $("#guardarClaveBtn").on("click", function () {
     if (validarFormulario()) {
       // Aquí puedes continuar con el submit o enviar por AJAX
       console.log("Formulario válido, se puede enviar");
+
       let params = {
-        username: $("#username").val().trim(),
-        nombres: $("#nombres").val().trim(),
-        apellidos: $("#apellidos").val().trim(),
-        email: $("#email").val().trim(),
+        username: $("#username").val(),
+        nombre_mostrar: $("#nombres").val(),
+        email: $("#email").val(),
         duracion: $("#duracion").val()
       }
 

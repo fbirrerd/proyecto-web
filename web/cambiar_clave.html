@@ -20,7 +20,7 @@
 
 <body>
     <div class="login-container">
-        <h3 class="mb-4">Cambiar Contraseña</h3>
+        <h3 class="mb-4">Cambiar Clave</h3>
         <div id="api-error" class="alert alert-danger d-none" role="alert"></div>
         <div id="change-success" class="alert alert-success d-none" role="alert">¡Contraseña cambiada con éxito!</div>
         <form id="change-password-form">
@@ -33,7 +33,7 @@
                 <input type="email" class="form-control" id="email" required>
             </div>
             <div class="form-group">
-                <label for="password" class="form-label">Nueva Password</label>
+                <label for="password" class="form-label">Nueva Clave</label>
                 <input type="password" class="form-control password-input" id="new_password" name="new_password"
                     required>
                 <i class="far fa-eye toggle-password" id="toggleNewPassword"></i>
@@ -41,14 +41,14 @@
 
             </div>
             <div class="form-group">
-                <label for="password" class="form-label">Confirme Password</label>
+                <label for="password" class="form-label">Confirme Clave</label>
                 <input type="password" class="form-control password-input" id="confirm_new_password"
                     name="confirm_new_password" required>
                 <i class="far fa-eye toggle-password" id="toggleConfirm"></i>
                 <ul id="confirm-password-errors" class="text-danger small mt-2"></ul>
             </div>
-            <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
-            <a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Cambiar Clave</button>
+            <a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary">Volver</a>
         </form>
     </div>
 

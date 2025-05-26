@@ -43,7 +43,7 @@ function llenarTabla() {
       $("<td>").text(item.email),
 
       // Columna de acciones
-      $("<td class='acciones-td text-end'>").append(`
+      $("<td class='acciones text-end'>").append(`
                 <button 
                     class="btn btn-sm toggle-estado-btn ${
                       item.estado ? "btn-success" : "btn-secondary"

@@ -32,7 +32,7 @@ function llenarTabla() {
         $row.append(
             $("<td>").append(`<input type="text" class="form-control form-control-sm" id="nombre-${item.id}" value="${item.nombre}">`),
             $("<td>").append(`<textarea class="form-control form-control-sm" id="descripcion-${item.id}" rows="2">${item.descripcion || ''}</textarea>`),
-            $("<td class='acciones-td text-end'>").append(`
+            $("<td class='acciones text-end'>").append(`
                 <div class="form-check form-switch d-inline-block me-2">
                     <input 
                         class="form-check-input toggle-estado-switch" 
@@ -77,8 +77,8 @@ function cancelarNuevoModulo() {
 }
 
 function insertarModulo() {
-    const nombre = $('#nuevoModuloNombre').val().trim();
-    const descripcion = $('#nuevoModuloDescripcion').val().trim();
+    const nombre = $('#nuevoModuloNombre').val();
+    const descripcion = $('#nuevoModuloDescripcion').val();
 
     if (!nombre) {
         alert('Ingresa un nombre');

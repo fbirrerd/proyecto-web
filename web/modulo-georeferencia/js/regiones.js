@@ -34,7 +34,7 @@ function llenarTabla() {
         <td>
           <input class="form-control form-control-sm abreviatura" style="width:50px" value="${item.abreviatura}">
         </td>
-        <td class="acciones-td  text-end">
+        <td class="acciones  text-end">
           <button 
             class="btn btn-sm ${item.estado ? 'btn-success' : 'btn-danger'} btn-estado" 
             data-id="${item.id}"
@@ -75,7 +75,7 @@ $(document).on('click', '.btn-editar', function () {
 $("#formTipoEmpresa").on("submit", function (e) {
   e.preventDefault();
 
-  const nombre = this.nombre.value.trim();
+  const nombre = this.nombre.value;
   const estado = this.estado.value === "true";
 
   if (!nombre) {
@@ -102,7 +102,7 @@ $("#formTipoEmpresa").on("submit", function (e) {
 $("#tableBody").on("click", ".btn-guardar", function () {
   const row = $(this).closest("tr");
   const id = row.data("id");
-  const nombre = row.find(".nombre").val().trim();
+  const nombre = row.find(".nombre").val();
 
   const params = {
     nombre: nombre
@@ -125,7 +125,7 @@ $("#tableBody").on("click", ".btn-guardar", function () {
 $("#tableBody").on("click", ".btn-estado", function () {
   const id = $(this).data("id");
   const row = $(this).closest("tr");
-  const nombre = row.find(".nombre").val().trim();
+  const nombre = row.find(".nombre").val();
   const estadoActual = $(this).hasClass("btn-success");
 
 
@@ -161,7 +161,7 @@ $('#btnNuevo').on('click', function () {
       <td>
         <input type="text" class="form-control form-control-sm nombre" placeholder="Nombre del tipo de empresa">
       </td>
-      <td class="acciones-td  text-end">
+      <td class="acciones  text-end">
         <button class="btn btn-sm btn-success btn-guardar-nuevo me-2"><i class="fas fa-save"></i></button>
         <button class="btn btn-sm btn-secondary btn-cancelar-nuevo"><i class="fas fa-times"></i></button>
       </td>
@@ -175,7 +175,7 @@ $('#btnNuevo').on('click', function () {
 // Guardar nuevo registro
 $(document).on('click', '.btn-guardar-nuevo', function () {
   const $fila = $(this).closest('tr');
-  const nombre = $fila.find('.nombre').val().trim();
+  const nombre = $fila.find('.nombre').val();
 
   if (!nombre) {
     alert('El nombre no puede estar vacío.');

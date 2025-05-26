@@ -109,7 +109,7 @@ function llenarTabla() {
                 </select>
             `),
       // $("<td>").append(`<input type="number" class="form-control form-control-sm" style="width:50px" id="orden-${item.id}" value="${item.orden}">`),
-      $("<td class='acciones-td  text-end'>").append(`
+      $("<td class='acciones  text-end'>").append(`
                 <button class="btn btn-sm ${
                   item.estado ? "btn-success" : "btn-danger"
                 } btn-estado" 

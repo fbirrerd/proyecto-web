@@ -34,7 +34,7 @@ function cargarTabla() {
       <tr>
         <td>${item.empresa_nombre || "Sin nombre"}</td>
         <td>${item.usuario_nombre || "Sin nombre"}</td>
-        <td class="acciones-td  text-end">
+        <td class="acciones  text-end">
           <button class="btn btn-sm ${item.estado ? 'btn-success' : 'btn-danger'} btn-estado" 
             data-id-empresa="${item.usuario_id}" data-id-usuario="${item.usuario_id}" title="${item.estado ? 'Desactivar' : 'Activar'}">
             <i class="fas ${item.estado ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
@@ -103,7 +103,7 @@ function agregarFilaInline() {
       <td>
         <select class="form-select form-select-sm" id="inline-usuario">${usuarioSelect}</select>
       </td>
-      <td class="acciones-td  text-end">
+      <td class="acciones  text-end">
         <button class="btn btn-success btn-sm" onclick="guardarFilaInline()">Guardar</button>
         <button class="btn btn-secondary btn-sm" onclick="$('#fila-inline').remove()">Cancelar</button>
       </td>

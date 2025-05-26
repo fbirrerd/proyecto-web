@@ -45,8 +45,8 @@ $(document).ready(function() {
     });
 
     function cerrarSesion() {
-        
         localStorage.removeItem("dataSystem"); // Borra el localStorage
+        localStorage.removeItem("tiempoRestante"); // Borra el localStorage
         window.location.href = 'index.html'; // Redirige a index.html
     }
 

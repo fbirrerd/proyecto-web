@@ -100,7 +100,7 @@ def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> 
             username=obj_acceso.username,
             exito=True,
             mensaje=mensaje_log,
-            usuario_id=obj_acceso.usuario.id,
+            id_usuario=obj_acceso.usuario.id,
             ip=ip,
             user_agent=user_agent
         )
@@ -113,6 +113,8 @@ def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> 
 
     except Exception as e:
         logger.exception(f"Error al validar token de empresa: {e}")
+        print(f"Error al validar token de empresa: {e}")
+        
         return objRespuesta(
             respuesta=False,
             data={'error': {"numero": 500, "mensaje": "Ocurrió un error interno. Contacte al administrador."}}

@@ -33,7 +33,7 @@ function llenarTabla() {
         const $row = $("<tr>");
         $row.append(
             $("<td>").append(`<input type="text" class="form-control form-control-sm" id="nombre-${item.id}" value="${item.nombre}">`),
-            $("<td class='acciones-td  text-end'>").append(`
+            $("<td class='acciones  text-end'>").append(`
                 <button 
                     class="btn btn-sm toggle-estado-btn ${item.estado ? 'btn-success' : 'btn-secondary'}" 
                     data-id="${item.id}" 
@@ -60,7 +60,7 @@ function mostrarFilaNueva() {
     const $fila = $(`
       <tr id="filaNueva">
         <td><input type="text" class="form-control" id="nuevoRolNombre" placeholder="Nombre del rol"></td>
-        <td class="acciones-td  text-end">
+        <td class="acciones  text-end">
           <button class="btn btn-success btn-sm me-2" onclick="insertarRol()"><i class="fa fa-check"></i> Guardar</button>
           <button class="btn btn-secondary btn-sm" onclick="cancelarNuevoRol()"><i class="fa fa-times"></i> Cancelar</button>
         </td>

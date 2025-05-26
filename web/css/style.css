@@ -112,3 +112,10 @@ body {
     max-height: 200px;
     overflow-y: auto;
   }
+
+
+.acciones-col {
+    width: 130px;
+    vertical-align: middle;
+    text-align: justify;
+}
