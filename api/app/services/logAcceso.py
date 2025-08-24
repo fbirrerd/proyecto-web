@@ -1,15 +1,14 @@
 from sqlalchemy import true
 from sqlalchemy.orm import Session
 
-from app.models.models import LogAcceso
-
-
 from sqlalchemy.orm import Session
 
 
 import logging
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+
+from app.models.models import LogAcceso
 
 # Configuración básica del logger (ajústalo según tu proyecto)
 logger = logging.getLogger(__name__)

@@ -13,13 +13,22 @@ $(document).ready(function () {
 
         LoadEmpresas(empresas)
         IniciarMenu(data);
-
-        console.log(data.duracionAcceso.minutos);
-
         iniciarContador(data.duracionAcceso.minutos); 
-
     } else {
         console.log('No token found in localStorage');
+    }
+
+    function obtenerPaginaSinExtension() {
+        // Obtenemos la ruta completa de la URL
+        let ruta = window.location.pathname; // "/carpeta/pagina.html"
+
+        // Obtenemos solo el nombre del archivo
+        let archivo = ruta.substring(ruta.lastIndexOf('/') + 1); // "pagina.html"
+
+        // Quitamos la extensión si existe
+        let nombreSinExtension = archivo.split('.')[0]; // "pagina"
+
+        return nombreSinExtension;
     }
 
     function LoadEmpresas(empresasJSON) {
@@ -59,19 +68,30 @@ function LoadMenu(menuJson, idPadre, idContainer) {
     }
     let datos = getHijosOrdenados(menuJson, idPadre);
     let menuHTML = "";
+    let urlInicio = localStorage.getItem('paginaInicio');
     if(datos.length!=0){
         menuHTML = `<ul class="list-unstyled components mb-5">`;
-        datos.forEach(nodo => {
+        //INICIO
+        menuHTML += `
+            <li>
+                <a onclick="abrirEnIframe('${urlInicio}', this)" 
+                   title="Vista principal" 
+                   href="#" 
+                   target="mainFrame" 
+                   class="menu-link">
+                   <i class="fas fa-solid fa-dashboard fa-fw me-2"></i> Dashboard
+                </a>
+            </li>`;        datos.forEach(nodo => {
             let identificadorMenuHijo = `submenu-${nodo.id}`;
             if(tieneHijos(menuJson,nodo.id)){
                 menuHTML += `<li>
-                <a href="#${identificadorMenuHijo}" title="${nodo.descripcion || ''}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="menu-principal">
+                <a href="#${identificadorMenuHijo}" title="${nodo.descripcion || ''}" target="mainFrame" data-bs-toggle="collapse" aria-expanded="false" class="menu-principal">
                 <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
                 </a>` 
                 menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);         
             }else{
                 menuHTML += `<li>
-                    <a onclick="abrirEnIframe('${nodo.url}',this.id)" title="${nodo.descripcion || ''}"  href="#" target="main-iframe" class="menu-link">
+                    <a onclick="abrirEnIframe('${nodo.url}',this.id)" title="${nodo.descripcion || ''}"  href="#" target="mainFrame" class="menu-link">
                     <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
                     </a>`
             }
@@ -97,13 +117,13 @@ function loadSubMenu(menuJson, idPadre, identificadorMenuHijo) {
 
         if(tieneHijos(menuJson,nodo.id)){
             menuHTML += `<li>
-            <a href="#${identificadorMenuHijo}" title="${nodo.descripcion || ''}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="menu-principal">
+            <a href="#${identificadorMenuHijo}" title="${nodo.descripcion || ''}" target="mainFrame" data-bs-toggle="collapse" aria-expanded="false" class="menu-principal">
             <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
             </a>` 
             menuHTML += loadSubMenu(menuJson, nodo.id, identificadorMenuHijo);  
         }else {
             menuHTML += `<li>
-                <a onclick="abrirEnIframe('${nodo.url}',this)" title="${nodo.descripcion || ''}" href="#" target="main-iframe" class="menu-link">
+                <a onclick="abrirEnIframe('${nodo.url}',this)" title="${nodo.descripcion || ''}" href="#" target="mainFrame" class="menu-link">
                 <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
                 </a>`
         }
@@ -148,7 +168,7 @@ function LoadMenuModulo(menuJson, idContainer) {
     let menuHTML = `<ul class="list-unstyled">`;
     menuJson.forEach(nodo => {
         menuHTML += `<li>
-                        <a href="#${nodo.nombre}" title="${nodo.descripcion || ''}" target="main-iframe" data-bs-toggle="collapse" aria-expanded="false" class="menu-principal">
+                        <a href="#${nodo.nombre}" title="${nodo.descripcion || ''}" target="mainFrame" data-bs-toggle="collapse" aria-expanded="false" class="menu-principal">
                         <i class="fas ${nodo.icono} fa-fw me-2"></i> ${nodo.nombre}
                         </a>`
                         menuHTML += loadSubMenu(nodo.arbol, null, nodo.nombre); 
@@ -161,14 +181,22 @@ function LoadMenuModulo(menuJson, idContainer) {
 }
 
 function abrirEnIframe(url, linkElement) {
-    url = url?.startsWith("/") ? url.substring(1) : url;
-    const $url = url + ".html";
-    console.log($url);
-    $("#mainFrame").attr("src", $url);
+    if (!url) {
+        console.warn("URL no válida");
+        return;
+    }
 
-    // Opcional: manejar estilos activos con jQuery
+    // Quitar el "/" inicial si existe
+    if (url.startsWith("/")) {
+        url = url.substring(1);
+    }
+    const iframeUrl = url.endsWith(".html") ? url : url + ".html";
+    console.log("Cargando en iframe:", iframeUrl);
+    // Cambiar la URL en el iframe
+    $("#mainFrame").attr("src", iframeUrl);
+    // Manejar estilos activos
     $("ul li").removeClass("activo");
-    $(linkElement).parent().addClass("activo");
+    $(linkElement).closest("li").addClass("activo");
 }
 
 function iniciarContador(minutos) {

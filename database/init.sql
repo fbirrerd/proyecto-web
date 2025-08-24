@@ -113,7 +113,7 @@ CREATE TABLE dashboard_inicial (
 -- 🧑 Tabla: personas
 CREATE TABLE personas (
     id SERIAL PRIMARY KEY,
-    run_rut VARCHAR(12) UNIQUE,
+    run_rut VARCHAR(20) UNIQUE,
     pasaporte VARCHAR(20),
     nombres VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100),
@@ -133,11 +133,11 @@ CREATE TABLE personas (
 );
 
 -- 🖼️ Tabla: fotos_personas
-CREATE TABLE fotos_personas (
+CREATE TABLE images  (
     id SERIAL PRIMARY KEY,
     id_persona INTEGER REFERENCES personas(id) ON DELETE CASCADE,
     url_foto VARCHAR(250) NOT NULL,
-    es_principal BOOLEAN DEFAULT FALSE,
+    es_perfil BOOLEAN DEFAULT FALSE,
     estado BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT now()
 );
@@ -145,7 +145,6 @@ CREATE TABLE fotos_personas (
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    nombre_mostrar VARCHAR(200) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     "password" VARCHAR(255) NOT NULL,
     duracion INT DEFAULT 20, -- Minutos de sesión u otro uso
@@ -339,8 +338,6 @@ CREATE TABLE modulo_menu (
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    
     PRIMARY KEY (id_modulo, id_menu)
 );
-
-
 
 
 
@@ -1030,7 +1027,7 @@ VALUES
 
 -- Tipos de empresa
 INSERT INTO tipos_empresa (nombre) 
-VALUES ('Farmacia'), ('Librería'), ('Tecnologia'), ('Bodega'), ('Venta'), ('Iglesia');
+VALUES ('Librería'), ('Tecnologia'), ('Farmacia'), ('Bodega'), ('Venta'), ('Iglesia');
 
 -- Empresas
 INSERT INTO empresas (nombre, id_tipo_empresa) VALUES 
@@ -1039,28 +1036,42 @@ INSERT INTO empresas (nombre, id_tipo_empresa) VALUES
 ('Libreria', 2),
 ('Tecnologia', 3);
 
+
+INSERT INTO dashboard_inicial(pagina) VALUES
+('dashboard'),
+('dashboard-flex');
+
 -- Usuarios
 INSERT INTO usuarios (
     username,
-    nombre_mostrar,
     email,
     "password",
     duracion,
-	pagina_inicio
+    pagina_inicio,
+	id_dashboard
 ) VALUES (
     'admin',
-    'Administrador Principal',
     'fbirrer@gmail.com',
     'cambiar',  -- ¡Reemplazar por una contraseña hasheada en producción!
     30,
-	'inicio.html'
+    'dashboard.html',1
+),(
+    'test1',
+    'tes1@gmail.com',
+    'cambiar',  -- ¡Reemplazar por una contraseña hasheada en producción!
+    30,
+    'dashboard-flex.html',2
+),(
+    'test2',
+    'test2@gmail.com',
+    'cambiar',  -- ¡Reemplazar por una contraseña hasheada en producción!
+    1000,
+    'dashboard-flex.html',2
 );
 
 -- Roles
 INSERT INTO roles (nombre) VALUES 
 ('Soporte'), ('Administrador'), ('Auditor'), ('Usuario');
-
-
 
 INSERT INTO tipos_menu (nombre) VALUES ('General'), ('Modulos');
 
@@ -1107,7 +1118,7 @@ VALUES
 (1, 1),(2, 1),(3, 1),(4, 1),(5, 1),(6, 1),(7, 1),(8, 1),(9, 1);
 
 -- Menús específicos para tipos de empresa
-INSERT INTO menu_tipo_empresa (id_menu, id_tipo_empresa) VALUES (1, 1);
+INSERT INTO menu_tipo_empresa (id_menu, id_tipo_empresa) VALUES (1, 1),(2, 1),(3, 1);
 
 INSERT INTO empresa_usuario (id_empresa, id_usuario)
 VALUES
@@ -1116,11 +1127,12 @@ VALUES
 
 INSERT INTO empresa_usuario_rol
 (id_empresa, id_usuario, id_rol)
-VALUES(1, 1, 1);
+VALUES(1, 1, 1),(2, 1, 1),(3, 1, 1);
 
 INSERT INTO modulos (nombre, descripcion)
 VALUES 
 ('Ventas', 'Módulo para administrar procesos de ventas de productos y servicios'),
+('Inventario', 'Módulo para gestionar inventario'),
 ('Vademecum', 'Módulo para generar y visualizar mantenedor de farmacias/remedios'), 
 ('Agenda', 'Módulo para generar y visualizar manejo de contactos');
 
@@ -1147,7 +1159,11 @@ INSERT INTO empresa_modulo (id_empresa, id_modulo, fecha_inicio, fecha_fin, esta
 VALUES
 (1, 2, '2000-01-01', NULL, true),
 (2, 2, '2000-01-01', NULL, true),
+(3, 2, '2000-01-01', NULL, true),
+(4, 2, '2000-01-01', NULL, true),
 (1, 3, '2000-01-01', NULL, true);
+
+
 
 -- =========================
 -- FIN DEL SCRIPT

@@ -15,16 +15,15 @@ $(document).ready(function() {
         cargarNombreEmpresa(empresaNombre);
         
         let data = getDatos();
-        console.log(empresaId);
         const params = {
             "token": data.token,
             "empresaid": empresaId
-        };        
+        };
         
+
         // Llamar a la API con la empresa seleccionada
         callApi('POST', 'auth/reload', params)
             .done(function(response) {
-                console.log(response.data);
                 if (response.respuesta) {
                     localStorage.setItem('dataSystem', JSON.stringify(response.data));
                     IniciarMenu(response.data);

@@ -52,7 +52,11 @@ $(document).ready(function() {
                         showInfo("Es necesario cambiar tus credenciales");                        
                     } else {
                         updateDataSystem(response.data);
-                        window.location.href = 'dashboard.html'; // Redirige a la página para cambiar la clave
+
+                        localStorage.setItem('paginaInicio',response.data.pagina.inicio);
+                        localStorage.setItem('dashboard',response.data.pagina.dashboard);
+
+                        window.location.href = response.data.pagina.dashboard + '.html'; // Redirige a la página para cambiar la clave
                     }
                 } else {
                     // Si hay un error en la respuesta

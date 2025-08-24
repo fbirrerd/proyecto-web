@@ -5,25 +5,28 @@ from typing import Optional
 
 class UsuarioBase(BaseModel):
     username: str
-    nombre_mostrar: str
     email: str
     duracion: Optional[int] = 20
-    pagina_inicio: str
-    id_dashboard: Optional[int]
-    id_persona: Optional[int]
+    pagina_inicio: Optional[str] = "/"
+    id_dashboard: Optional[int] = None
+    id_persona: Optional[int] = None
     estado: Optional[bool] = True
 
+
 class UsuarioCreate(UsuarioBase):
-    password: str
+    password: str  # requerido al crear usuario
+
 
 class UsuarioUpdate(BaseModel):
-    nombre_mostrar: Optional[str]
-    email: Optional[str]
-    duracion: Optional[int]
-    pagina_inicio: Optional[str]
-    id_dashboard: Optional[int]
-    id_persona: Optional[int]
-    estado: Optional[bool]
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    duracion: Optional[int] = None
+    pagina_inicio: Optional[str] = None
+    id_dashboard: Optional[int] = None
+    id_persona: Optional[int] = None
+    estado: Optional[bool] = None
+
 
 class UsuarioOut(UsuarioBase):
     id: int
@@ -32,13 +35,16 @@ class UsuarioOut(UsuarioBase):
 
     class Config:
         orm_mode = True
-
-class UsuarioAcceso(UsuarioBase):
+        
+class AccesoUsuario(BaseModel):
     id: int
     username: str
-    nombre_mostrar: str
     email: str
+    duracion: Optional[int] = 20
+    id_dashboard: Optional[int]
+    id_persona: Optional[int]
     id_direccion: Optional[int] = None
+    estado: Optional[bool] = True
     class Config:
         orm_mode = True      
 
@@ -51,7 +57,6 @@ class UsuarioList(BaseModel):
 class UsuariosListado(BaseModel):
     id: int
     username: str
-    nombre_mostrar: str
     email: str
     estado: Optional[bool] = True
     class Config:
@@ -73,5 +78,7 @@ class UsuarioCambioEstado(BaseModel):
     estado: str
     class Config:
         orm_mode = True     
+
+     
            
         

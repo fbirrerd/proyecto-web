@@ -244,7 +244,6 @@ function loadDatosUsuario(userid) {
       if (usuarios) {
         $("#id").val(userid);
         $("#username").val(usuarios.username);
-        $("#nombres").val(usuarios.nombre_mostrar);
         $("#email").val(usuarios.email);
         $("#duracion").val(usuarios.duracion);
         $("#pagina_inicio").val(usuarios.pagina_inicio);
@@ -352,7 +351,6 @@ $("#guardarClaveBtn").on("click", function () {
 
       let params = {
         username: $("#username").val(),
-        nombre_mostrar: $("#nombres").val(),
         email: $("#email").val(),
         duracion: $("#duracion").val()
       }
