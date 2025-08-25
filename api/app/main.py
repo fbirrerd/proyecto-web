@@ -9,7 +9,7 @@ from app.routes import (
     auth, empresa, usuario, menus, rol, rolMenu,
     empresaUsuario, empresaUsuarioRol, tipoEmpresa,
     tipoMenu, modulo, moduloMenu, empresaModulo,
-    region, provincia, comuna, nacionalidad
+    region, provincia, comuna, nacionalidad, vademecum
 )
 
 # Inicialización de la aplicación
@@ -60,6 +60,7 @@ app.include_router(region.router, prefix="/api/v1/region")
 app.include_router(provincia.router, prefix="/api/v1/provincia")
 app.include_router(comuna.router, prefix="/api/v1/comuna")
 app.include_router(nacionalidad.router, prefix="/api/v1/nacionalidad")
+app.include_router(vademecum.router, prefix="/api/v1/vademecum")
 
 # Ruta raíz
 @app.get("/")

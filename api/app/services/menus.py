@@ -175,7 +175,7 @@ def getListMenus(db: Session, param: MenuFiltroPlus):
         menus_mod_ids = []
         menu_list = []
         
-        print(f"{param}")
+        # print(f"{param}")
 
         # FILTRADO POR ROLES/EMPRESAS
         ####################################
@@ -189,7 +189,7 @@ def getListMenus(db: Session, param: MenuFiltroPlus):
                 EmpresaUsuario.estado == True
             ).count()        
                 
-            print(f"Count en EmpresaUsuario {cantidad}")
+            # print(f"Count en EmpresaUsuario {cantidad}")
             if cantidad==0:
                 return [] 
                            
@@ -200,7 +200,7 @@ def getListMenus(db: Session, param: MenuFiltroPlus):
             ).all()
             
             roles_ids = [item.id_rol for item in EmpresaUsuarioRolList] 
-            print(f"roles {roles_ids}")
+            # print(f"roles {roles_ids}")
             
             MenuRolList = db.query(MenuRol).filter(
                 and_(
@@ -211,7 +211,7 @@ def getListMenus(db: Session, param: MenuFiltroPlus):
             if not MenuRolList:
                 return []                            
             menus_ids = [item.id_menu for item in MenuRolList]
-            print(f"menus {menus_ids}")
+            # print(f"menus {menus_ids}")
 
 
         # FILTRADO POR MODULOS
@@ -219,6 +219,7 @@ def getListMenus(db: Session, param: MenuFiltroPlus):
         ####################################
         ####################################
 
+        print(f"{param.id_modulo}")
         if param.id_modulo!=None:
             ModuloMenuList = db.query(ModuloMenu).filter(
                 and_(
@@ -229,8 +230,6 @@ def getListMenus(db: Session, param: MenuFiltroPlus):
             ).all()    
             menus_mod_ids = set(item.id_menu for item in ModuloMenuList)
             print(f"📦 Menús del módulo {param.id_modulo} encontrados: {menus_mod_ids}")
-        
-
         
         ####################################
         ####################################
