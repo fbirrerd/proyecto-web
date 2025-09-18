@@ -66,5 +66,7 @@ class MenuFiltroPlus(BaseModel):
     id_usuario: Optional[int] = None    
     id_empresa: Optional[int] = None    
     id_modulo: Optional[int] = None        
+    id_padre: Optional[int] = None        
     solo_activos: Optional[bool] = False        
-    ordenado: Optional[bool] = False        
+    ordenado: Optional[bool] = False
+    modo: Optional[int] = 2        

@@ -46,9 +46,13 @@ $(document).ready(function() {
     function cerrarSesion() {
         localStorage.removeItem("dataSystem"); // Borra el localStorage
         localStorage.removeItem("tiempoRestante"); // Borra el localStorage
+        localStorage.removeItem('empresa_id');
+        localStorage.removeItem('usuario_id');
+        localStorage.removeItem('dashboard');
+        localStorage.removeItem('paginaInicio');
+        
         window.location.href = 'index.html'; // Redirige a index.html
     }
-
 
     // Verificar el estado del sidebar al cargar la página
     if (localStorage.getItem('sidebarState') === 'hidden') {

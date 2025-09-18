@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from app.schemas.menus import MenuFiltroPlus
 from app.models.models import EmpresaModulo, Modulo
 from app.schemas.modulo import ModuloBase, ModuloConArbol, ModuloCreate,  ModuloUpdate
-from app.services.menus import getListMenus
 
 def get_modulos(db: Session) -> List[ModuloBase]:
     return db.query(Modulo).all()
@@ -39,24 +38,6 @@ def delete_modulo(db: Session, modulo_id: int) -> ModuloBase:
     return db_modulo
 
 
-def ListMenuXModulo(db: Session, empresaId: int, usuarioId: int) -> list[ModuloConArbol]:
-    lModulos = obtener_modulos_por_empresa(db, empresaId)
-    for modulo in lModulos:
-        print(modulo.id, modulo.nombre, modulo.descripcion)
-        
-        obj = MenuFiltroPlus(
-            id_tipo_menu=2,    
-            id_usuario=usuarioId,    
-            id_empresa=empresaId, 
-            id_modulo=modulo.id,   
-            solo_activos=True,     
-            ordenado=True          
-        )
-        lArbol = getListMenus(db, obj)        
-        modulo.arbol = lArbol
-
-    return lModulos    
- 
 def obtener_modulos_por_empresa(db: Session, empresa_id: int) -> list[ModuloConArbol]:
     print(f"Obteniendo módulos para la empresa con ID: {empresa_id}")
     try:

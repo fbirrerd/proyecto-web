@@ -4,13 +4,8 @@ from sqlalchemy.orm import Session
 from app.utils.redis_utils import get_redis
 from typing import Optional
 from typing import Optional, List
-import json
 
-def get_vademecum(db: Session, id_empresa: Optional[int] = None):
-    print(f"pasa por aca")
-    query = db.execute(text("SELECT * FROM vw_medicamentos_completos where id_empresa = " + id_empresa))
-    medicamentos = [dict(row._mapping) for row in query]
-    return medicamentos
+
 
 # def get_vademecum_cache(db: Session, id_empresa: Optional[int] = None) -> List[Vademecum]:
 #     redis_client = get_redis()

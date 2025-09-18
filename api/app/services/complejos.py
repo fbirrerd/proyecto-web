@@ -2,9 +2,11 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 from sqlalchemy.orm import Session
 
+
+from app.services.menusxmodulos import ListMenuXModulo
+from app.services.menus import obtener_menu
 from app.schemas.usuario import AccesoUsuario
 from app.schemas.menus import MenuFiltroPlus
-from app.services.menus import  getListMenus
 from app.services.acceso import crear_acceso
 from app.services.rol import getDatosRol
 from app.services.empresa import getDatosEmpresa
@@ -12,7 +14,6 @@ from app.services.usuario import getDatosUsuarioXID
 from app.schemas.complejos import AccesoDuracion, AccesoPagina, DatosAcceso
 from app.models.models import Acceso
 from app.utils.security import generar_jwt
-from app.services.modulo import ListMenuXModulo
 from app.services.dashboard_inicial import get_dashboard, get_dashboard_pagina
 
 
@@ -30,11 +31,6 @@ def getObjetoAcceso(db: Session, userid: int, empresaid: Optional[int] = None, t
             email=oUsuario.email
         )
         
-        # oPagina = AccesoPagina(
-        #     dashboard=oUsuario.id_dashboard,
-        #     inicio=oUsuario.pagina_inicio,
-        # )
-
         minutosAcceso = oUsuario.duracion
 
         # Obtener empresas asociadas al usuario
@@ -47,7 +43,6 @@ def getObjetoAcceso(db: Session, userid: int, empresaid: Optional[int] = None, t
 
         # Obtener roles y módulos
         lRoles = getDatosRol(db, userid, idEmpresaSeleccionada)
-        lModulos = ListMenuXModulo(db, idEmpresaSeleccionada, userid)
 
         # Obtener menús ordenados
         
@@ -56,9 +51,11 @@ def getObjetoAcceso(db: Session, userid: int, empresaid: Optional[int] = None, t
             id_usuario=userid,    
             id_empresa=idEmpresaSeleccionada,    
             solo_activos=True,     
-            ordenado=True          
+            ordenado=True,
+            id_padre=None           
         )
-        lMenus = getListMenus(db, obj)
+        lMenus = obtener_menu(db, obj)
+        lModulos = ListMenuXModulo(db, idEmpresaSeleccionada, userid)
 
         # Generar token si no viene proporcionado
         if token is None:
@@ -102,7 +99,7 @@ def getObjetoAcceso(db: Session, userid: int, empresaid: Optional[int] = None, t
     
     except Exception as e:
         print(f"Error en getObjetoAcceso: {e}")
-        raise  # Relanzamos el error para que el controlador superior lo capture
+        raise  # Relanzamos eMKBLBKLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLl error para que el controlador superior lo capture
 
 def getNombreDashboard(db: Session, dashboardid: int) -> str:
     return get_dashboard(db,dashboardid)    

@@ -7,15 +7,20 @@ $(document).ready(function () {
     }
 
     let data = getDatos();
+    console.log(data);
     if (data) {
         let token = data.token;
         let empresas = data.empresas;
+
+        localStorage.setItem('empresa_id', data.empresaSeleccionada);
+        localStorage.setItem('usuario_id', data.usuario.id);
 
         LoadEmpresas(empresas)
         IniciarMenu(data);
         iniciarContador(data.duracionAcceso.minutos); 
     } else {
         console.log('No token found in localStorage');
+
     }
 
     function obtenerPaginaSinExtension() {
@@ -224,7 +229,6 @@ function iniciarContador(minutos) {
 
         if (tiempoRestante <= 0) {
             clearInterval(intervalo);
-            localStorage.removeItem('tiempoRestante'); // limpia el almacenamiento
             cerrarSesion();
         } else {
             tiempoRestante--;
@@ -233,13 +237,15 @@ function iniciarContador(minutos) {
     }, 1000);
 }
 
-    function cerrarSesion() {
-        localStorage.removeItem("dataSystem"); // Borra el localStorage
-        localStorage.removeItem("tiempoRestante"); // Borra el localStorage
-        window.location.href = 'index.html'; // Redirige a index.html
-    }
-
-
-
+    // function cerrarSesion() {
+    //     localStorage.removeItem("dataSystem"); // Borra el localStorage
+    //     localStorage.removeItem("tiempoRestante"); // Borra el localStorage
+    //     localStorage.removeItem('empresa_id');
+    //     localStorage.removeItem('usuario_id');
+    //     localStorage.removeItem('dashboard');
+    //     localStorage.removeItem('paginaInicio');
+        
+    //     window.location.href = 'index.html'; // Redirige a index.html
+    // }
 
 console.log("dashboard-token.js cargado (versión con jQuery para UI).");

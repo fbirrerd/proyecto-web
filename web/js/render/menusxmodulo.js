@@ -16,7 +16,7 @@ function fetchitems() {
     ordenado: true
   };
 
-  callApi("POST", "menu/lista", params)
+  callApi("POST", "menu/modulos", params)
     .done(function (response) {
       if (response.respuesta) {
         currentData = response.data;

@@ -2,16 +2,23 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-class VademecumBase(BaseModel):
+from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
+
+class VademecumOut(BaseModel):
+    id_medicamento: int
+    id_empresa: int
     url_logo: Optional[str] = None
     nombre_laboratorio: str
-    id_medicamento: int
     url_medicamento: Optional[str] = None
     nombre_comercial: str
-    nombre_generico: Optional[str] = None
-    forma_farmaceutica: Optional[str] = None
-    concentracion: Optional[str] = None
-    nombre_categoria: Optional[str] = None
+    nombre_generico: str
+    forma_farmaceutica: str
+    concentracion: str
+    nombre_categoria: str
     estado: Optional[bool] = None
-    fecha_creacion: Optional[datetime] = None
-    id_empresa: int
+    fecha_creacion: datetime
+
+    class Config:
+        from_attributes = True  # permite mapear desde SQLAlchemy

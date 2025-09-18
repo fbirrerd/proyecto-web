@@ -1,14 +1,14 @@
 from typing import List
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
-from app.models.models import Empresa, EmpresaUsuario, EmpresaUsuarioRol, Usuario
+from app.models.models import Empresa, EmpresaUsuarioRol, Usuario
 from app.schemas.empresa import EmpresaAcceso, EmpresaCreate, EmpresaList, EmpresaOut, EmpresaUpdate, UsuarioListado
 
 
 def getDatosEmpresa(db: Session, UsuarioId: int):
-    userEmpObj = db.query(EmpresaUsuario).filter(
-        and_(EmpresaUsuario.id_usuario == UsuarioId, 
-             EmpresaUsuario.estado == True)).all()
+    userEmpObj = db.query(EmpresaUsuarioRol).filter(
+        and_(EmpresaUsuarioRol.id_usuario == UsuarioId, 
+             EmpresaUsuarioRol.estado == True)).all()
     if not userEmpObj:
         raise Exception("Registro EmpresaUsuario no encontrado")
     
@@ -79,8 +79,8 @@ def get_lista(db: Session) ->  EmpresaList:
 def get_lista_usuarios(db: Session, empresa_id: int) -> List[UsuarioListado]:
     try:
         # Paso 1: Obtener ids como lista de enteros
-        subquery = db.query(EmpresaUsuario.id_usuario)\
-                     .filter(EmpresaUsuario.id_empresa == empresa_id)\
+        subquery = db.query(EmpresaUsuarioRol.id_usuario)\
+                     .filter(EmpresaUsuarioRol.id_empresa == empresa_id)\
                      .all()
         id_usuarios = [r[0] for r in subquery]  # Desempaquetar correctamente
 

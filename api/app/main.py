@@ -7,7 +7,7 @@ from app.config import ALLOWED_ORIGINS
 # Importación de routers agrupados
 from app.routes import (
     auth, empresa, usuario, menus, rol, rolMenu,
-    empresaUsuario, empresaUsuarioRol, tipoEmpresa,
+    empresaUsuarioRol, tipoEmpresa,
     tipoMenu, modulo, moduloMenu, empresaModulo,
     region, provincia, comuna, nacionalidad, vademecum
 )
@@ -52,7 +52,6 @@ app.include_router(tipoMenu.router, prefix="/api/v1/tipomenu")
 app.include_router(moduloMenu.router, prefix="/api/v1/modulomenu")
 app.include_router(empresaModulo.router, prefix="/api/v1/empresamodulo")
 app.include_router(rolMenu.router, prefix="/api/v1/rolmenu")
-app.include_router(empresaUsuario.router, prefix="/api/v1/empresausuario")
 app.include_router(empresaUsuarioRol.router, prefix="/api/v1/empresausuariorol")
 
 # Endpoints geográficos

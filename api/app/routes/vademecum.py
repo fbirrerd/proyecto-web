@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.services.vademecum import get_vademecum
 from app.database import SessionLocal
 from app.schemas.respond import objRespuesta
-from app.services.views import get_vademecum
 
 router = APIRouter(tags=["Vademecum"])
 
@@ -30,13 +30,16 @@ def get_db():
 #             data=[]
 #         )
 
-@router.get("/{id_empresa}", response_model=objRespuesta)
-def obtener_lista_vademecum(id_empresa: int, db: Session = Depends(get_db)):
 
+@router.get("/{id_empresa}", response_model=objRespuesta)
+def get_medicamentos(id_empresa: int, db: Session = Depends(get_db)): 
     try:
         medicamentos = get_vademecum(db, id_empresa)
         if not medicamentos:
             raise HTTPException(status_code=404, detail="No medicamentos found")
-        return medicamentos
+        return objRespuesta(respuesta=True, data=medicamentos)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving medicamentos: {str(e)}")
+        return objRespuesta(
+            respuesta=False,
+            data=f"Error al obtener la lista de empresas: {str(e)}"
+        )

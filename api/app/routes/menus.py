@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.schemas.respond import objRespuesta
 from app.schemas.menus import MenuEstadoUpdate, MenuFiltroPlus, MenuUpdate
-from app.services.menus import actualizar_estado, actualizar_menu, getListMenuOrdenada, getListMenus
+from app.services.menus import actualizar_estado, actualizar_menu, getListMenuOrdenada, obtener_menu, obtener_menu_modulo
 from app.database import SessionLocal
 
 router = APIRouter(tags=["Menu"])
@@ -55,9 +55,18 @@ def cambiar_estado_menu(menu: MenuEstadoUpdate, db: Session = Depends(get_db)):
         return objRespuesta(respuesta=False, data=f"Error al cambiar estado del menú: {str(e)}")
     
 @router.post("/lista", response_model=objRespuesta)
-def obtener_menus_x_tipo(param: MenuFiltroPlus, db: Session = Depends(get_db)):  
+def obtener_menus_x_tipo(filtro: MenuFiltroPlus, db: Session = Depends(get_db)):  
     try:
-        data = getListMenus(db,param)
+        data = obtener_menu(db,filtro)
+        return objRespuesta(respuesta=True, data=data)
+    except Exception as e:
+        return objRespuesta(respuesta=False, data=f"Error al obtener menús: {str(e)}")
+
+
+@router.post("/modulos", response_model=objRespuesta)
+def obtener_menus_x_tipo(filtro: MenuFiltroPlus, db: Session = Depends(get_db)):  
+    try:
+        data = obtener_menu_modulo(db,filtro)
         return objRespuesta(respuesta=True, data=data)
     except Exception as e:
         return objRespuesta(respuesta=False, data=f"Error al obtener menús: {str(e)}")

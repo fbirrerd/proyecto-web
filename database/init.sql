@@ -1301,64 +1301,73 @@ INSERT INTO tipos_menu (nombre) VALUES
 ('General'), ('Módulos');
 
 -- Menús
-INSERT INTO menus (nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden)
+INSERT INTO menus (
+    id, nombre, icono, id_tipo_menu, id_padre, url, descripcion, "token", orden
+)
 VALUES
-    ('Gestión', 'fa-solid fa-atom', 1, NULL, '/gestion', 'Módulo de gestión', NULL, 2),
-    ('Tablas', 'fa-solid fa-table', 1, 1, '/gestion/tablas', 'Tablas base del sistema', NULL, 1),
-    ('Tipo de Datos', 'fa-solid fa-database', 1, 1, '/gestion/tipoEmpresa', 'Gestión de Tipo de Empresas', NULL, 2),
-    ('Relaciones', 'fa-solid fa-lock', 1, 1, NULL, 'Gestionador de relaciones', NULL, 3),
-    ('Geo referencia', 'fa-solid fa-map-location-dot', 1, NULL, NULL, NULL, NULL, 4),
-    ('Empresas', 'fa-solid fa-building', 1, 2, '/gestion/empresas', 'Empresas del sistema', NULL, 1),
-    ('Usuarios', 'fa-solid fa-users', 1, 2, '/gestion/usuarios', 'Usuarios del sistema', NULL, 2),
-    ('Roles', 'fa-solid fa-user-shield', 1, 2, '/gestion/rol', 'Roles del sistema', NULL, 3),
-    ('Menús Generales', 'fa-solid fa-bars', 1, 2, '/gestion/menu', 'Menus generales del sistema', NULL, 4),
-    ('Menus X Modulo', 'fa-solid fa-sitemap', 1, 2, '/gestion/menusxmodulo', 'Menus por Modulos', NULL, 5),
-    ('Modulos', 'fa-solid fa-puzzle-piece', 1, 2, '/gestion/modulo', 'Modulos del sistema', NULL, 6),
-    ('Nacionalidad', 'fa-solid fa-flag', 1, 2, '/gestion/nacionalidad', 'Nacionalidades del sistema', NULL, 7),
-    ('Rol Menu', 'fa-solid fa-link', 1, 4, '/gestion/rolMenu', NULL, NULL, 1),
-    ('Empresa Modulo', 'fa-solid fa-layer-group', 1, 4, NULL, NULL, NULL, 1),
-    ('Empresa Usuario', 'fa-solid fa-diagram-project', 1, 4, '/gestion/empresaUsuario', NULL, NULL, 2),
-    ('Empresa Otro', 'fa-solid fa-user-tie', 1, 4, NULL, NULL, NULL, 2),
-    ('Modulos Menu', 'fa-solid fa-list', 1, 4, NULL, NULL, NULL, 3),
-    ('Tipo de Empresas', 'fa-solid fa-industry', 1, 3, '/gestion/tipoEmpresa', NULL, NULL, 1),
-    ('Tipo de Menu', 'fa-solid fa-list', 1, 3, '/gestion/tipoMenu', NULL, NULL, 2),
-    ('Regiones', 'fa-solid fa-globe', 1, 5, '/modulo-georeferencia/regiones', NULL, NULL, 2),
-    ('Provincias', 'fa-solid fa-map', 1, 5, '/modulo-georeferencia/provincias', NULL, NULL, 3),
-    ('Comunas', 'fa-solid fa-location-dot', 1, 5, '/modulo-georeferencia/comunas', NULL, NULL, 4),
-    ('Personas', 'fa-solid fa-users', 2, NULL, NULL, NULL, NULL, 1),
-    ('Vademecum-Lista', 'fa-solid fa-book-medical', 2, NULL, '/modulo-vademecum/lista', NULL, NULL, 1),
-    ('Hashtag', 'fa-solid fa-hashtag', 2, NULL, NULL, NULL, NULL, 2),
-    ('Tablas', 'fa-solid fa-table', 2, NULL, '/modulo-inventario', NULL, NULL, 2),
-    ('Informes', 'fa-solid fa-file-lines', 2, NULL, NULL, NULL, NULL, 3),
-    ('Correos', 'fa-solid fa-envelope', 2, NULL, NULL, NULL, NULL, 4),
-    ('Movimientos', 'fa-solid fa-arrow-right-arrow-left', 2, NULL, '/modulo-inventario/movimientos', NULL, NULL, 2),
-    ('Medicamentos', 'fa-solid fa-capsules', 2, 24, '/modulo-vademecum/medicamento', NULL, NULL, 1),
-    ('Laboratorios', 'fa-solid fa-flask', 2, 24, '/modulo-vademecum/laboratorios', NULL, NULL, 2),
-    ('Cat. Terapeuticas', 'fa-solid fa-stethoscope', 2, 24, '/modulo-vademecum/catTerapeuticas', NULL, NULL, 3),
-    ('Cat. Medicamentos', 'fa-solid fa-prescription', 2, 24, '/modulo-vademecum/cat-medicamentos', NULL, NULL, 4),
-    ('Indicaciones', 'fa-solid fa-clipboard-list', 2, 24, '/modulo-vademecum/indicaciones', NULL, NULL, 5),
-    ('Posologia', 'fa-solid fa-syringe', 2, 24, '/modulo-vademecum/posologia', NULL, NULL, 6),
-    ('ContraIndicaciones', 'fa-solid fa-ban', 2, 24, '/modulo-vademecum/contraIndicaciones', NULL, NULL, 7),
-    ('Interacciones', 'fa-solid fa-arrows-to-dot', 2, 24, '/modulo-vademecum/interacciones', NULL, NULL, 8),
-    ('Efectos Secundarios', 'fa-solid fa-triangle-exclamation', 2, 24, '/modulo-vademecum/efectosSecundarios', NULL, NULL, 9),
-    ('Presentaciones', 'fa-solid fa-box', 2, 24, '/modulo-vademecum/presentaciones', NULL, NULL, 10),
-    ('Farmacinetica', 'fa-solid fa-chart-line', 2, 24, '/modulo-vademecum/farmacinetica', NULL, NULL, 11),
-    ('Protocolos', 'fa-solid fa-file-prescription', 2, 24, '/modulo-vademecum/protocolos', NULL, NULL, 12),
-    ('Logo de Laboratorio', 'fa-solid fa-image', 2, 24, '/modulo-vademecum/logoLaboratorio', NULL, NULL, 13),
-    ('Foto de Medicamento', 'fa-solid fa-camera', 2, 24, '/modulo-vademecum/fotoMedicamento', NULL, NULL, 14),
-    ('Clientes', 'fa-solid fa-user-group', 2, 37, '/modulo-inventario/clientes', NULL, NULL, 1),
-    ('Proveedores', 'fa-solid fa-truck', 2, 37, '/modulo-inventario/proveedores', NULL, NULL, 2),
-    ('Productos', 'fa-solid fa-boxes-stacked', 2, 37, '/modulo-inventario/productos', NULL, NULL, 3),
-    ('Sucursales', 'fa-solid fa-store', 2, 37, '/modulo-inventario/sucursales', NULL, NULL, 4),
-    ('Cumpleaños', 'fa-solid fa-cake-candles', 2, 45, NULL, NULL, NULL, 1),
-    ('Busqueda', 'fa-solid fa-magnifying-glass', 2, 45, NULL, NULL, NULL, 2),
-    ('Configurados', 'fa-solid fa-gear', 2, 48, NULL, NULL, NULL, 5),
-    ('Masivos', 'fa-solid fa-envelopes-bulk', 2, 48, NULL, NULL, NULL, 6),
-    ('Templates', 'fa-solid fa-file-code', 2, 50, NULL, NULL, NULL, 1),
-    ('Calendarizar', 'fa-solid fa-calendar', 2, 50, NULL, NULL, NULL, 2),
-    ('Configuración', 'fa-solid fa-gear', 1, NULL, NULL, NULL, NULL, 10),
-    ('Propiedades', 'fa-solid fa-list-check', 1, 54, NULL, NULL, NULL, 1),
-    ('Propiedades Empresa', 'fa-solid fa-building-columns', 1, 54, NULL, NULL, NULL, 2);
+    (1, 'Gestión', 'fa-solid fa-atom', 1, NULL, '/gestion', 'Módulo de gestión', NULL, 2),
+    (2, 'Tablas', 'fa-solid fa-table', 1, 1, '/gestion/tablas', 'Tablas base del sistema', NULL, 1),
+    (3, 'Tipo de Datos', 'fa-solid fa-database', 1, 1, '/gestion/tipoEmpresa', 'Gestión de Tipo de Empresas', NULL, 2),
+    (4, 'Relaciones', 'fa-solid fa-lock', 1, 1, NULL, 'Gestionador de relaciones', NULL, 3),
+    (5, 'Geo referencia', 'fa-solid fa-map-location-dot', 1, NULL, NULL, NULL, NULL, 4),
+    (6, 'Empresas', 'fa-solid fa-building', 1, 2, '/gestion/empresas', 'Empresas del sistema', NULL, 1),
+    (7, 'Usuarios', 'fa-solid fa-users', 1, 2, '/gestion/usuarios', 'Usuarios del sistema', NULL, 2),
+    (8, 'Roles', 'fa-solid fa-user-shield', 1, 2, '/gestion/rol', 'Roles del sistema', NULL, 3),
+    (9, 'Menús Generales', 'fa-solid fa-bars', 1, 2, '/gestion/menu', 'Menus generales del sistema', NULL, 4),
+    (10, 'Menus X Modulo', 'fa-solid fa-sitemap', 1, 2, '/gestion/menusxmodulo', 'Menus por Modulos', NULL, 5),
+    (11, 'Modulos', 'fa-solid fa-puzzle-piece', 1, 2, '/gestion/modulo', 'Modulos del sistema', NULL, 6),
+    (12, 'Nacionalidad', 'fa-solid fa-flag', 1, 2, '/gestion/nacionalidad', 'Nacionalidades del sistema', NULL, 7),
+    (13, 'Rol Menu', 'fa-solid fa-link', 1, 4, '/gestion/rolMenu', NULL, NULL, 1),
+    (14, 'Empresa Modulo', 'fa-solid fa-layer-group', 1, 4, NULL, NULL, NULL, 1),
+    (15, 'Empresa Usuario', 'fa-solid fa-diagram-project', 1, 4, '/gestion/empresaUsuario', NULL, NULL, 2),
+    (16, 'Empresa Otro', 'fa-solid fa-user-tie', 1, 4, NULL, NULL, NULL, 2),
+    (17, 'Modulos Menu', 'fa-solid fa-list', 1, 4, NULL, NULL, NULL, 3),
+    (18, 'Tipo de Empresas', 'fa-solid fa-industry', 1, 3, '/gestion/tipoEmpresa', NULL, NULL, 1),
+    (19, 'Tipo de Menu', 'fa-solid fa-list', 1, 3, '/gestion/tipoMenu', NULL, NULL, 2),
+    (20, 'Regiones', 'fa-solid fa-globe', 1, 5, '/modulo-georeferencia/regiones', NULL, NULL, 2),
+    (21, 'Provincias', 'fa-solid fa-map', 1, 5, '/modulo-georeferencia/provincias', NULL, NULL, 3),
+    (22, 'Comunas', 'fa-solid fa-location-dot', 1, 5, '/modulo-georeferencia/comunas', NULL, NULL, 4),
+--vademecum
+    (23, 'Vademecum-Lista', 'fa-solid fa-book-medical', 2, NULL, '/modulo-vademecum/lista', NULL, NULL, 1),
+    (24, 'Tablas', 'fa-solid fa-table', 2, NULL, '/modulo-inventario', NULL, NULL, 2),
+    (25, 'Medicamentos', 'fa-solid fa-capsules', 2, 24, '/modulo-vademecum/medicamento', NULL, NULL, 1),
+    (26, 'Laboratorios', 'fa-solid fa-flask', 2, 24, '/modulo-vademecum/laboratorios', NULL, NULL, 2),
+    (27, 'Cat. Terapeuticas', 'fa-solid fa-stethoscope', 2, 24, '/modulo-vademecum/catTerapeuticas', NULL, NULL, 3),
+    (28, 'Cat. Medicamentos', 'fa-solid fa-prescription', 2, 24, '/modulo-vademecum/cat-medicamentos', NULL, NULL, 4),
+    (29, 'Indicaciones', 'fa-solid fa-clipboard-list', 2, 24, '/modulo-vademecum/indicaciones', NULL, NULL, 5),
+    (30, 'Posologia', 'fa-solid fa-syringe', 2, 24, '/modulo-vademecum/posologia', NULL, NULL, 6),
+    (31, 'ContraIndicaciones', 'fa-solid fa-ban', 2, 24, '/modulo-vademecum/contraIndicaciones', NULL, NULL, 7),
+    (32, 'Interacciones', 'fa-solid fa-arrows-to-dot', 2, 24, '/modulo-vademecum/interacciones', NULL, NULL, 8),
+    (33, 'Efectos Secundarios', 'fa-solid fa-triangle-exclamation', 2, 24, '/modulo-vademecum/efectosSecundarios', NULL, NULL, 9),
+    (34, 'Presentaciones', 'fa-solid fa-box', 2, 24, '/modulo-vademecum/presentaciones', NULL, NULL, 10),
+    (35, 'Farmacinetica', 'fa-solid fa-chart-line', 2, 24, '/modulo-vademecum/farmacinetica', NULL, NULL, 11),
+    (36, 'Protocolos', 'fa-solid fa-file-prescription', 2, 24, '/modulo-vademecum/protocolos', NULL, NULL, 12),
+    (37, 'Logo de Laboratorio', 'fa-solid fa-image', 2, 24, '/modulo-vademecum/logoLaboratorio', NULL, NULL, 13),
+    (38, 'Foto de Medicamento', 'fa-solid fa-camera', 2, 24, '/modulo-vademecum/fotoMedicamento', NULL, NULL, 14),
+--agenda
+    (39, 'Personas', 'fa-solid fa-users', 2, NULL, NULL, NULL, NULL, 1),
+    (40, 'Hashtag', 'fa-solid fa-hashtag', 2, NULL, NULL, NULL, NULL, 2),
+    (41, 'Informes', 'fa-solid fa-file-lines', 2, NULL, NULL, NULL, NULL, 3),
+    (42, 'Correos', 'fa-solid fa-envelope', 2, NULL, NULL, NULL, NULL, 4),
+    (43, 'Cumpleaños', 'fa-solid fa-cake-candles', 2, 41, NULL, NULL, NULL, 1),
+    (44, 'Busqueda', 'fa-solid fa-magnifying-glass', 2, 41, NULL, NULL, NULL, 2),
+    (45, 'Configurados', 'fa-solid fa-gear', 2, 41, NULL, NULL, NULL, 5),
+    (46, 'Masivos', 'fa-solid fa-envelopes-bulk', 2, 41, NULL, NULL, NULL, 6),
+    (47, 'Templates', 'fa-solid fa-file-code', 2, 46, NULL, NULL, NULL, 1),
+    (48, 'Calendarizar', 'fa-solid fa-calendar', 2, 46, NULL, NULL, NULL, 2),
+--inventario
+    (49, 'Movimientos', 'fa-solid fa-arrow-right-arrow-left', 2, NULL, '/modulo-inventario/movimientos', NULL, NULL, 2),
+    (50, 'Clientes', 'fa-solid fa-user-group', 2, 37, '/modulo-inventario/clientes', NULL, NULL, 1),
+    (51, 'Proveedores', 'fa-solid fa-truck', 2, 37, '/modulo-inventario/proveedores', NULL, NULL, 2),
+    (52, 'Productos', 'fa-solid fa-boxes-stacked', 2, 37, '/modulo-inventario/productos', NULL, NULL, 3),
+    (53, 'Sucursales', 'fa-solid fa-store', 2, 37, '/modulo-inventario/sucursales', NULL, NULL, 4),
+--propiedades
+    (54, 'Configuración', 'fa-solid fa-gear', 1, NULL, NULL, NULL, NULL, 10),
+    (55, 'Propiedades', 'fa-solid fa-list-check', 1, 54, '/propiedades/configuracion', NULL, NULL, 1),
+    (56, 'Propiedades Empresa', 'fa-solid fa-building-columns', 1, 54, '/propiedades/configuracion-empresa', NULL, NULL, 2),
+    (57, 'Carga Masiva', 'fa-solid fa-envelopes-bulk', 1, 54, '/propiedades/carga-masiva', NULL, NULL, 3);
+
+SELECT setval(pg_get_serial_sequence('menus', 'id'), (SELECT MAX(id) FROM menus)+1);
 
 
 -- Relación menú-rol
@@ -1580,11 +1589,14 @@ VALUES
     (55, 3, false),
     (55, 1, true),
     (55, 4, false),
+    (56, 2, false),
+    (56, 3, false),
+    (56, 1, true),
+    (56, 4, false),
     (57, 2, false),
     (57, 3, false),
     (57, 1, true),
     (57, 4, false);
-
 -- Menús específicos para tipos de empresa
 INSERT INTO menu_tipo_empresa (id_menu, id_tipo_empresa) VALUES
 (1, 1), (2, 1), (3, 1);
@@ -1609,42 +1621,50 @@ INSERT INTO parametro_sistema (clave, valor, descripcion) VALUES
 ('valida_session', 'true', 'Se valida el tiempo de conexión de los usuarios');
 
 -- Relación módulo-menú
-INSERT INTO modulo_menu (
-    id_modulo, id_menu
-) VALUES
-    (2, 38),
-    (2, 39),
-    (2, 40),
-    (2, 41),
-    (3, 23),
-    (2, 42),
-    (3, 25),
-    (3, 26),
-    (3, 27),
-    (3, 28),
-    (3, 29),
-    (3, 30),
-    (3, 31),
-    (3, 32),
-    (3, 33),
-    (3, 34),
-    (3, 35),
-    (3, 36),
-    (3, 37),
-    (3, 38),
-    (3, 39),
-    (3, 40),
-    (3, 41),
-    (3, 42),
-    (4, 43),
-    (4, 44),
-    (4, 45),
-    (4, 46),
-    (4, 47),
-    (4, 48),
-    (4, 49),
-    (4, 50),
-    (4, 51);
+-- 1️⃣ Inserción de registros en modulo_menu (id_modulo_menu es autoincremental)
+INSERT INTO public.modulo_menu (id_modulo, id_menu, estado)
+VALUES
+    -- Módulo 3
+    (3, 23, true),
+    (3, 24, true),
+    (3, 25, true),
+    (3, 26, true),
+    (3, 27, true),
+    (3, 28, true),
+    (3, 29, true),
+    (3, 30, true),
+    (3, 31, true),
+    (3, 32, true),
+    (3, 33, true),
+    (3, 34, true),
+    (3, 35, true),
+    (3, 37, true),
+    (3, 38, true),
+
+    -- Módulo 4
+    (4, 39, true),
+    (4, 40, true),
+    (4, 41, true),
+    (4, 42, true),
+    (4, 43, true),
+    (4, 44, true),
+    (4, 45, true),
+    (4, 46, true),
+    (4, 47, true),
+    (4, 48, true),
+
+    -- Módulo 2
+    (2, 49, true),
+    (2, 50, true),
+    (2, 51, true),
+    (2, 52, true),
+    (2, 53, true),
+
+    -- Módulo 1
+    (1, 54, true),
+    (1, 55, true),
+    (1, 56, true),
+    (1, 57, true);
 
 -- Relación empresa-módulo
 INSERT INTO empresa_modulo (id_empresa, id_modulo, fecha_inicio, fecha_fin, estado) VALUES

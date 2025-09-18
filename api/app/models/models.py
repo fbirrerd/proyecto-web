@@ -229,16 +229,6 @@ class MenuRol(Base):
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-class EmpresaUsuario(Base):
-    __tablename__ = "empresa_usuario"
-
-    id_empresa = Column(Integer, ForeignKey("empresas.id", ondelete="CASCADE"), primary_key=True)
-    id_usuario = Column(Integer, ForeignKey("usuarios.id", ondelete="CASCADE"), primary_key=True)
-    fecha_creacion = Column(DateTime, default=datetime.utcnow)
-    fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    estado = Column(Boolean, default=True)
-
-
 class EmpresaUsuarioRol(Base):
     __tablename__ = "empresa_usuario_rol"
 

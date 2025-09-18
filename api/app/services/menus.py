@@ -1,7 +1,7 @@
 from typing import Any, List, Optional
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Session
-from app.models.models import EmpresaUsuario, EmpresaUsuarioRol, Menu, MenuRol, ModuloMenu
+from app.models.models import EmpresaModulo, EmpresaUsuarioRol, Menu, MenuRol, Modulo, ModuloMenu
 from app.utils.tree import getArbolOrdenadoTabulado
 from app.schemas.respond import objRespuesta
 from app.schemas.menus import MenuAcceso, MenuFiltroPlus, MenuUpdate
@@ -10,7 +10,6 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 logger = logging.getLogger(__name__)
-
     
 # def get_lista_menu(db: Session)  -> objRespuesta:
 #     try:
@@ -45,7 +44,7 @@ def actualizar_menu(db: Session, menu: MenuUpdate)  -> objRespuesta:
         if valor:
             return objRespuesta(
                 respuesta=True,
-                data=getListMenuOrdenada(db, None, None)
+                # data=getListMenuOrdenada(db, None, None)
             )
                         
     except Exception as e:
@@ -169,110 +168,7 @@ def editar_menu(db, id_menu, nombre=None, icono=None, url=None, id_padre=None, e
 #         db.rollback()
 #         return None
 
-def getListMenus(db: Session, param: MenuFiltroPlus):
-    try:
-        menus_ids = []
-        menus_mod_ids = []
-        menu_list = []
         
-        # print(f"{param}")
-
-        # FILTRADO POR ROLES/EMPRESAS
-        ####################################
-        ####################################
-        ####################################
-        if(param.id_empresa!=None and param.id_usuario!=None):
-            
-            cantidad = db.query(EmpresaUsuario).filter(
-                EmpresaUsuario.id_usuario == param.id_usuario, 
-                EmpresaUsuario.id_empresa == param.id_empresa,
-                EmpresaUsuario.estado == True
-            ).count()        
-                
-            # print(f"Count en EmpresaUsuario {cantidad}")
-            if cantidad==0:
-                return [] 
-                           
-            EmpresaUsuarioRolList = db.query(EmpresaUsuarioRol).filter(
-                and_(EmpresaUsuarioRol.id_usuario == param.id_usuario, 
-                    EmpresaUsuarioRol.id_empresa == param.id_empresa,
-                    EmpresaUsuarioRol.estado == True)
-            ).all()
-            
-            roles_ids = [item.id_rol for item in EmpresaUsuarioRolList] 
-            # print(f"roles {roles_ids}")
-            
-            MenuRolList = db.query(MenuRol).filter(
-                and_(
-                    MenuRol.id_rol.in_(roles_ids),
-                    MenuRol.estado == True    
-                )
-                ).all()
-            if not MenuRolList:
-                return []                            
-            menus_ids = [item.id_menu for item in MenuRolList]
-            # print(f"menus {menus_ids}")
-
-
-        # FILTRADO POR MODULOS
-        ####################################
-        ####################################
-        ####################################
-
-        print(f"{param.id_modulo}")
-        if param.id_modulo!=None:
-            ModuloMenuList = db.query(ModuloMenu).filter(
-                and_(
-                    ModuloMenu.id_modulo == param.id_modulo,
-                    ModuloMenu.estado == True    
-                )
-                
-            ).all()    
-            menus_mod_ids = set(item.id_menu for item in ModuloMenuList)
-            print(f"📦 Menús del módulo {param.id_modulo} encontrados: {menus_mod_ids}")
-        
-        ####################################
-        ####################################
-        # CONSULTA A LA TABLA DE MENU
-        # POR ID DE TIPO DE MENU
-        ####################################
-        ####################################
-        query = db.query(Menu).filter(
-            or_(
-                and_(
-                    param.solo_activos == True,
-                    Menu.id_tipo_menu == param.id_tipo_menu,
-                    Menu.estado == True
-                ),
-                and_(
-                    param.solo_activos == False,
-                    Menu.id_tipo_menu == param.id_tipo_menu,
-                )
-            )
-        )
-
-        ####################################
-        ####################################
-        if menus_ids:
-            query = query.filter(Menu.id.in_(menus_ids))
-        if menus_mod_ids:
-            query = query.filter(Menu.id.in_(menus_mod_ids))
-        menu_list = query.all()
-
-        if (param.ordenado):
-            menu_ordenado = getArbolOrdenadoTabulado(menu_list)
-            return menu_ordenado;
-
-        print("***fin***" )
-        return menu_list    
-
-    except SQLAlchemyError as db_err:
-        logger.error(f"Error de base de datos en getListMenuOrdenada: {str(db_err)}")
-        return []
-
-    except Exception as e:
-        logger.error(f"Error inesperado en getListMenuOrdenada: {str(e)}")
-        return []
         
 def getListMenuOrdenada(db: Session, UsuarioId: int, EmpresaId: int):
     try:
@@ -347,3 +243,277 @@ def filtrarEspecial(db: Session, id_usuario: int, id_empresa: int, id_tipo: int,
 
     
     return MenuList   
+
+def obtener_menu(db: Session, filtro: MenuFiltroPlus):
+    try:
+        # 1. obtener ids de menús disponibles
+        if filtro.id_usuario is None and filtro.id_empresa is None:
+            ids = [
+                id_menu
+                for (id_menu,) in db.query(Menu.id)
+                    .filter(
+                        Menu.id_tipo_menu == filtro.id_tipo_menu,
+                        (Menu.id_padre == filtro.id_padre) if filtro.id_padre is not None else Menu.id_padre.is_(None)
+                    )
+                    .all()
+            ]
+        else:
+            ids = [
+                id_menu
+                for (id_menu,) in get_menus_por_usuario_empresa(
+                    db, filtro.id_usuario, filtro.id_empresa
+                )
+            ]
+
+        print(f"padre {filtro.id_padre} ids disponibles: {ids}")
+
+        if not ids:  # si no hay nada, retornar vacío
+            return []
+
+        # 2. traer menús según el padre actual
+        menus = (
+            db.query(Menu)
+            .filter(
+                Menu.id.in_(ids),
+                (Menu.id_padre == filtro.id_padre) if filtro.id_padre is not None else Menu.id_padre.is_(None),
+                Menu.id_tipo_menu == filtro.id_tipo_menu
+            )
+            .order_by(Menu.orden.asc())
+            .all()
+        )
+
+        resultado = []
+
+        for menu in menus:
+            # construir filtro hijo
+            if filtro.id_usuario is None and filtro.id_empresa is None:
+                filtro_hijo = MenuFiltroPlus(
+                    id_padre=menu.id,
+                    id_tipo_menu=filtro.id_tipo_menu,
+                    modo=filtro.modo
+                )
+            else:
+                filtro_hijo = MenuFiltroPlus(
+                    id_usuario=filtro.id_usuario,
+                    id_empresa=filtro.id_empresa,
+                    id_padre=menu.id,
+                    id_tipo_menu=filtro.id_tipo_menu,
+                    modo=filtro.modo
+                )
+
+            # llamada recursiva
+            children = obtener_menu(db, filtro_hijo)
+
+            nodo = {
+                "id": menu.id,
+                "icono": menu.icono,
+                "nombre": getattr(menu, "nombre", None),
+                "id_padre": getattr(menu, "id_padre", None),
+                "url": menu.url,
+                "orden": getattr(menu, "orden", None),
+            }
+
+            if filtro.modo == 1:
+                # modo árbol → children dentro del nodo
+                nodo["children"] = children
+                resultado.append(nodo)
+
+            elif filtro.modo == 2:
+                # modo aplanado → hijos al mismo nivel
+                resultado.append(nodo)
+                if children:
+                    resultado.extend(children)
+
+        return resultado
+
+    except Exception as e:
+        print(f"Error en obtener_menu: {e}")
+        return []
+    
+
+def obtener_menu_modulo(db: Session, filtro: MenuFiltroPlus):
+    try:
+        # 1. obtener ids de módulos activos
+        print(f"Filtros {filtro}")
+        modulos = obtener_modulos_activos(db, filtro)
+        id_modulos = [modulo['id'] for modulo in modulos]
+
+        print(f"Modulos {id_modulos}")
+
+        if not modulos:
+            return []
+
+        # 2. obtener ids de menús relacionados a esos módulos
+        if filtro.id_usuario is None and filtro.id_empresa is None:
+            menus1 = (
+                db.query(ModuloMenu.id_menu)
+                .join(MenuRol, MenuRol.id_menu == ModuloMenu.id_menu)
+                .filter(
+                    MenuRol.estado == True,
+                    MenuRol.id_rol == EmpresaUsuarioRol.id_rol,
+                    ModuloMenu.estado == True,
+                    ModuloMenu.id_modulo.in_(id_modulos)
+                )
+                .all()
+            )
+        else:
+            menus1 = (
+                db.query(ModuloMenu.id_menu)
+                .join(EmpresaModulo, EmpresaModulo.id_modulo == ModuloMenu.id_modulo)
+                .join(EmpresaUsuarioRol, EmpresaUsuarioRol.id_empresa == EmpresaModulo.id_empresa)
+                .join(MenuRol, MenuRol.id_menu == ModuloMenu.id_menu)
+                .filter(
+                    EmpresaUsuarioRol.estado == True,
+                    EmpresaUsuarioRol.id_empresa == filtro.id_empresa,
+                    EmpresaUsuarioRol.id_usuario == filtro.id_usuario,
+                    EmpresaModulo.estado == True,
+                    MenuRol.estado == True,
+                    MenuRol.id_rol == EmpresaUsuarioRol.id_rol,
+                    ModuloMenu.estado == True,
+                    ModuloMenu.id_modulo.in_(id_modulos)
+                )
+                .all()
+            )
+            
+
+        # Convertimos a lista plana de IDs
+        id_menus = [row.id_menu for row in menus1]
+        print(f"id_menus {id_menus}")
+
+        if not id_menus:
+            return []
+
+        # 3. traer menús según el padre actual
+        menus = (
+            db.query(Menu)
+            .filter(
+                Menu.id.in_(id_menus),
+                Menu.id_padre.is_(filtro.id_padre) if filtro.id_padre is None else Menu.id_padre == filtro.id_padre,
+                Menu.id_tipo_menu == filtro.id_tipo_menu
+            )
+            .order_by(Menu.orden.asc())
+            .all()
+        )
+
+        resultado = []
+
+        for menu in menus:
+            filtro_hijo = MenuFiltroPlus(
+                id_usuario=filtro.id_usuario,
+                id_empresa=filtro.id_empresa,
+                id_padre=menu.id,
+                id_tipo_menu=filtro.id_tipo_menu,
+                modo=filtro.modo  # heredamos el modo
+            )
+
+            children = obtener_menu(db, filtro_hijo)
+
+            nodo = {
+                "id": menu.id,
+                "icono": menu.icono,
+                "nombre": getattr(menu, "nombre", None),
+                "id_padre": getattr(menu, "id_padre", None),
+                # "id_tipo_menu": getattr(menu, "id_tipo_menu", 1),
+                "url": menu.url,
+                "orden": getattr(menu, "orden", None),
+            }
+
+            if filtro.modo == 1:
+                # modo árbol → agregamos children
+                nodo["children"] = children
+                resultado.append(nodo)
+
+            elif filtro.modo == 2:
+                # modo aplanado → agregamos el nodo actual
+                resultado.append(nodo)
+                # concatenamos los hijos al mismo nivel
+                resultado.extend(children)
+
+        return resultado
+    except Exception as e:
+        print(f"Error en obtener_menu_modulo: {e}")
+        return []
+
+
+      
+    
+def get_menus_por_modulo_usuario_empresa(db: Session, id_usuario: int, id_empresa: int):
+    query = (
+        db.query(MenuRol.id_menu)
+        .join(EmpresaUsuarioRol, EmpresaUsuarioRol.id_rol == MenuRol.id_rol)
+        .filter(
+            MenuRol.estado == True,
+            EmpresaUsuarioRol.estado == True,
+            EmpresaUsuarioRol.id_usuario == id_usuario,
+            EmpresaUsuarioRol.id_empresa == id_empresa
+        )
+    )
+    return query.all()     
+    
+def get_menus_por_usuario_empresa(db: Session, id_usuario: int, id_empresa: int):
+    query = (
+        db.query(MenuRol.id_menu)
+        .join(EmpresaUsuarioRol, EmpresaUsuarioRol.id_rol == MenuRol.id_rol)
+        .filter(
+            MenuRol.estado == True,
+            EmpresaUsuarioRol.estado == True,
+            EmpresaUsuarioRol.id_usuario == id_usuario,
+            EmpresaUsuarioRol.id_empresa == id_empresa
+        )
+    )
+    return query.all()     
+
+# def get_menus_detalle(db: Session, id_usuario: int, id_empresa: int):
+#     # 1. obtener ids de menús disponibles
+#     ids = [id_menu for (id_menu,) in get_menus_por_usuario_empresa(db, id_usuario, id_empresa)]
+
+#     if not ids:  # si no hay nada, retornar vacío
+#         return []
+
+#     # 2. usarlos como filtro en otra consulta
+#     query = db.query(Menu).filter(Menu.id.in_(ids))
+#     return query.all()
+
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
+from typing import List, Dict
+
+def obtener_modulos_activos(db: Session, filtro: MenuFiltroPlus) -> List[Modulo]:
+    try:
+        if filtro.id_usuario is None and filtro.id_empresa is None:
+            modulos = (
+                db.query(Modulo)
+                .order_by(Modulo.nombre.asc())
+                .all()
+            )
+        else:
+            modulos = (
+                db.query(Modulo.id, Modulo.nombre, Modulo.descripcion)
+                .join(EmpresaModulo, EmpresaModulo.id_modulo == Modulo.id)
+                .filter(
+                    Modulo.estado == True,
+                    EmpresaModulo.estado == True,
+                    EmpresaModulo.id_empresa == filtro.id_empresa
+                )
+                .group_by(Modulo.id, Modulo.nombre, Modulo.descripcion)
+                .order_by(Modulo.nombre.asc())
+                .all()
+            )
+
+        if not modulos:
+            # Retorna lista vacía si no hay resultados
+            return []
+
+        # Convertimos a lista de diccionarios
+        arreglo = [{"id": m.id, "nombre": m.nombre, "descripcion": m.descripcion} for m in modulos]
+        return [{"id": m.id, "nombre": m.nombre, "descripcion": m.descripcion} for m in modulos]
+
+    except SQLAlchemyError as e:
+        # Captura errores de SQLAlchemy (conexión, consulta, etc.)
+        print(f"[ERROR] SQLAlchemyError en obtener_modulos_activos: {e}")
+        return []
+
+    except Exception as e:
+        # Captura cualquier otro error inesperado
+        print(f"[ERROR] Exception en obtener_modulos_activos: {e}")
+        return []

@@ -136,16 +136,24 @@ def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Reque
             Usuario.email == user.email
         ).first()
 
+
         if not userObj:
             return objRespuesta(
                 respuesta=False,
-                error='No se encuentra el usuario',
-                status_code=404
+                data={
+                    "error": "No se encuentra el usuario",
+                    "status_code": 404
+                }
             )
 
         # Actualizar contraseña y fecha
         userObj.password = get_password_hash(user.password)
         userObj.fecha_modificacion = datetime.now(timezone.utc)
+
+        print(f"error ....: pasa por aca 2")
+        print(f"error ....: pasa por aca 3")
+        print(f"error ....: pasa por aca 4")
+
 
         # Guardar cambios
         db.commit()
@@ -153,6 +161,7 @@ def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Reque
 
         # Registrar log
         registrar_log_acceso(db,userObj.username,True,"Cambio de clave exitoso",userObj.id,ip,user_agent)
+        print(f"error ....: pasa por  5")
 
         return objRespuesta(
             respuesta=True,
@@ -166,6 +175,7 @@ def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Reque
 
     except SQLAlchemyError as e:
         db.rollback()
+        print(f"error ....: pasa por  6")
         print(f"error ....: {str(e)}")
         registrar_log_acceso(db,user.username,False,f"Error al cambiar clave: {str(e)}",None,ip,user_agent)
         return objRespuesta(

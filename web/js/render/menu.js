@@ -16,10 +16,13 @@ function fetchitems() {
     ordenado: true
   };
 
+
+
   callApi("POST", "menu/lista", params)
     .done(function (response) {
       if (response.respuesta) {
         currentData = response.data;
+        $("#filtroGeneral").val("")        
         llenarTabla();
       } else {
         showWarning("Error al cargar el menu");
@@ -185,6 +188,7 @@ $(document).on("click", ".guardar-btn", function () {
     .done(function (response) {
       if (response.respuesta) {
         showInfo("Estado actualizado con exito");
+        $("#filtroGeneral").val("")        
         fetchitems();
       } else {
         showWarning("Hubo un error al intentar actualizar");

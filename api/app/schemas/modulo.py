@@ -34,7 +34,7 @@ class ModuloNombre(BaseModel):
         orm_mode = True
 
 class ModuloConArbol(BaseModel):
-    id: int
+    id: Optional[int] = None
     nombre: str
     descripcion: str
     arbol: Optional[list[Any]]

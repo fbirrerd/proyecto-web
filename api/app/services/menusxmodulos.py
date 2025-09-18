@@ -1,7 +1,9 @@
 from typing import Any, List, Optional
-from sqlalchemy import and_, or_
+from fastapi import HTTPException
+from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
-from app.models.models import EmpresaUsuario, EmpresaUsuarioRol, Menu, MenuRol, ModuloMenu
+from app.schemas.modulo import ModuloConArbol
+from app.models.models import  EmpresaModulo, EmpresaUsuarioRol, Menu, MenuRol, Modulo, ModuloMenu
 from app.utils.tree import getArbolOrdenadoTabulado
 from app.schemas.respond import objRespuesta
 from app.schemas.menus import MenuAcceso, MenuFiltroPlus, MenuUpdate
@@ -120,7 +122,7 @@ def actualizar_menu(db: Session, menu: MenuUpdate)  -> objRespuesta:
         if valor:
             return objRespuesta(
                 respuesta=True,
-                data=getListMenuOrdenada(db, None, None)
+                # data=getListMenuOrdenada(db, None, None)
             )
                         
     except Exception as e:
@@ -244,103 +246,94 @@ def getArbolMenuModulo(db: Session, ModuloId: int, EmpresaId: int, usuarioId: in
         db.rollback()
         return None
 
-def getListMenus(db: Session, param: MenuFiltroPlus):
+        
+def ListMenuXModulo(db: Session, empresaId: int, usuarioId: int) -> list[ModuloConArbol]:
+    lModulos = obtener_modulos_por_empresa(db, empresaId, False)
+    for modulo in lModulos:
+        print(modulo.id, modulo.nombre, modulo.descripcion)
+        
+        filtro = MenuFiltroPlus(
+            id_tipo_menu=2,    
+            id_usuario=usuarioId,    
+            id_empresa=empresaId, 
+            id_modulo=modulo.id,   
+            solo_activos=True,     
+            ordenado=True          
+        )
+        lArbol = obtener_menus_modulo(db, filtro)        
+        modulo.arbol = lArbol
+
+    return lModulos    
+
+def obtener_menus_modulo(db: Session, filtro: MenuFiltroPlus):
     try:
-        menus_ids = []
-        menus_mod_ids = []
-        menu_list = []
-        
-        print(f"{param}")
-
-        # FILTRADO POR ROLES/EMPRESAS
-        ####################################
-        ####################################
-        ####################################
-        if(param.id_empresa!=None and param.id_usuario!=None):
-            
-            cantidad = db.query(EmpresaUsuario).filter(
-                EmpresaUsuario.id_usuario == param.id_usuario, 
-                EmpresaUsuario.id_empresa == param.id_empresa,
-                EmpresaUsuario.estado == True
-            ).count()        
-                
-            print(f"Count en EmpresaUsuario {cantidad}")
-            if cantidad==0:
-                return [] 
-                           
-            EmpresaUsuarioRolList = db.query(EmpresaUsuarioRol).filter(
-                and_(EmpresaUsuarioRol.id_usuario == param.id_usuario, 
-                    EmpresaUsuarioRol.id_empresa == param.id_empresa,
-                    EmpresaUsuarioRol.estado == True)
-            ).all()
-            
-            roles_ids = [item.id_rol for item in EmpresaUsuarioRolList] 
-            print(f"roles {roles_ids}")
-            
-            MenuRolList = db.query(MenuRol).filter(
-                and_(
-                    MenuRol.id_rol.in_(roles_ids),
-                    MenuRol.estado == True    
-                )
-                ).all()
-            if not MenuRolList:
-                return []                            
-            menus_ids = [item.id_menu for item in MenuRolList]
-            print(f"menus {menus_ids}")
-
-
-        # FILTRADO POR MODULOS
-        ####################################
-        ####################################
-        ####################################
-
-        if param.id_modulo!=None:
-            ModuloMenuList = db.query(ModuloMenu).filter(
-                and_(
-                    ModuloMenu.id_modulo == param.id_modulo,
-                    ModuloMenu.estado == True    
-                )
-                
-            ).all()    
-            menus_mod_ids = set(item.id_menu for item in ModuloMenuList)
-            print(f"📦 Menús del módulo {param.id_modulo} encontrados: {menus_mod_ids}")
-        
-
-        
-        ####################################
-        ####################################
-        # CONSULTA A LA TABLA DE MENU
-        # POR ID DE TIPO DE MENU
-        ####################################
-        ####################################
-        query = db.query(Menu).filter(
-            or_(
-                and_(
-                    param.solo_activos == True,
-                    Menu.id_tipo_menu == param.id_tipo_menu,
-                    Menu.estado == True
-                ),
-                and_(
-                    param.solo_activos == False,
-                    Menu.id_tipo_menu == param.id_tipo_menu,
-                )
+        menus1 = (
+            db.query(ModuloMenu.id_menu)
+            .join(EmpresaModulo, EmpresaModulo.id_modulo == ModuloMenu.id_modulo)
+            .join(EmpresaUsuarioRol, EmpresaUsuarioRol.id_empresa == EmpresaModulo.id_empresa)
+            .join(MenuRol, MenuRol.id_menu == ModuloMenu.id_menu)
+            .filter(
+                EmpresaUsuarioRol.estado == True,
+                EmpresaUsuarioRol.id_empresa == filtro.id_empresa,
+                EmpresaUsuarioRol.id_usuario == filtro.id_usuario,
+                EmpresaModulo.estado == True,
+                MenuRol.estado == True,
+                MenuRol.id_rol == EmpresaUsuarioRol.id_rol,
+                ModuloMenu.estado == True,
+                ModuloMenu.id_modulo == filtro.id_modulo
             )
+            .all()
         )
 
-        ####################################
-        ####################################
-        if menus_ids:
-            query = query.filter(Menu.id.in_(menus_ids))
-        if menus_mod_ids:
-            query = query.filter(Menu.id.in_(menus_mod_ids))
-        menu_list = query.all()
+        id_menus = [row.id_menu for row in menus1]
 
-        if (param.ordenado):
-            menu_ordenado = getArbolOrdenadoTabulado(menu_list)
-            return menu_ordenado;
 
-        print("***fin***" )
-        return menu_list    
+        menus = (
+            db.query(Menu)
+            .filter(
+                Menu.id.in_(id_menus),
+                Menu.id_padre.is_(filtro.id_padre) if filtro.id_padre is None else Menu.id_padre == filtro.id_padre,
+                Menu.id_tipo_menu == filtro.id_tipo_menu
+            )
+            .order_by(Menu.orden.asc())
+            .all()
+        )
+
+        resultado = []
+        for menu in menus:
+            filtro_hijo = MenuFiltroPlus(
+                id_usuario=filtro.id_usuario,
+                id_empresa=filtro.id_empresa,
+                id_padre=menu.id,
+                id_tipo_menu=filtro.id_tipo_menu,
+                modo=filtro.modo  # heredamos el modo
+            )
+
+            children = obtener_menus_modulo(db, filtro_hijo)
+
+            nodo = {
+                "id": menu.id,
+                "icono": menu.icono,
+                "nombre": getattr(menu, "nombre", None),
+                "id_padre": getattr(menu, "id_padre", None),
+                # "id_tipo_menu": getattr(menu, "id_tipo_menu", 1),
+                "url": menu.url,
+                "orden": getattr(menu, "orden", None),
+            }
+
+            if filtro.modo == 1:
+                # modo árbol → agregamos children
+                nodo["children"] = children
+                resultado.append(nodo)
+
+            elif filtro.modo == 2:
+                # modo aplanado → agregamos el nodo actual
+                resultado.append(nodo)
+                # concatenamos los hijos al mismo nivel
+                resultado.extend(children)
+
+        return resultado
+
 
     except SQLAlchemyError as db_err:
         logger.error(f"Error de base de datos en getListMenuOrdenada: {str(db_err)}")
@@ -349,5 +342,54 @@ def getListMenus(db: Session, param: MenuFiltroPlus):
     except Exception as e:
         logger.error(f"Error inesperado en getListMenuOrdenada: {str(e)}")
         return []
-        
-    
+
+def obtener_modulos_por_empresa(db: Session, empresa_id: int, incluir_general: bool) -> list[ModuloConArbol]:
+    try:
+        # Paso 1: Obtener los id_modulo de la empresa
+        ids_modulos = db.query(EmpresaModulo.id_modulo).filter(
+            and_(
+                EmpresaModulo.id_empresa == empresa_id,
+                EmpresaModulo.fecha_inicio <= func.now(),
+                or_(
+                    EmpresaModulo.fecha_fin == None,
+                    EmpresaModulo.fecha_fin >= func.now()
+                ),
+                EmpresaModulo.estado == True
+            )
+        ).all()
+        lista_ids = [id_tuple[0] for id_tuple in ids_modulos]
+
+        if not ids_modulos:
+            print(f"No se encontraron módulos asociados a la empresa con ID: {empresa_id}")
+            return []
+
+        # Paso 2: Consultar los módulos con esos IDs
+        modulos = (
+            db.query(Modulo)
+                .filter(Modulo.id.in_(lista_ids))
+                .order_by(Modulo.nombre.asc())
+                .all()
+            )
+
+        # Agregarlo a la lista
+        if(incluir_general):
+            modulos.append(Modulo(
+                id=None,
+                nombre="menu general",
+                descripcion="muestra los menus generales"
+            ))
+
+        if not modulos:
+            print(f"No se encontraron módulos con los IDs: {lista_ids}")
+            raise HTTPException(status_code=404, detail="No se encontraron módulos asociados.")
+
+        # Convertimos a esquema Pydantic (si tienes un schema definido)
+        modulos_pydantic = [ModuloConArbol.from_orm(mod) for mod in modulos]
+        return modulos_pydantic
+    except HTTPException as http_exc:
+        print(f"Error HTTP: {http_exc.detail}")
+        raise http_exc  
+    except Exception as e:
+        # Otros errores no controlados
+        print(f"Error inesperado al obtener módulos para la empresa {empresa_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Ocurrió un error inesperado: {str(e)}")
