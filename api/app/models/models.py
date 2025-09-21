@@ -367,6 +367,32 @@ class ModuloMenu(Base):
 
 
 # =========================
+# PROPIEDADES
+# =========================
+class Propiedad(Base):
+    __tablename__ = "propiedades"
+
+    id = Column(Integer, primary_key=True, index=True)
+    propiedad = Column(String(255), nullable=False)
+    tipo = Column(String(50), nullable=False)  # texto, numero, opciones, select
+    posibles_valores = Column(Text, nullable=True)
+
+    empresas = relationship("PropiedadEmpresa", back_populates="propiedad_rel")
+
+
+class PropiedadEmpresa(Base):
+    __tablename__ = "propiedades_empresa"
+
+    id = Column(Integer, primary_key=True, index=True)
+    empresa_id = Column(Integer, ForeignKey("empresas.id", ondelete="CASCADE"), nullable=False)
+    propiedad_id = Column(Integer, ForeignKey("propiedades.id", ondelete="CASCADE"), nullable=False)
+    valor = Column(Text, nullable=False)
+
+    propiedad_rel = relationship("Propiedad", back_populates="empresas")
+
+
+
+# =========================
 # VADEMÉCUM
 # =========================
 class VademecumLaboratorio(Base):
@@ -546,6 +572,9 @@ class Imagen(Base):
             name="chk_imagen_ref"
         ),
     )
+
+
+
 
 # app/models/medicamento.py
 from sqlalchemy import Column, Integer, String, Boolean, DateTime

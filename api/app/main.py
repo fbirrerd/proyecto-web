@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routes import vademecum_categoria, vademecum_laboratorio, vademecum_medicamento
+from app.routes import propiedad, propiedad_empresa
 from app.database import init_db
 from app.config import ALLOWED_ORIGINS
 
@@ -59,7 +61,16 @@ app.include_router(region.router, prefix="/api/v1/region")
 app.include_router(provincia.router, prefix="/api/v1/provincia")
 app.include_router(comuna.router, prefix="/api/v1/comuna")
 app.include_router(nacionalidad.router, prefix="/api/v1/nacionalidad")
+
+
+app.include_router(propiedad.router, prefix="/api/v1/propiedad")
+app.include_router(propiedad_empresa.router, prefix="/api/v1/propiedad_empresa")
+
 app.include_router(vademecum.router, prefix="/api/v1/vademecum")
+app.include_router(vademecum_categoria.router, prefix="/api/v1/vademecum/categoria")
+app.include_router(vademecum_laboratorio.router, prefix="/api/v1/vademecum/laboratorio")
+app.include_router(vademecum_medicamento.router, prefix="/api/v1/vademecum/medicamento")
+
 
 # Ruta raíz
 @app.get("/")

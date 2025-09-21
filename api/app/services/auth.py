@@ -6,11 +6,10 @@ from app.schemas.auth import LoginReload, UsuarioCambioPassword, UsuarioLogin
 from app.models.models import Acceso, Usuario
 from app.utils.password import get_password_hash, verify_password
 from sqlalchemy.orm import Session
-from datetime import datetime, timezone
-from sqlalchemy import and_, or_
-from app.schemas.respond import objRespuesta
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import or_
 from datetime import datetime, timezone
+from app.schemas.respond import objRespuesta
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +21,10 @@ def obtener_info_cliente(request: Request):
         return ip, user_agent
     return None, None
 
+
 def validar_login_usuario(db: Session, user: UsuarioLogin, request: Request) -> objRespuesta:
     ip, user_agent = obtener_info_cliente(request)
-
-    usuarioID = ""
+    usuarioID = None  
 
     try:
         userObj = db.query(Usuario).filter(
@@ -33,10 +32,13 @@ def validar_login_usuario(db: Session, user: UsuarioLogin, request: Request) -> 
         ).first()
 
         if not userObj:
-            registrar_log_acceso(db, userObj.username, False, "Usuario no encontrado", userObj.id, ip, user_agent)
-            return objRespuesta(respuesta=False, data={'error': 'Usuario no existe en la base de datos'})
-        
-        usuarioID = userObj.id 
+            registrar_log_acceso(db, user.username, False, "Usuario no encontrado", None, ip, user_agent)
+            return objRespuesta(
+                respuesta=False,
+                data={'error': 'Usuario no existe en la base de datos'}
+            )
+
+        usuarioID = userObj.id
 
         if userObj.password == "cambiar":
             registrar_log_acceso(db, userObj.username, True, "Requiere cambio de clave", userObj.id, ip, user_agent)
@@ -51,7 +53,7 @@ def validar_login_usuario(db: Session, user: UsuarioLogin, request: Request) -> 
         return objRespuesta(respuesta=True, data=objAcceso)
 
     except Exception as e:
-        print(f"❌ Error durante la validación del login: {e}")
+        logger.exception(f"❌ Error durante la validación del login: {e}")
         registrar_log_acceso(db, user.username, False, f"Excepción en login: {e}", usuarioID, ip, user_agent)
         return objRespuesta(
             respuesta=False,
@@ -60,22 +62,9 @@ def validar_login_usuario(db: Session, user: UsuarioLogin, request: Request) -> 
 
 
 def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> objRespuesta:
-    """
-    Valida el token de empresa y registra el acceso.
-
-    Args:
-        db (Session): Sesión de base de datos.
-        login (LoginReload): Objeto con datos de login (incluye token y empresaid).
-        request (Request): Objeto de solicitud para obtener IP y user-agent.
-
-    Returns:
-        objRespuesta: Respuesta estructurada con éxito o error.
-    """
     try:
-        # Obtener datos del cliente
         ip, user_agent = obtener_info_cliente(request)
 
-        # Obtener ID del usuario a partir del token
         id_usuario = getIDUsuarioXToken(db, login.token)
         if not id_usuario:
             logger.warning(f"Token inválido: {login.token}")
@@ -84,7 +73,6 @@ def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> 
                 data={'error': {"numero": 401, "mensaje": "Token inválido"}}
             )
 
-        # Obtener objeto de acceso con permisos/empresa
         obj_acceso = getObjetoAcceso(db, id_usuario, login.empresaid, login.token)
         if not obj_acceso:
             logger.warning(f"Acceso denegado: id_usuario={id_usuario}, empresaid={login.empresaid}")
@@ -93,7 +81,6 @@ def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> 
                 data={'error': {"numero": 403, "mensaje": "Acceso denegado a la empresa"}}
             )
 
-        # Registrar el log de acceso exitoso
         mensaje_log = f"Cambio de empresa exitoso. Nueva empresa: {login.empresaid}"
         registrar_log_acceso(
             db,
@@ -104,30 +91,24 @@ def validar_token_empresa(db: Session, login: LoginReload, request: Request) -> 
             ip=ip,
             user_agent=user_agent
         )
-        logger.info(f"Usuario {obj_acceso.username} cambió exitosamente a empresa {login.empresaid}")
 
-        return objRespuesta(
-            respuesta=True,
-            data=obj_acceso
-        )
+        return objRespuesta(respuesta=True, data=obj_acceso)
 
     except Exception as e:
         logger.exception(f"Error al validar token de empresa: {e}")
-        print(f"Error al validar token de empresa: {e}")
-        
         return objRespuesta(
             respuesta=False,
             data={'error': {"numero": 500, "mensaje": "Ocurrió un error interno. Contacte al administrador."}}
         )
+
+
 def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Request) -> objRespuesta:
     ip, user_agent = obtener_info_cliente(request)
 
-    # Validar datos básicos
     if not user.username or not user.email or not user.password:
         return objRespuesta(
             respuesta=False,
-            error='Faltan datos obligatorios (username, email o password)',
-            status_code=400
+            data={'error': 'Faltan datos obligatorios (username, email o password)', 'status_code': 400}
         )
 
     try:
@@ -136,32 +117,19 @@ def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Reque
             Usuario.email == user.email
         ).first()
 
-
         if not userObj:
             return objRespuesta(
                 respuesta=False,
-                data={
-                    "error": "No se encuentra el usuario",
-                    "status_code": 404
-                }
+                data={'error': "No se encuentra el usuario", 'status_code': 404}
             )
 
-        # Actualizar contraseña y fecha
         userObj.password = get_password_hash(user.password)
         userObj.fecha_modificacion = datetime.now(timezone.utc)
 
-        print(f"error ....: pasa por aca 2")
-        print(f"error ....: pasa por aca 3")
-        print(f"error ....: pasa por aca 4")
-
-
-        # Guardar cambios
         db.commit()
         db.refresh(userObj)
 
-        # Registrar log
-        registrar_log_acceso(db,userObj.username,True,"Cambio de clave exitoso",userObj.id,ip,user_agent)
-        print(f"error ....: pasa por  5")
+        registrar_log_acceso(db, userObj.username, True, "Cambio de clave exitoso", userObj.id, ip, user_agent)
 
         return objRespuesta(
             respuesta=True,
@@ -175,22 +143,14 @@ def actualizar_password(db: Session, user: UsuarioCambioPassword, request: Reque
 
     except SQLAlchemyError as e:
         db.rollback()
-        print(f"error ....: pasa por  6")
-        print(f"error ....: {str(e)}")
-        registrar_log_acceso(db,user.username,False,f"Error al cambiar clave: {str(e)}",None,ip,user_agent)
+        logger.exception(f"Error SQLAlchemy en cambio de clave: {e}")
+        registrar_log_acceso(db, user.username, False, f"Error al cambiar clave: {str(e)}", None, ip, user_agent)
         return objRespuesta(
             respuesta=False,
-            error='Error interno al intentar cambiar la clave',
-            status_code=500
+            data={'error': 'Error interno al intentar cambiar la clave', 'status_code': 500}
         )
-        
-def getIDUsuarioXToken(db: Session, token: str):
-    accesoObj = db.query(Acceso).filter(
-            Acceso.token == token
-    ).first()
 
-    if accesoObj:
-        # Convierte el ORM en Pydantic
-        return accesoObj.id_usuario
-    else:
-        return None       
+
+def getIDUsuarioXToken(db: Session, token: str):
+    accesoObj = db.query(Acceso).filter(Acceso.token == token).first()
+    return accesoObj.id_usuario if accesoObj else None

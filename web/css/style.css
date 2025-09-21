@@ -4,7 +4,7 @@ body {
     overflow-x: hidden; /* Evita scroll horizontal */
 }
 #sidebar {
-    min-width: 250px;
+    min-width: 150px;
     max-width: 250px;
     background: #343a40; /* Color de fondo del sidebar */
     color: #fff;
@@ -19,7 +19,7 @@ body {
     background: #212529; /* Cabecera más oscura */
 }
 #sidebar ul.components {
-    padding: 20px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #47748b;
 }
 #sidebar ul p {
@@ -28,7 +28,7 @@ body {
 }
 #sidebar ul li a {
     padding: 10px;
-    font-size: 1.1em;
+    font-size: 22px;
     display: block;
     color: rgba(255,255,255,0.8);
     text-decoration: none;
@@ -43,7 +43,7 @@ body {
     background: #007bff; /* Color activo/desplegado */
 }
 #sidebar ul ul a { /* Estilos para submenús */
-    font-size: 0.9em !important;
+    font-size: 20px !important;
     padding-left: 30px !important;
     background: #495057; /* Fondo para submenús */
 }

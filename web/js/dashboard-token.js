@@ -180,7 +180,7 @@ function LoadMenuModulo(menuJson, idContainer) {
                     // </li>`
     });
     menuHTML += `</ul>`;
-    // console.log(menuHTML);
+    console.log(menuHTML);
     document.getElementById(idContainer).innerHTML = menuHTML;
 
 }

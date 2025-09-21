@@ -265,8 +265,6 @@ def obtener_menu(db: Session, filtro: MenuFiltroPlus):
                 )
             ]
 
-        print(f"padre {filtro.id_padre} ids disponibles: {ids}")
-
         if not ids:  # si no hay nada, retornar vacío
             return []
 
@@ -283,7 +281,6 @@ def obtener_menu(db: Session, filtro: MenuFiltroPlus):
         )
 
         resultado = []
-
         for menu in menus:
             # construir filtro hijo
             if filtro.id_usuario is None and filtro.id_empresa is None:
@@ -303,7 +300,6 @@ def obtener_menu(db: Session, filtro: MenuFiltroPlus):
 
             # llamada recursiva
             children = obtener_menu(db, filtro_hijo)
-
             nodo = {
                 "id": menu.id,
                 "icono": menu.icono,
@@ -317,7 +313,6 @@ def obtener_menu(db: Session, filtro: MenuFiltroPlus):
                 # modo árbol → children dentro del nodo
                 nodo["children"] = children
                 resultado.append(nodo)
-
             elif filtro.modo == 2:
                 # modo aplanado → hijos al mismo nivel
                 resultado.append(nodo)
@@ -325,7 +320,6 @@ def obtener_menu(db: Session, filtro: MenuFiltroPlus):
                     resultado.extend(children)
 
         return resultado
-
     except Exception as e:
         print(f"Error en obtener_menu: {e}")
         return []
@@ -378,7 +372,6 @@ def obtener_menu_modulo(db: Session, filtro: MenuFiltroPlus):
 
         # Convertimos a lista plana de IDs
         id_menus = [row.id_menu for row in menus1]
-        print(f"id_menus {id_menus}")
 
         if not id_menus:
             return []
@@ -407,7 +400,6 @@ def obtener_menu_modulo(db: Session, filtro: MenuFiltroPlus):
             )
 
             children = obtener_menu(db, filtro_hijo)
-
             nodo = {
                 "id": menu.id,
                 "icono": menu.icono,
@@ -422,7 +414,6 @@ def obtener_menu_modulo(db: Session, filtro: MenuFiltroPlus):
                 # modo árbol → agregamos children
                 nodo["children"] = children
                 resultado.append(nodo)
-
             elif filtro.modo == 2:
                 # modo aplanado → agregamos el nodo actual
                 resultado.append(nodo)

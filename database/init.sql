@@ -1328,9 +1328,9 @@ VALUES
     (21, 'Provincias', 'fa-solid fa-map', 1, 5, '/modulo-georeferencia/provincias', NULL, NULL, 3),
     (22, 'Comunas', 'fa-solid fa-location-dot', 1, 5, '/modulo-georeferencia/comunas', NULL, NULL, 4),
 --vademecum
-    (23, 'Vademecum-Lista', 'fa-solid fa-book-medical', 2, NULL, '/modulo-vademecum/lista', NULL, NULL, 1),
+    (23, 'Vademecum-Lista', 'fa-solid fa-book-medical', 2, NULL, '/modulo-vademecum/remedios', NULL, NULL, 1),
     (24, 'Tablas', 'fa-solid fa-table', 2, NULL, '/modulo-inventario', NULL, NULL, 2),
-    (25, 'Medicamentos', 'fa-solid fa-capsules', 2, 24, '/modulo-vademecum/medicamento', NULL, NULL, 1),
+    (25, 'Medicamentos', 'fa-solid fa-capsules', 2, 24, '/modulo-vademecum/medicamentos', NULL, NULL, 1),
     (26, 'Laboratorios', 'fa-solid fa-flask', 2, 24, '/modulo-vademecum/laboratorios', NULL, NULL, 2),
     (27, 'Cat. Terapeuticas', 'fa-solid fa-stethoscope', 2, 24, '/modulo-vademecum/catTerapeuticas', NULL, NULL, 3),
     (28, 'Cat. Medicamentos', 'fa-solid fa-prescription', 2, 24, '/modulo-vademecum/cat-medicamentos', NULL, NULL, 4),
@@ -1345,16 +1345,16 @@ VALUES
     (37, 'Logo de Laboratorio', 'fa-solid fa-image', 2, 24, '/modulo-vademecum/logoLaboratorio', NULL, NULL, 13),
     (38, 'Foto de Medicamento', 'fa-solid fa-camera', 2, 24, '/modulo-vademecum/fotoMedicamento', NULL, NULL, 14),
 --agenda
-    (39, 'Personas', 'fa-solid fa-users', 2, NULL, NULL, NULL, NULL, 1),
-    (40, 'Hashtag', 'fa-solid fa-hashtag', 2, NULL, NULL, NULL, NULL, 2),
-    (41, 'Informes', 'fa-solid fa-file-lines', 2, NULL, NULL, NULL, NULL, 3),
-    (42, 'Correos', 'fa-solid fa-envelope', 2, NULL, NULL, NULL, NULL, 4),
-    (43, 'Cumpleaños', 'fa-solid fa-cake-candles', 2, 41, NULL, NULL, NULL, 1),
-    (44, 'Busqueda', 'fa-solid fa-magnifying-glass', 2, 41, NULL, NULL, NULL, 2),
+    (39, 'Personas', 'fa-solid fa-users', 2, NULL, '/modulo-agenda/personas', NULL, NULL, 1),
+    (40, 'Hashtag', 'fa-solid fa-hashtag', 2, NULL, '/modulo-agenda/hashtags', NULL, NULL, 2),
+    (41, 'Informes', 'fa-solid fa-file-lines', 2, NULL, '/modulo-agenda/informes', NULL, NULL, 3),
+    (42, 'Correos', 'fa-solid fa-envelope', 2, NULL, '/modulo-agenda/correos', NULL, NULL, 4),
+    (43, 'Cumpleaños', 'fa-solid fa-cake-candles', 2, 41, '/modulo-agenda/cumpleanos', NULL, NULL, 1),
+    (44, 'Busqueda', 'fa-solid fa-magnifying-glass', 2, 41, '/modulo-agenda/busqueda', NULL, NULL, 2),
     (45, 'Configurados', 'fa-solid fa-gear', 2, 41, NULL, NULL, NULL, 5),
     (46, 'Masivos', 'fa-solid fa-envelopes-bulk', 2, 41, NULL, NULL, NULL, 6),
-    (47, 'Templates', 'fa-solid fa-file-code', 2, 46, NULL, NULL, NULL, 1),
-    (48, 'Calendarizar', 'fa-solid fa-calendar', 2, 46, NULL, NULL, NULL, 2),
+    (47, 'Templates', 'fa-solid fa-file-code', 2, 46, '/modulo-agenda/templates', NULL, NULL, 1),
+    (48, 'Calendarizar', 'fa-solid fa-calendar', 2, 46, '/modulo-agenda/calendarizar', NULL, NULL, 2),
 --inventario
     (49, 'Movimientos', 'fa-solid fa-arrow-right-arrow-left', 2, NULL, '/modulo-inventario/movimientos', NULL, NULL, 2),
     (50, 'Clientes', 'fa-solid fa-user-group', 2, 37, '/modulo-inventario/clientes', NULL, NULL, 1),
@@ -1363,9 +1363,9 @@ VALUES
     (53, 'Sucursales', 'fa-solid fa-store', 2, 37, '/modulo-inventario/sucursales', NULL, NULL, 4),
 --propiedades
     (54, 'Configuración', 'fa-solid fa-gear', 1, NULL, NULL, NULL, NULL, 10),
-    (55, 'Propiedades', 'fa-solid fa-list-check', 1, 54, '/propiedades/configuracion', NULL, NULL, 1),
-    (56, 'Propiedades Empresa', 'fa-solid fa-building-columns', 1, 54, '/propiedades/configuracion-empresa', NULL, NULL, 2),
-    (57, 'Carga Masiva', 'fa-solid fa-envelopes-bulk', 1, 54, '/propiedades/carga-masiva', NULL, NULL, 3);
+    (55, 'Propiedades', 'fa-solid fa-list-check', 1, 54, '/configuracion/propiedades', NULL, NULL, 1),
+    (56, 'Propiedades Empresa', 'fa-solid fa-building-columns', 1, 54, '/configuracion/configuracion-empresa', NULL, NULL, 2),
+    (57, 'Carga Masiva', 'fa-solid fa-envelopes-bulk', 1, 54, '/configuracion/carga-masiva', NULL, NULL, 3);
 
 SELECT setval(pg_get_serial_sequence('menus', 'id'), (SELECT MAX(id) FROM menus)+1);
 
@@ -1800,44 +1800,44 @@ BEGIN
         clasificacion VARCHAR
     );
 
-    -- Insertar los 950 medicamentos placeholders
-    INSERT INTO vademecum_medicamentos (
-        nombre_comercial, 
-        nombre_generico, 
-        forma_farmaceutica, 
-        concentracion, 
-        id_laboratorio, 
-        registro_sanitario, 
-        clasificacion, 
-        id_empresa, 
-        estado, 
-        fecha_creacion
-    )
-    SELECT 
-        CONCAT('Medicamento ', n, ' FarmaVida') AS nombre_comercial,
-        CONCAT('Principio Activo ', n) AS nombre_generico,
-        CASE 
-            WHEN n % 4 = 0 THEN 'Comprimido'
-            WHEN n % 4 = 1 THEN 'Cápsula'
-            WHEN n % 4 = 2 THEN 'Inyectable'
-            ELSE 'Tópico'
-        END AS forma_farmaceutica,
-        CASE 
-            WHEN n % 4 = 0 THEN CONCAT((n % 100 + 10), ' mg')
-            WHEN n % 4 = 1 THEN CONCAT((n % 100 + 5), ' mg')
-            WHEN n % 4 = 2 THEN CONCAT((n % 10 + 1), ' UI/ml')
-            ELSE CONCAT((n % 5 + 1), '%')
-        END AS concentracion,
-        FLOOR(1 + (RANDOM() * 15))::INTEGER AS id_laboratorio,
-        CONCAT('REG-', LPAD((n + 50)::TEXT, 4, '0')) AS registro_sanitario,
-        CASE 
-            WHEN n % 2 = 0 THEN 'Prescripción'
-            ELSE 'Venta libre'
-        END AS clasificacion,
-        1,
-        TRUE,
-        CURRENT_TIMESTAMP
-    FROM generate_series(1, 950) AS n;
+--     -- Insertar los 950 medicamentos placeholders
+--     INSERT INTO vademecum_medicamentos (
+--         nombre_comercial, 
+--         nombre_generico, 
+--         forma_farmaceutica, 
+--         concentracion, 
+--         id_laboratorio, 
+--         registro_sanitario, 
+--         clasificacion, 
+--         id_empresa, 
+--         estado, 
+--         fecha_creacion
+--     )
+--     SELECT 
+--         CONCAT('Medicamento ', n, ' FarmaVida') AS nombre_comercial,
+--         CONCAT('Principio Activo ', n) AS nombre_generico,
+--         CASE 
+--             WHEN n % 4 = 0 THEN 'Comprimido'
+--             WHEN n % 4 = 1 THEN 'Cápsula'
+--             WHEN n % 4 = 2 THEN 'Inyectable'
+--             ELSE 'Tópico'
+--         END AS forma_farmaceutica,
+--         CASE 
+--             WHEN n % 4 = 0 THEN CONCAT((n % 100 + 10), ' mg')
+--             WHEN n % 4 = 1 THEN CONCAT((n % 100 + 5), ' mg')
+--             WHEN n % 4 = 2 THEN CONCAT((n % 10 + 1), ' UI/ml')
+--             ELSE CONCAT((n % 5 + 1), '%')
+--         END AS concentracion,
+--         FLOOR(1 + (RANDOM() * 15))::INTEGER AS id_laboratorio,
+--         CONCAT('REG-', LPAD((n + 50)::TEXT, 4, '0')) AS registro_sanitario,
+--         CASE 
+--             WHEN n % 2 = 0 THEN 'Prescripción'
+--             ELSE 'Venta libre'
+--         END AS clasificacion,
+--         1,
+--         TRUE,
+--         CURRENT_TIMESTAMP
+--     FROM generate_series(1, 950) AS n;
 END $$;
 
 -- Insertar Medicamento-Categoría

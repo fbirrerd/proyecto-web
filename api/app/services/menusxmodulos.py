@@ -258,7 +258,7 @@ def ListMenuXModulo(db: Session, empresaId: int, usuarioId: int) -> list[ModuloC
             id_empresa=empresaId, 
             id_modulo=modulo.id,   
             solo_activos=True,     
-            ordenado=True          
+            ordenado=True         
         )
         lArbol = obtener_menus_modulo(db, filtro)        
         modulo.arbol = lArbol
@@ -286,8 +286,6 @@ def obtener_menus_modulo(db: Session, filtro: MenuFiltroPlus):
         )
 
         id_menus = [row.id_menu for row in menus1]
-
-
         menus = (
             db.query(Menu)
             .filter(
@@ -306,9 +304,13 @@ def obtener_menus_modulo(db: Session, filtro: MenuFiltroPlus):
                 id_empresa=filtro.id_empresa,
                 id_padre=menu.id,
                 id_tipo_menu=filtro.id_tipo_menu,
-                modo=filtro.modo  # heredamos el modo
+                id_modulo = filtro.id_modulo,
+                modo=filtro.modo,
+                solo_activos=filtro.solo_activos,
+                ordenado=filtro.ordenado
             )
 
+            # llamada recursiva
             children = obtener_menus_modulo(db, filtro_hijo)
 
             nodo = {
@@ -325,7 +327,6 @@ def obtener_menus_modulo(db: Session, filtro: MenuFiltroPlus):
                 # modo árbol → agregamos children
                 nodo["children"] = children
                 resultado.append(nodo)
-
             elif filtro.modo == 2:
                 # modo aplanado → agregamos el nodo actual
                 resultado.append(nodo)
