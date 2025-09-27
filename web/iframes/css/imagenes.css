@@ -1,0 +1,22 @@
+/* Estilos para el área de drag-and-drop */
+.upload-area {
+    border: 2px dashed #007bff;
+    padding: 20px;
+    text-align: center;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.upload-area img {
+    max-width: 100%;
+    height: auto;
+    display: none;
+}
+
+.hidden {
+    display: none;
+}
+
+#alertContainer {
+    margin-top: 20px;
+}

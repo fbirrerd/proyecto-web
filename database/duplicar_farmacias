@@ -1,0 +1,343 @@
+DELIMITER //
+
+CREATE PROCEDURE sp_replicar_empresa_vademecum (
+    IN p_id_empresa_origen INT,
+    IN p_id_empresa_destino INT,
+    OUT p_mensaje VARCHAR(255)
+)
+BEGIN
+    DECLARE v_nombre_empresa_origen VARCHAR(100);
+    DECLARE v_nombre_empresa_destino VARCHAR(100);
+    DECLARE v_count_origen INT;
+    DECLARE v_count_destino INT;
+    DECLARE v_new_id_laboratorio INT;
+    DECLARE v_new_id_medicamento INT;
+    DECLARE v_new_id_categoria INT;
+    DECLARE v_new_id_protocolo INT;
+    
+    -- Validar que las empresas existan
+    SELECT COUNT(*) INTO v_count_origen FROM vademecum_Empresas WHERE id_empresa = p_id_empresa_origen AND estado = 0;
+    SELECT COUNT(*) INTO v_count_destino FROM vademecum_Empresas WHERE id_empresa = p_id_empresa_destino AND estado = 0;
+    
+    IF v_count_origen = 0 THEN
+        SET p_mensaje = 'Error: La empresa origen no existe o está eliminada.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = p_mensaje;
+    END IF;
+    
+    IF v_count_destino = 0 THEN
+        SET p_mensaje = 'Error: La empresa destino no existe o está eliminada.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = p_mensaje;
+    END IF;
+    
+    -- Obtener nombres de las empresas para ajustar nombres comerciales
+    SELECT nombre_empresa INTO v_nombre_empresa_origen FROM vademecum_Empresas WHERE id_empresa = p_id_empresa_origen;
+    SELECT nombre_empresa INTO v_nombre_empresa_destino FROM vademecum_Empresas WHERE id_empresa = p_id_empresa_destino;
+    
+    -- Iniciar transacción
+    START TRANSACTION;
+    
+    -- Crear un cursor para mapear los IDs de laboratorios originales a los nuevos
+    DECLARE cursor_laboratorios CURSOR FOR
+        SELECT id_laboratorio, nombre_laboratorio, pais, direccion, sitio_web, contacto
+        FROM vademecum_Laboratorios
+        WHERE id_empresa = p_id_empresa_origen AND estado = 0;
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET @done = TRUE;
+    
+    -- Crear tabla temporal para mapear laboratorios originales a nuevos
+    CREATE TEMPORARY TABLE temp_laboratorios_map (
+        id_laboratorio_origen INT,
+        id_laboratorio_nuevo INT
+    );
+    
+    -- Crear tabla temporal para mapear medicamentos originales a nuevos
+    CREATE TEMPORARY TABLE temp_medicamentos_map (
+        id_medicamento_origen INT,
+        id_medicamento_nuevo INT
+    );
+    
+    -- Crear tabla temporal para mapear categorías originales a nuevas
+    CREATE TEMPORARY TABLE temp_categorias_map (
+        id_categoria_origen INT,
+        id_categoria_nuevo INT
+    );
+    
+    -- Crear tabla temporal para mapear protocolos originales a nuevos
+    CREATE TEMPORARY TABLE temp_protocolos_map (
+        id_protocolo_origen INT,
+        id_protocolo_nuevo INT
+    );
+    
+    -- Replicar Laboratorios
+    SET @done = FALSE;
+    OPEN cursor_laboratorios;
+    
+    read_laboratorios: LOOP
+        FETCH cursor_laboratorios INTO 
+            @id_laboratorio_origen, @nombre_laboratorio, @pais, @direccion, @sitio_web, @contacto;
+        
+        IF @done THEN
+            LEAVE read_laboratorios;
+        END IF;
+        
+        -- Insertar laboratorio en la empresa destino
+        INSERT INTO vademecum_Laboratorios (
+            nombre_laboratorio, pais, direccion, sitio_web, contacto, id_empresa, estado, fecha_creacion
+        )
+        VALUES (
+            @nombre_laboratorio, @pais, @direccion, @sitio_web, @contacto, p_id_empresa_destino, 0, NOW()
+        );
+        
+        SET v_new_id_laboratorio = LAST_INSERT_ID();
+        
+        -- Guardar mapeo de IDs
+        INSERT INTO temp_laboratorios_map (id_laboratorio_origen, id_laboratorio_nuevo)
+        VALUES (@id_laboratorio_origen, v_new_id_laboratorio);
+    END LOOP;
+    
+    CLOSE cursor_laboratorios;
+    
+    -- Replicar Medicamentos
+    INSERT INTO vademecum_Medicamentos (
+        nombre_comercial, nombre_generico, forma_farmaceutica, concentracion, id_laboratorio, 
+        registro_sanitario, clasificacion, id_empresa, estado, fecha_creacion
+    )
+    SELECT 
+        REPLACE(m.nombre_comercial, v_nombre_empresa_origen, v_nombre_empresa_destino),
+        m.nombre_generico,
+        m.forma_farmaceutica,
+        m.concentracion,
+        (SELECT id_laboratorio_nuevo FROM temp_laboratorios_map tlm WHERE tlm.id_laboratorio_origen = m.id_laboratorio),
+        CONCAT('REG-', LPAD(ROW_NUMBER() OVER (ORDER BY m.id_medicamento), 4, '0')),
+        m.clasificacion,
+        p_id_empresa_destino,
+        0,
+        NOW()
+    FROM vademecum_Medicamentos m
+    WHERE m.id_empresa = p_id_empresa_origen AND m.estado = 0;
+    
+    -- Mapear IDs de medicamentos
+    INSERT INTO temp_medicamentos_map (id_medicamento_origen, id_medicamento_nuevo)
+    SELECT 
+        m.id_medicamento,
+        (SELECT MAX(id_medicamento) FROM vademecum_Medicamentos n 
+         WHERE n.nombre_comercial = REPLACE(m.nombre_comercial, v_nombre_empresa_origen, v_nombre_empresa_destino)
+         AND n.id_empresa = p_id_empresa_destino)
+    FROM vademecum_Medicamentos m
+    WHERE m.id_empresa = p_id_empresa_origen AND m.estado = 0;
+    
+    -- Replicar Indicaciones
+    INSERT INTO vademecum_Indicaciones (
+        id_medicamento, indicacion, mecanismo_accion, estado, fecha_creacion
+    )
+    SELECT 
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = i.id_medicamento),
+        i.indicacion,
+        i.mecanismo_accion,
+        0,
+        NOW()
+    FROM vademecum_Indicaciones i
+    JOIN vademecum_Medicamentos m ON i.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen AND i.estado = 0;
+    
+    -- Replicar Posologías
+    INSERT INTO vademecum_Posologias (
+        id_medicamento, dosis, via_administracion, edad_minima, edad_maxima, instrucciones_especiales, estado, fecha_creacion
+    )
+    SELECT 
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = p.id_medicamento),
+        p.dosis,
+        p.via_administracion,
+        p.edad_minima,
+        p.edad_maxima,
+        p.instrucciones_especiales,
+        0,
+        NOW()
+    FROM vademecum_Posologias p
+    JOIN vademecum_Medicamentos m ON p.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen AND p.estado = 0;
+    
+    -- Replicar Contraindicaciones
+    INSERT INTO vademecum_Contraindicaciones (
+        id_medicamento, contraindicacion, estado, fecha_creacion
+    )
+    SELECT 
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = c.id_medicamento),
+        c.contraindicacion,
+        0,
+        NOW()
+    FROM vademecum_Contraindicaciones c
+    JOIN vademecum_Medicamentos m ON c.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen AND c.estado = 0;
+    
+    -- Replicar Interacciones
+    INSERT INTO vademecum_Interacciones (
+        id_medicamento, id_medicamento_interactua, descripcion_interaccion, tipo_interaccion, estado, fecha_creacion
+    )
+    SELECT 
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = i.id_medicamento),
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = i.id_medicamento_interactua),
+        i.descripcion_interaccion,
+        i.tipo_interaccion,
+        0,
+        NOW()
+    FROM vademecum_Interacciones i
+    JOIN vademecum_Medicamentos m ON i.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen AND i.estado = 0;
+    
+    -- Replicar Efectos Secundarios
+    INSERT INTO vademecum_Efectos_Secundarios (
+        id_medicamento, efecto_secundario, frecuencia, estado, fecha_creacion
+    )
+    SELECT 
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = es.id_medicamento),
+        es.efecto_secundario,
+        es.frecuencia,
+        0,
+        NOW()
+    FROM vademecum_Efectos_Secundarios es
+    JOIN vademecum_Medicamentos m ON es.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen AND es.estado = 0;
+    
+    -- Replicar Presentaciones
+    INSERT INTO vademecum_Presentaciones (
+        id_medicamento, formato, concentracion, codigo_barras, estado, fecha_creacion
+    )
+    SELECT 
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = p.id_medicamento),
+        p.formato,
+        p.concentracion,
+        CONCAT('BAR-', LPAD((SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = p.id_medicamento), 8, '0')),
+        0,
+        NOW()
+    FROM vademecum_Presentaciones p
+    JOIN vademecum_Medicamentos m ON p.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen AND p.estado = 0;
+    
+    -- Replicar Farmacocinética
+    INSERT INTO vademecum_Farmacocinetica (
+        id_medicamento, absorcion, distribucion, metabolismo, eliminacion, estado, fecha_creacion
+    )
+    SELECT 
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = f.id_medicamento),
+        f.absorcion,
+        f.distribucion,
+        f.metabolismo,
+        f.eliminacion,
+        0,
+        NOW()
+    FROM vademecum_Farmacocinetica f
+    JOIN vademecum_Medicamentos m ON f.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen AND f.estado = 0;
+    
+    -- Replicar Categorías Terapéuticas
+    INSERT INTO vademecum_Categorias_Terapeuticas (
+        nombre_categoria, descripcion, id_empresa, estado, fecha_creacion
+    )
+    SELECT 
+        ct.nombre_categoria,
+        ct.descripcion,
+        p_id_empresa_destino,
+        0,
+        NOW()
+    FROM vademecum_Categorias_Terapeuticas ct
+    WHERE ct.id_empresa = p_id_empresa_origen AND ct.estado = 0;
+    
+    -- Mapear IDs de categorías
+    INSERT INTO temp_categorias_map (id_categoria_origen, id_categoria_nuevo)
+    SELECT 
+        ct.id_categoria,
+        (SELECT MAX(id_categoria) FROM vademecum_Categorias_Terapeuticas n 
+         WHERE n.nombre_categoria = ct.nombre_categoria AND n.id_empresa = p_id_empresa_destino)
+    FROM vademecum_Categorias_Terapeuticas ct
+    WHERE ct.id_empresa = p_id_empresa_origen AND ct.estado = 0;
+    
+    -- Replicar Medicamento_Categoria
+    INSERT INTO vademecum_Medicamento_Categoria (
+        id_medicamento, id_categoria
+    )
+    SELECT 
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = mc.id_medicamento),
+        (SELECT id_categoria_nuevo FROM temp_categorias_map tcm WHERE tcm.id_categoria_origen = mc.id_categoria)
+    FROM vademecum_Medicamento_Categoria mc
+    JOIN vademecum_Medicamentos m ON mc.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen;
+    
+    -- Replicar Protocolos Clínicos
+    INSERT INTO vademecum_Protocolos_Clinicos (
+        nombre_protocolo, descripcion, fuente, fecha_actualizacion, id_empresa, estado, fecha_creacion
+    )
+    SELECT 
+        pc.nombre_protocolo,
+        pc.descripcion,
+        pc.fuente,
+        pc.fecha_actualizacion,
+        p_id_empresa_destino,
+        0,
+        NOW()
+    FROM vademecum_Protocolos_Clinicos pc
+    WHERE pc.id_empresa = p_id_empresa_origen AND pc.estado = 0;
+    
+    -- Mapear IDs de protocolos
+    INSERT INTO temp_protocolos_map (id_protocolo_origen, id_protocolo_nuevo)
+    SELECT 
+        pc.id_protocolo,
+        (SELECT MAX(id_protocolo) FROM vademecum_Protocolos_Clinicos n 
+         WHERE n.nombre_protocolo = pc.nombre_protocolo AND n.id_empresa = p_id_empresa_destino)
+    FROM vademecum_Protocolos_Clinicos pc
+    WHERE pc.id_empresa = p_id_empresa_origen AND pc.estado = 0;
+    
+    -- Replicar Medicamento_Protocolo
+    INSERT INTO vademecum_Medicamento_Protocolo (
+        id_medicamento, id_protocolo
+    )
+    SELECT 
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = mp.id_medicamento),
+        (SELECT id_protocolo_nuevo FROM temp_protocolos_map tpm WHERE tpm.id_protocolo_origen = mp.id_protocolo)
+    FROM vademecum_Medicamento_Protocolo mp
+    JOIN vademecum_Medicamentos m ON mp.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen;
+    
+    -- Replicar Imágenes (asociadas a medicamentos)
+    INSERT INTO vademecum_Imagenes (
+        url, descripcion, id_medicamento, id_laboratorio, estado, fecha_creacion
+    )
+    SELECT 
+        i.url,
+        REPLACE(i.descripcion, v_nombre_empresa_origen, v_nombre_empresa_destino),
+        (SELECT id_medicamento_nuevo FROM temp_medicamentos_map tmm WHERE tmm.id_medicamento_origen = i.id_medicamento),
+        NULL,
+        0,
+        NOW()
+    FROM vademecum_Imagenes i
+    JOIN vademecum_Medicamentos m ON i.id_medicamento = m.id_medicamento
+    WHERE m.id_empresa = p_id_empresa_origen AND i.estado = 0;
+    
+    -- Replicar Imágenes (asociadas a laboratorios)
+    INSERT INTO vademecum_Imagenes (
+        url, descripcion, id_medicamento, id_laboratorio, estado, fecha_creacion
+    )
+    SELECT 
+        i.url,
+        i.descripcion,
+        NULL,
+        (SELECT id_laboratorio_nuevo FROM temp_laboratorios_map tlm WHERE tlm.id_laboratorio_origen = i.id_laboratorio),
+        0,
+        NOW()
+    FROM vademecum_Imagenes i
+    JOIN vademecum_Laboratorios l ON i.id_laboratorio = l.id_laboratorio
+    WHERE l.id_empresa = p_id_empresa_origen AND i.estado = 0;
+    
+    -- Limpiar tablas temporales
+    DROP TEMPORARY TABLE temp_laboratorios_map;
+    DROP TEMPORARY TABLE temp_medicamentos_map;
+    DROP TEMPORARY TABLE temp_categorias_map;
+    DROP TEMPORARY TABLE temp_protocolos_map;
+    
+    -- Confirmar transacción
+    COMMIT;
+    
+    SET p_mensaje = 'Datos replicados exitosamente de la empresa origen a la empresa destino.';
+END//
+
+DELIMITER ;

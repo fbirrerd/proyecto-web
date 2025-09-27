@@ -1,59 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache"> 
+    <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    
+
     <title>Cambiar Password</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style-login.css" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Carga jQuery desde CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/comun.js"></script>    
+    <script src="js/cambiar_clave.js"></script>
 
-    <script src="js/api.js"></script>
-    <script src="js/cambiar_clave.js"></script>   
+
 <body>
     <div class="login-container">
-        <h3 class="mb-4">Cambiar Contraseña</h3>
+        <h3 class="mb-4">Cambiar Clave</h3>
         <div id="api-error" class="alert alert-danger d-none" role="alert"></div>
         <div id="change-success" class="alert alert-success d-none" role="alert">¡Contraseña cambiada con éxito!</div>
-
-        <!-- Mensaje temporal de redirección con loading -->
-        <div id="redirecting-message" class="alert alert-info d-none" role="alert">
-            <span>Cargando</span> 
-            <img src="img/loading.gif" alt="Cargando..." style="width: 30px; vertical-align: middle;">
-        </div>
-       
         <form id="change-password-form">
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
+                <label for="username" class="form-label">username</label>
                 <input type="text" class="form-control" id="username" required>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Correo</label>
                 <input type="email" class="form-control" id="email" required>
             </div>
-            <div class="mb-3">
-                <label for="new_password" class="form-label">Nueva Contraseña</label>
-                <input type="password" class="form-control" id="new_password" required minlength="10">
-                <ul id="password-errors" class="text-danger small mt-2"></ul>
+            <div class="form-group">
+                <label for="password" class="form-label">Nueva Clave</label>
+                <input type="password" class="form-control password-input" id="new_password" name="new_password"
+                    required>
+                <i class="far fa-eye toggle-password" id="toggleNewPassword"></i>
+                <ul id="password-errors" class="text-danger small mt-2"></ul> <!-- Aquí se mostrarán los errores -->
+
             </div>
-            <div class="mb-3">
-                <label for="confirm_new_password" class="form-label">Confirmar Nueva Contraseña</label>
-                <input type="password" class="form-control" id="confirm_new_password" required>
+            <div class="form-group">
+                <label for="password" class="form-label">Confirme Clave</label>
+                <input type="password" class="form-control password-input" id="confirm_new_password"
+                    name="confirm_new_password" required>
+                <i class="far fa-eye toggle-password" id="toggleConfirm"></i>
                 <ul id="confirm-password-errors" class="text-danger small mt-2"></ul>
             </div>
-            <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
-            <a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Cambiar Clave</button>
+            <a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary">Volver</a>
         </form>
     </div>
 
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+
     <script>
+
+
+
         function showMessage(selector, message, type = 'info') {
             const $element = $(selector);
             $element
@@ -67,18 +72,19 @@
             const password = $('#new_password').val();
             const username = $('#username').val();
             const errors = [];
-
+        
             if (password.length < 10) errors.push("Debe tener al menos 10 caracteres.");
             if (!/[A-Z]/.test(password)) errors.push("Debe tener al menos una mayúscula.");
             if (!/[a-z]/.test(password)) errors.push("Debe tener al menos una minúscula.");
             if (!/[\W_]/.test(password)) errors.push("Debe tener al menos un carácter especial.");
+            if (!/\d/.test(password)) errors.push("Debe tener al menos un número."); // 👈 Agregado
             if (username && password.toLowerCase().includes(username.toLowerCase())) errors.push("La contraseña no debe contener el nombre de usuario.");
             if (/\d{5,}/.test(password)) errors.push("No debe contener 5 números secuenciales.");
-
+        
             const $errorsList = $('#password-errors');
             $errorsList.empty();
             errors.forEach(error => $errorsList.append(`<li>${error}</li>`));
-
+        
             return errors.length === 0;
         }
 
@@ -122,8 +128,7 @@
 
                     changePasswordAPI()
                         .then(() => {
-                            showMessage('#change-success', '¡Contraseña cambiada con éxito!', 'success');
-                            setTimeout(() => window.location.href = 'index.html', 2000);
+                            //mostrarAlerta({mensaje: "Password cambiada con exito"}); 
                         })
                         .catch(err => {
                             showMessage('#api-error', err, 'danger');
@@ -132,8 +137,13 @@
                     showMessage('#api-error', 'Por favor, corrige los errores antes de enviar.', 'warning');
                 }
             });
+
+            
+            togglePasswordVisibility('#new_password', '#toggleNewPassword');
+            togglePasswordVisibility('#confirm_new_password', '#toggleConfirm');
         });
     </script>
-    
+
 </body>
+
 </html>

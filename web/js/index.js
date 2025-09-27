@@ -1,7 +1,17 @@
-// js/login.js
-
 $(document).ready(function() {
-    // Cuando el formulario se envíe
+    const savedUsername = localStorage.getItem("rememberedUsername");
+    const savedPassword = localStorage.getItem("rememberedPassword");
+
+    if (savedUsername && savedPassword) {
+      document.getElementById("username").value = savedUsername;
+      document.getElementById("password").value = savedPassword;
+      document.getElementById("rememberMe").checked = true;
+    }
+    
+    $('#btnCambiarClave').click(function(event) {
+        window.location.href = 'cambiar_clave.html'; // Redirige a la página para cambiar la clave
+    });    
+
     $('#login-form').submit(function(event) {
         event.preventDefault();  // Evita el comportamiento predeterminado del formulario (recarga de página)
 
@@ -9,46 +19,54 @@ $(document).ready(function() {
         const username = $('#username').val();
         const password = $('#password').val();
 
+
+
         // Muestra un mensaje de error si no se llenan los campos
         if (!username || !password) {
-            $('#error-message').text('Por favor, ingresa tu usuario y contraseña.').removeClass('d-none');
-            return;
+            showWarning("Ingrese un usuario y contraseña válido")
         }
 
         // Parámetros para la API
         const params = {
-            userName: username,
+            username: username,
             password: password
         };
 
+        const remember = document.getElementById("rememberMe").checked;
+            
+        if (remember) {
+          localStorage.setItem("rememberedUsername", username);
+          localStorage.setItem("rememberedPassword", password);
+        } else {
+          localStorage.removeItem("rememberedUsername");
+          localStorage.removeItem("rememberedPassword");
+        }
+
+
         // Llamada a la API para autenticar al usuario con Basic Auth
-        callApi('POST', 'usuario/login', params)
+        callApi('POST', 'auth/', params)
             .done(function(response) {
                 if (response.respuesta) {
                     // Si la respuesta es exitosa y 'cambioClave' es true, muestra un mensaje adecuado
                     if (response.data.cambioClave) {
-                        $('#error-message').text('Es necesario cambiar tu contraseña.').removeClass('d-none');
-                        // Esperamos 5 segundos antes de redirigir a la página de cambio de contraseña
-                        setTimeout(function() {
-                            window.location.href = 'cambiar_clave.html'; // Redirige a la página para cambiar la clave
-                        }, 5000);  // 5 segundos de retraso                        
+                        showInfo("Es necesario cambiar tus credenciales");                        
                     } else {
-                        // Esperamos 5 segundos antes de redirigir a la página de cambio de contraseña
                         updateDataSystem(response.data);
-                        setTimeout(function() {
-                            window.location.href = 'dashboard.html'; // Redirige a la página para cambiar la clave
-                        }, 5000);  // 5 segundos de retraso
+
+                        localStorage.setItem('paginaInicio',response.data.pagina.inicio);
+                        localStorage.setItem('dashboard',response.data.pagina.dashboard);
+
+                        window.location.href = response.data.pagina.dashboard + '.html'; // Redirige a la página para cambiar la clave
                     }
                 } else {
                     // Si hay un error en la respuesta
-                    console.log(response.error);
-                    $('#error-message').text(`Error en el login. Verifica tus credenciales. (${response.data.error})`).removeClass('d-none');
+                    showWarning("Existe un error con tus credenciales");                        
                 }
             })
             .fail(function() {
                 // En caso de que falle la solicitud
-                $('#error-message').text('Hubo un error al conectar con el servidor. Intenta de nuevo.').removeClass('d-none');
-            });
+                showDanger("No se puede conectar con el servidor");                
+        });
     });
 
     function updateDataSystem(newToken) {
@@ -57,21 +75,8 @@ $(document).ready(function() {
             // Elimina el token existente
             localStorage.removeItem('dataSystem');
         }
-    
-        // Guarda el nuevo token en localStorage
-        localStorage.setItem('dataSystem', newToken);
-        alert(`Se guarda el token 'dataSystem'`);
-        alert(newToken);
+        localStorage.setItem('dataSystem', JSON.stringify(newToken));
     }    
-    // function updateAccesToken(newToken) {
-    //     // Verifica si ya existe el token en localStorage
-    //     if (localStorage.getItem('accessToken')) {
-    //         // Elimina el token existente
-    //         localStorage.removeItem('accessToken');
-    //     }
-    //     // Guarda el nuevo token en localStorage
-    //     localStorage.setItem('accessToken', newToken);
-    // }    
 });
 
 console.log("login.js cargado (versión con jQuery para UI).");

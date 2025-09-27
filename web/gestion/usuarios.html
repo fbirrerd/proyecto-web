@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulario de Usuario</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+  <style>
+    #map { height: 200px; }
+  </style>
+</head>
+<body class="bg-light py-4">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Usuarios</h2>
+      <button class="btn btn-light" id="btnNuevo">
+        <i class="fa fa-plus"></i> Agregar
+      </button>
+    </div>
+
+    <table class="table table-striped mt-3">
+      <thead>
+        <tr>
+          <th>Login</th>
+          <th>Nombre</th>
+          <th>E-mail</th>
+          <th class="acciones-col"></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Modal cambiar clave -->
+<div class="modal fade" id="modalCambiarClave" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cambiar Clave</h5>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="userId" />
+        <div class="input-group">
+          <input type="password" class="form-control" placeholder="Nueva Clave" id="nuevaClave" />
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" id="toggleClave">
+              <i class="fa fa-eye" id="iconoClave"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="guardarClaveBtn">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Modal usuario -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Formulario de Usuario</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Tabs -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="tab1" data-toggle="tab" href="#tabInformacion" role="tab" aria-controls="tabInformacion" aria-selected="true">Información</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab2" data-toggle="tab" href="#tabEmpresa" role="tab" aria-controls="tabEmpresa" aria-selected="false">Empresa</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab3" data-toggle="tab" href="#tabEmpresaModulo" role="tab" aria-controls="tabEmpresaModulo" aria-selected="false">Empresa Módulo</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab4" data-toggle="tab" href="#tabDireccion" role="tab" aria-controls="tabDireccion" aria-selected="false">Dirección</a>
+              </li>
+            </ul>
+
+            <form id="formUsuario" class="tab-content mt-3">
+              <!-- Información -->
+              <div class="tab-pane fade show active" id="tabInformacion" role="tabpanel">
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <div class="input-group">
+                    <input type="text" id="username" class="form-control" placeholder="Username">
+                    <span class="input-group-text" id="loading-icon" style="display: none;">
+                      <i class="fas fa-spinner fa-spin"></i> <!-- o "fa-search" si prefieres -->
+                    </span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" placeholder="Ingrese el email" />
+                </div>
+                <div class="form-group">
+                  <label for="duracion">Duración de Sesión (Minutos)</label>
+                  <input type="number" class="form-control" id="duracion" placeholder="Ingrese la duración" />
+                </div>
+                <div class="form-group">
+                    <label for="pagina_inicio" class="form-label">Página de Inicio</label>
+                    <input type="text" class="form-control" id="pagina_inicio" name="pagina_inicio" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_dashboard" class="form-label">Dashboard (opcional)</label>
+                    <select class="form-control" id="id_dashboard" name="id_persona">
+                        <option value="">Seleccione una dashboard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="id_persona" class="form-label">Persona</label>
+                    <select class="form-control" id="id_persona" name="id_persona">
+                        <option value="">Seleccione una persona</option>
+                    </select>
+                </div>              
+              </div>
+
+              <!-- Dirección -->
+              <div class="tab-pane fade" id="tabDireccion" role="tabpanel">
+                <div class="form-group">
+                  <label for="region">Región</label>
+                  <input class="form-control" id="region" placeholder="Región" />
+                </div>
+                <div class="form-group">
+                  <label for="provincia">Provincia</label>
+                  <input class="form-control" id="provincia" placeholder="Provincia" />
+                </div>
+                <div class="form-group">
+                  <label for="comuna">Comuna</label>
+                  <input class="form-control" id="comuna" placeholder="Comuna" />
+                </div>
+                <div class="form-group">
+                  <label for="calle">Calle</label>
+                  <input class="form-control" id="calle" placeholder="Calle" />
+                </div>
+                <div class="form-group">
+                  <label for="numero">Número</label>
+                  <input class="form-control" id="numero" placeholder="Número" />
+                </div>
+                <div class="form-group">
+                  <label for="latitud">Latitud</label>
+                  <input class="form-control" id="latitud" placeholder="Latitud" readonly />
+                </div>
+                <div class="form-group">
+                  <label for="longitud">Longitud</label>
+                  <input class="form-control" id="longitud" placeholder="Longitud" readonly />
+                </div>
+                <div id="map"></div>
+              </div>
+
+              <!-- Empresa -->
+              <div class="tab-pane fade" id="tabEmpresa" role="tabpanel">
+                <div class="form-group">
+                  <label for="empresaSelect">Empresas</label>
+                  <div id="listaEmpresas">
+                    <!-- Aquí se agregarán los checkboxes dinámicamente -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empresa -->
+              <div class="tab-pane fade" id="tabEmpresaModulo" role="tabpanel">
+                <div class="row">
+                      <div class="col-md-6">
+                          <div class="form-group">
+                              <label for="id_persona_select" class="form-label">Seleccionar empresa</label>
+                              <select class="form-control" id="id_persona_select">
+                                  <option value="">Seleccione una Empresa</option>
+                                  <!-- Opciones se cargan dinámicamente -->
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-md-6">
+                          <div class="form-group">
+                              <label for="id_persona_select" class="form-label">Seleccionar módulo</label>
+                              <select class="form-control" id="id_persona_select">
+                                  <option value="">Seleccione un Modulo</option>
+                                  <!-- Opciones se cargan dinámicamente -->
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-lg-12 mt-4 mb-5">
+                          <button type="button" class="btn btn-light" id="btnAgregarPersona">
+                              Agregar
+                          </button>
+                      </div>
+                  </div>
+
+                  <table class="table table-bordered" id="tablaRelaciones">
+                      <thead
+                          <tr>
+                              <th>Empresa</th>
+                              <th>Modulo</th>
+                              <th></th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <!-- Filas agregadas dinámicamente -->
+                      </tbody>
+                  </table>
+              </div>
+              
+
+              <!-- Botón guardar -->
+              <div class="modal-footer">
+                <button type="button" id="btnGuardar"  class="btn btn-primary">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="../js/comun.js"></script>
+  <script src="../js/render/usuarios.js"></script>
+
+  <script>
+    let mapa;
+    let marcador;
+
+    $(document).ready(function () {
+      mapa = L.map("map").setView([-33.45, -70.6667], 13);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(mapa);
+
+      mapa.on("click", function (e) {
+        if (marcador) {
+          mapa.removeLayer(marcador);
+        }
+        marcador = L.marker(e.latlng).addTo(mapa);
+        $("#latitud").val(e.latlng.lat);
+        $("#longitud").val(e.latlng.lng);
+      });
+
+      $("#calle, #region, #provincia, #comuna").on("change", function () {
+        const direccion = `${$("#calle").val()} ${$("#numero").val()}, ${$("#comuna").val()}, ${$("#provincia").val()}, ${$("#region").val()}`;
+        console.log("Dirección completa:", direccion);
+      });
+    });
+  </script>
+</body>
+</html>

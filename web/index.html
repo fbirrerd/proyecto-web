@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -13,31 +13,39 @@
     <link href="css/style-login.css" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Carga jQuery desde CDN -->
-
-    <script src="js/api.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/comun.js"></script>
     <script src="js/index.js"></script>   
 </head> 
 <body>
-    <div id="overlay" class="overlay">
-        <div  class="cargando-message">
-            <img src="img/loading.gif">
-        </div>
-    </div>    
+  
     <div class="login-container">
         <h2 class="text-center mb-4">Iniciar Sesión</h2>
-        <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
         <form id="login-form">
             <div class="mb-3">
                 <label for="username" class="form-label">Usuario o Email</label>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control password-input" id="password" name="password" required>
+                <i class="far fa-eye toggle-password" id="togglePassword"></i>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">
+                  Recordar usuario y password
+                </label>
+              </div>              
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+            <button type="button" id="btnCambiarClave" class="btn btn-secondary">Cambiar clave</button>
         </form>
         <div id="error-info" class="alert alert-info d-none" role="info"></div>
     </div>
 </body>
 </html>
+<script>
+    $(document).ready(function () {
+        togglePasswordVisibility('#password', '#togglePassword');
+    });
+</script>

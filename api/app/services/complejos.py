@@ -1,62 +1,105 @@
 from datetime import datetime, timedelta
-from sqlalchemy import or_
+from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.services.usuario_empresa import obtener_empresas_por_usuario
-from app.models.empresa import Empresa
+
+
+from app.services.menusxmodulos import ListMenuXModulo
+from app.services.menus import obtener_menu
+from app.schemas.usuario import AccesoUsuario
+from app.schemas.menus import MenuFiltroPlus
+from app.services.acceso import crear_acceso
+from app.services.rol import getDatosRol
+from app.services.empresa import getDatosEmpresa
+from app.services.usuario import getDatosUsuarioXID
+from app.schemas.complejos import AccesoDuracion, AccesoPagina, DatosAcceso
+from app.models.models import Acceso
 from app.utils.security import generar_jwt
-from app.services.acceso import create_acceso
-from app.models.usuario import Usuario
-from app.schemas.usuario import UsuarioLogin
-from app.schemas.complejos import AccesoDuracion, DatosAcceso
-from app.models.acceso import Acceso  # Corregir la importación
+from app.services.dashboard_inicial import get_dashboard, get_dashboard_pagina
 
-def get_objeto_acceso(db: Session, user: UsuarioLogin) -> DatosAcceso:
-    #traer la informacion del usuario
-    # Buscar el usuario con el nombre de usuario proporcionado
 
-    userObj = db.query(Usuario).filter(
-        or_(Usuario.nombre_usuario == user.userName, 
-            Usuario.email == user.userName)
-        ).first()
-    if not userObj:
-        raise Exception("Usuario no encontrado")
-    
-    idUsuario = userObj.id
-    minutosAcceso = userObj.duracion
+def getObjetoAcceso(db: Session, userid: int, empresaid: Optional[int] = None, token: Optional[str] = None) -> DatosAcceso:
+    try:
+        # Obtener datos del usuario
+        oUsuario = getDatosUsuarioXID(db, userid)
+        if not oUsuario:
+            raise Exception(f"Usuario no encontrado: {userid}")
 
-    # Se genera el Token
-    newToken = generar_jwt(idUsuario, minutosAcceso)
+
+        oAccesoUsuario = AccesoUsuario(
+            id = userid,
+            username=oUsuario.username,
+            email=oUsuario.email
+        )
         
-    # Crear el acceso
-    db_acceso = Acceso(
-        usuario_id=idUsuario,
-        empresa_id=None,
-        token=newToken,
-        fecha_ingreso=datetime.now(),
-        fecha_creacion=datetime.now(),
-        fecha_vencimiento=datetime.now() + timedelta(minutes=minutosAcceso),
-    )
-    # retornar el token
-    objAcceso = create_acceso(db, db_acceso)
-    #retornar los roles
-    #crear el super objeto
+        minutosAcceso = oUsuario.duracion
 
-    empresaList = obtener_empresas_por_usuario(db, idUsuario)
+        # Obtener empresas asociadas al usuario
+        lEmpresas = getDatosEmpresa(db, userid)
+        if not lEmpresas:
+            raise Exception("No se encontraron empresas asociadas al usuario.")
+
+        # Determinar empresa seleccionada
+        idEmpresaSeleccionada = empresaid if empresaid is not None else lEmpresas[0].id
+
+        # Obtener roles y módulos
+        lRoles = getDatosRol(db, userid, idEmpresaSeleccionada)
+
+        # Obtener menús ordenados
+        
+        obj = MenuFiltroPlus(
+            id_tipo_menu=1,    
+            id_usuario=userid,    
+            id_empresa=idEmpresaSeleccionada,    
+            solo_activos=True,     
+            ordenado=True,
+            id_padre=None           
+        )
+        lMenus = obtener_menu(db, obj)
+        lModulos = ListMenuXModulo(db, idEmpresaSeleccionada, userid)
+
+        # Generar token si no viene proporcionado
+        if token is None:
+            newToken = generar_jwt(userid, minutosAcceso)
+            now = datetime.utcnow()
+            db_acceso = Acceso(
+                id_usuario=userid,
+                id_empresa=idEmpresaSeleccionada,
+                token=newToken,
+                fecha_ingreso=now,
+                fecha_creacion=now,
+                fecha_vencimiento=now + timedelta(minutes=minutosAcceso),
+            )
+            crear_acceso(db, db_acceso)
+        else:
+            newToken = token
+
+        duracion = AccesoDuracion(
+            inicio=datetime.utcnow(),
+            termino=datetime.utcnow() + timedelta(minutes=minutosAcceso),
+            minutos=minutosAcceso,
+        )
+
+        # Construir objeto de acceso final
+        return DatosAcceso(
+            username=oUsuario.username,
+            email=oUsuario.email,
+            usuario=oAccesoUsuario,
+            token=newToken,
+            duracionAcceso=duracion,
+            modulos=lModulos,
+            empresas=lEmpresas,
+            empresaSeleccionada=idEmpresaSeleccionada,
+            roles=lRoles,
+            menus=lMenus,
+            pagina= AccesoPagina(
+                inicio=oUsuario.pagina_inicio,
+                dashboard=get_dashboard_pagina(db, oUsuario.id_dashboard),
+            )
+        )
     
-    duracion = AccesoDuracion(
-        inicio = datetime.now(),
-        termino = datetime.now()+ timedelta(minutes=minutosAcceso),
-        minutos = minutosAcceso
-    )
-    return DatosAcceso(
-        nombre_usuario = userObj.nombre_usuario,
-        email = userObj.email,
-        token = objAcceso.token,
-        duracionAcceso = duracion, 
-        empresas = empresaList,  # Lista de empresas
-        empresaSeleccionada= empresaList[0].id
-    )
+    except Exception as e:
+        print(f"Error en getObjetoAcceso: {e}")
+        raise  # Relanzamos eMKBLBKLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLl error para que el controlador superior lo capture
 
-    
-
-
+def getNombreDashboard(db: Session, dashboardid: int) -> str:
+    return get_dashboard(db,dashboardid)    

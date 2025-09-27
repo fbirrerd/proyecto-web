@@ -1,10 +1,58 @@
-function getToken() {
-    return localStorage.getItem('dataSystem');
-}
+
 $(document).ready(function() {
 
+    function getDatos() {
+        let cadena = localStorage.getItem('dataSystem')
+        let data = JSON.parse(cadena);
+        return data;
+    }
 
+    $(document).on("click", ".empresa-opcion", function (e) {
+        e.preventDefault();
+        const empresaId = $(this).data("id");
+        const empresaNombre = $(this).text();
 
+        cargarNombreEmpresa(empresaNombre);
+        
+        let data = getDatos();
+        const params = {
+            "token": data.token,
+            "empresaid": empresaId
+        };
+        
+
+        // Llamar a la API con la empresa seleccionada
+        callApi('POST', 'auth/reload', params)
+            .done(function(response) {
+                if (response.respuesta) {
+                    localStorage.setItem('dataSystem', JSON.stringify(response.data));
+                    IniciarMenu(response.data);
+
+                } else {
+
+                }
+            })
+            .fail(function() {
+                showDanger("No se puede conectar con el servidor"); 
+            });
+
+    });   
+
+    $('#logout-button').on('click', function (e) {
+        e.preventDefault(); // Evita el comportamiento predeterminado del enlace
+        cerrarSesion();
+    });
+
+    function cerrarSesion() {
+        localStorage.removeItem("dataSystem"); // Borra el localStorage
+        localStorage.removeItem("tiempoRestante"); // Borra el localStorage
+        localStorage.removeItem('empresa_id');
+        localStorage.removeItem('usuario_id');
+        localStorage.removeItem('dashboard');
+        localStorage.removeItem('paginaInicio');
+        
+        window.location.href = 'index.html'; // Redirige a index.html
+    }
 
     // Verificar el estado del sidebar al cargar la página
     if (localStorage.getItem('sidebarState') === 'hidden') {
@@ -14,8 +62,6 @@ $(document).ready(function() {
     // Función para alternar el estado del sidebar y guardarlo en localStorage
     $('#sidebarCollapse').on('click', function() {
         $('#sidebar').toggleClass('active');
-
-        // Guardar el estado en localStorage
         if ($('#sidebar').hasClass('active')) {
             localStorage.setItem('sidebarState', 'hidden');
         } else {
@@ -28,8 +74,6 @@ $(document).ready(function() {
         $('#theme-stylesheet').attr('href', 'css/desktop-style/' + theme + '.css');
     });
     
-    
-    // Manejar enlaces del menú para iframe o enlaces externos
     $('#sidebar .menu-link').on('click', function (event) {
         const target = $(this).attr('target');
         const href = $(this).attr('href');
@@ -60,9 +104,8 @@ $(document).ready(function() {
             $('body').css('flex-direction', 'flex');
         }
     }
-
     checkIframeOnly();
 
-
-    
 });
+
+console.log("dashboard.js cargado (versión con jQuery para UI).");

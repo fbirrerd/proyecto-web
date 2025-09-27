@@ -1,0 +1,72 @@
+from datetime import datetime
+from typing import List, Optional
+from pydantic import BaseModel
+
+
+class MenuBase(BaseModel):
+    nombre: Optional[str] = None
+    icono: Optional[str] = None
+    url: Optional[str] = None
+    id_padre: Optional[int] = None
+    # es_publico: Optional[bool] = False
+    # estado: Optional[bool] = True
+    descripcion: Optional[str]
+    class Config:
+        orm_mode = True  # Esto permite que Pydantic utilice objetos SQLAlchemy
+
+class MenuCreate(MenuBase):
+    pass
+
+
+class MenuUpdate(BaseModel):
+    id: int
+    nombre: str
+    icono: str
+    url: Optional[str] = None    
+    tipo: Optional[str] = None
+    id_padre: Optional[int] = None
+
+class MenuEstadoUpdate(BaseModel):
+    id: int
+    estado: bool
+
+class MenuOut(MenuBase):
+    id: int
+    id_padre: Optional[int] = None
+    hijos: Optional[bool] 
+    nivel: Optional[bool] = 0
+    class Config:
+        orm_mode = True
+
+class MenuAcceso(MenuBase):
+    id: Optional[int] = None
+    # tipo: Optional[str] = None
+    orden: Optional[int] = None
+    id_tipo_menu: Optional[int] = None
+    url: Optional[str] = None
+    descripcion: Optional[str] = None
+
+  
+    class Config:
+        orm_mode = True
+        
+class MenuInput(BaseModel):
+    nombre: str
+    icono: str
+    id_tipo_menu: int
+    id_padre: Optional[int]
+    url: str
+    descripcion: Optional[str]
+    orden: Optional[int]
+    estado: bool
+    roles: List[int]  # ← esto es nuevo        
+        
+class MenuFiltroPlus(BaseModel):
+    id_tipo_menu: int    
+    id_usuario: Optional[int] = None    
+    id_empresa: Optional[int] = None    
+    id_modulo: Optional[int] = None        
+    id_padre: Optional[int] = None        
+    solo_activos: Optional[bool] = False        
+    ordenado: Optional[bool] = False
+    modo: Optional[int] = 2        

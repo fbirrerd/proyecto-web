@@ -1,0 +1,19 @@
+    body {
+  background-color: #f8f9fa;
+}
+
+h1 {
+  font-weight: bold;
+  color: #0d6efd;
+}
+
+.table img {
+  width: 50px;
+  height: auto;
+  border-radius: 6px;
+}
+
+.card img {
+  max-height: 200px;
+  object-fit: contain;
+}
