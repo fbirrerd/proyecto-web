@@ -1,5 +1,8 @@
 from sqlalchemy.orm import Session
 
+from app.models.models import Imagen
+from app.schemas.imagen import ImagenCreate, ImagenUpdate
+
 def get_imagenes(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Imagen).offset(skip).limit(limit).all()
 
