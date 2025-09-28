@@ -40,6 +40,7 @@ class EmpresaAcceso(EmpresaBase):
 
 class UsuarioListado(BaseModel):
     username: str
-    nombre: str
+    email: str
+    perfiles: Optional[str] = None   
     class Config:
         orm_mode = True           

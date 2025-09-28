@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
+from app.models.models import Propiedad
+from app.schemas.propiedad import PropiedadCreate, PropiedadUpdate
+
 
 # --- Propiedades ---
 def create_propiedad(db: Session, payload: PropiedadCreate) -> Propiedad:

@@ -140,7 +140,7 @@ def get_lista(db: Session) -> List[UsuarioList]:
         func.concat(Usuario.nombres, ' ', Usuario.apellidos).label("nombreCompleto")
     ).filter(Usuario.estado == True).all()
 
-    return [UsuarioList(id=r.id, nombreCompleto=r.nombreCompleto) for r in datos]
+    return [UsuarioList(id=r.id, nombreCompleto=r.nombreCompleto) for r in data]
 
 
 # ===============================

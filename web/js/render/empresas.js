@@ -65,7 +65,7 @@ function cargarEmpresas() {
         <td>
           <!-- Botón tipo switch -->
           <button class="btn btn-sm ${item.estado ? 'btn-success' : 'btn-danger'} btn-estado" 
-            data-id-empresa="${item.usuario_id}" data-id-usuario="${item.usuario_id}" title="${item.estado ? 'Desactivar' : 'Activar'}">
+            data-id="${item.id}" title="${item.estado ? 'Desactivar' : 'Activar'}">
             <i class="fas ${item.estado ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
           </button>           
           <!-- Botón guardar -->
@@ -84,41 +84,52 @@ function cargarEmpresas() {
   $("#tableBody").html(rows.join(""));
 
   // Asigna eventos a los toggles
-  $(".toggle-switch").on("change", function () {
-    const id = $(this).data("id");
-    const nuevoEstado = $(this).is(":checked");
-    cambiarEstado(id, nuevoEstado);
+$(".btn-estado").on("click", function () {
+  const id = $(this).data("id");
+  const btn = $(this);
+  const icon = btn.find("i");
 
-    // const label = $(this).siblings("label");
-    // label.text(nuevoEstado ? "Activo" : "Inactivo");
-  });
+  const estadoActual = icon.hasClass("fa-toggle-on");
+  const nuevoEstado = !estadoActual;
+
+  cambiarEstado(id, nuevoEstado);
+});
 }
 
-
 function cambiarEstado(id, nuevoEstado) {
-  const url = `empresa/${id}`; // ✅ Aquí corregido (ya no es array)
-
+  const url = `empresa/${id}`;
   const empresa = {
-    estado: !!nuevoEstado, // ✅ Forzamos a booleano
+    estado: !!nuevoEstado,
   };
-  let resultado = callApi("PUT", url, empresa)
+
+  callApi("PUT", url, empresa)
     .done(function (response) {
       if (response.respuesta) {
-        const btn = $(`button.toggle-estado[data-id="${id}"]`);
+        const row = $(`button.guardar-fila[data-id="${id}"]`).closest("tr");
+        const btn = row.find(".btn-estado");
+        const icon = btn.find("i");
+
+        // Cambiar clase del botón
         btn
-          .toggleClass("btn-success", nuevoEstado)
-          .toggleClass("btn-secondary", !nuevoEstado)
-          .text(nuevoEstado ? "Activo" : "Inactivo")
-          .attr("onclick", `cambiarEstado(${id}, ${!nuevoEstado})`);
-        showInfo("Cambios correctamente guardados");
+          .removeClass("btn-success btn-danger")
+          .addClass(nuevoEstado ? "btn-success" : "btn-danger")
+          .attr("title", nuevoEstado ? "Desactivar" : "Activar");
+
+        // Cambiar clase del ícono
+        icon
+          .removeClass("fa-toggle-on fa-toggle-off")
+          .addClass(nuevoEstado ? "fa-toggle-on" : "fa-toggle-off");
+
+        showInfo("Estado actualizado correctamente");
       } else {
-        showWarning("no se puede traer la información de menus");
+        showWarning("No se pudo actualizar el estado");
       }
     })
     .fail(function () {
       showDanger("No se puede conectar con el servidor");
     });
 }
+
 
 function abrirModal(id = null) {
   if (id) {
@@ -139,7 +150,8 @@ function abrirModal(id = null) {
         }
 
         if(usuarios){
-          console.log(usuarios);
+          cargarUsuarios(usuarios);
+
         }
 
 
@@ -181,17 +193,59 @@ async function cargarModulos(){
     }
 };
 
-async function getEmpresaModulo(empresa){
-  let data = [];
-  await callApi('GET', `empresamodulo/empresa/${empresa}`, undefined)
-    .done(function(response) {
-        data = response.data;
-    })
-    .fail(function() {
-        showDanger("No se puede conectar con el servidor");          
-    });
-    return datos;
+async function cargarUsuarios(data) {
+  console.log("Usuarios recibidos:", data);
+
+  const $container = $("#usuariosContainer");
+  $container.empty(); // Limpia el contenedor antes de agregar contenido
+
+  if (!Array.isArray(data) || data.length === 0) {
+    $container.html('<p class="text-muted">No hay usuarios disponibles.</p>');
+    return;
+  }
+
+  // Construir la tabla
+  let html = `
+    <table class="table table-sm table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Perfiles</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  data.forEach(usuario => {
+    html += `
+      <tr>
+        <td>${usuario.username || '-'}</td>
+        <td>${usuario.perfiles || '-'}</td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
+
+  $container.html(html);
+  console.log(html);
 }
+
+
+  async function getEmpresaModulo(empresa){
+    let data = [];
+    await callApi('GET', `empresamodulo/empresa/${empresa}`, data)
+      .done(function(response) {
+        data = response.data;
+      })
+      .fail(function() {
+          showDanger("No se puede conectar con el servidor");          
+      });
+      return data;
+  }
 
 function guardarEmpresa(empresaData = null, empresaId = null) {
     const id = empresaId ?? $("#empresaId").val();

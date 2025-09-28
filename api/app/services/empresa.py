@@ -1,7 +1,7 @@
 from typing import List
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
-from app.models.models import Empresa, EmpresaUsuarioRol, Usuario
+from app.models.models import Empresa, EmpresaUsuarioRol, Rol, Usuario
 from app.schemas.empresa import EmpresaAcceso, EmpresaCreate, EmpresaList, EmpresaOut, EmpresaUpdate, UsuarioListado
 
 
@@ -73,7 +73,7 @@ def delete(db: Session, empresa_id: int) ->  EmpresaOut:
 
 def get_lista(db: Session) ->  EmpresaList:
     data = db.query(Empresa).filter(Empresa.estado == True).order_by(Empresa.nombre).all()
-    return [EmpresaList.from_orm(emp) for emp in datos]
+    return [EmpresaList.from_orm(emp) for emp in data]
 
 
 def get_lista_usuarios(db: Session, empresa_id: int) -> List[UsuarioListado]:
@@ -92,10 +92,30 @@ def get_lista_usuarios(db: Session, empresa_id: int) -> List[UsuarioListado]:
         # Paso 3: Construir lista de UsuarioListado
         return [
             UsuarioListado(
-                username=u.username,
-                nombre=f"{u.nombres} "
+                username = u.username,
+                email = u.email,
+                perfiles = get_listado_perfiles(db, empresa_id, u.id)            
             ) for u in usuarios
         ]
     except Exception as e:
         print(f"Error en get_lista_usuarios: {e}")
         raise
+
+def get_listado_perfiles(db: Session, empresa_id: int, usuario_id: int):
+        subquery = db.query(EmpresaUsuarioRol.id_rol)\
+                     .filter(
+                         and_(EmpresaUsuarioRol.id_empresa == empresa_id, EmpresaUsuarioRol.id_usuario == usuario_id))\
+                     .all()
+        id_roles = [r[0] for r in subquery]  # Desempaquetar correctamente
+
+        if not id_roles:
+            return []
+
+        # Paso 2: Obtener los nombres de los roles
+        roles = db.query(Rol.nombre)\
+                .filter(Rol.id.in_(id_roles))\
+                .all()
+
+        nombres_roles = [r.nombre for r in roles]  # Extraer nombres
+
+        return ", ".join(nombres_roles)

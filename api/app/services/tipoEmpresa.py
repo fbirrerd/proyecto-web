@@ -42,7 +42,7 @@ def update(db: Session, id: int, data: TipoEmpresaUpdate) -> TipoEmpresaOut:
     except Exception as e:
         db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail=f"Error al actualizar: {str(e)}"
         )
 
@@ -50,8 +50,8 @@ def update(db: Session, id: int, data: TipoEmpresaUpdate) -> TipoEmpresaOut:
 
 def get_lista(db: Session) ->  TipoEmpresaList:
     data = db.query(TipoEmpresa).filter(TipoEmpresa.estado == True).all()
-    return [TipoEmpresaList.from_orm(emp) for emp in datos]
+    return [TipoEmpresaList.from_orm(emp) for emp in data]
 
 def get_lista_empresas_x_tipo(id_tipo_empresa: int,db: Session) ->  EmpresasOut:
     data = db.query(Empresa).filter(Empresa.id_tipo_empresa==id_tipo_empresa).all()
-    return [EmpresasOut.from_orm(emp) for emp in datos]
+    return [EmpresasOut.from_orm(emp) for emp in data]

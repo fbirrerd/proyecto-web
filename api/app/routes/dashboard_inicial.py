@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from api.app.schemas.respond import objRespuesta
+from app.schemas.respond import objRespuesta
 from app.database import get_db
 from app.schemas import dashboard_inicial
 from app.schemas.dashboard_inicial import (

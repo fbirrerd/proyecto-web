@@ -118,7 +118,10 @@ def obtener_id_nombre_empresas(db: Session = Depends(get_db)):
 def obtener_lista_usuarios_x_empresa(empresa_id:int, db: Session = Depends(get_db)):
     try:
         lista = get_lista_usuarios(db, empresa_id)
-        return objRespuesta(respuesta = True, data=lista) 
+        return objRespuesta(
+            respuesta = True, 
+            data=lista
+        ) 
     except Exception as e:
         return objRespuesta(
             respuesta = False,

@@ -74,7 +74,7 @@ function LoadMenu(menuJson, idPadre, idContainer) {
     let data = getHijosOrdenados(menuJson, idPadre);
     let menuHTML = "";
     let urlInicio = localStorage.getItem('paginaInicio');
-    if(datos.length!=0){
+    if(data.length!=0){
         menuHTML = `<ul class="list-unstyled components mb-5">`;
         //INICIO
         menuHTML += `
@@ -86,7 +86,8 @@ function LoadMenu(menuJson, idPadre, idContainer) {
                    class="menu-link">
                    <i class="fas fa-solid fa-dashboard fa-fw me-2"></i> Dashboard
                 </a>
-            </li>`;        datos.forEach(nodo => {
+            </li>`;        
+            data.forEach(nodo => {
             let identificadorMenuHijo = `submenu-${nodo.id}`;
             if(tieneHijos(menuJson,nodo.id)){
                 menuHTML += `<li>
@@ -117,7 +118,7 @@ function loadSubMenu(menuJson, idPadre, identificadorMenuHijo) {
 
 
     let strPadre = "";
-    datos.forEach(nodo => {
+    data.forEach(nodo => {
         let identificadorMenuHijo = `submenu-${nodo.id}`;
 
         if(tieneHijos(menuJson,nodo.id)){

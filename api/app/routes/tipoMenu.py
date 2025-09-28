@@ -31,7 +31,7 @@ def read_tipos_menu(db: Session = Depends(get_db)):
         data = get_all(db=db)
         return objRespuesta(
             respuesta = True, 
-            data=usuarios
+            data = data
         )
     except Exception as e:
         return objRespuesta(
@@ -88,4 +88,7 @@ def obtener_menus_por_tipo(id: int, db: Session = Depends(get_db)):
         lista = get_lista_menus_x_tipo(id, db)
         return objRespuesta(respuesta = True, data=lista)
     except Exception as e:
-        return objRespuesta(respuesta = False, mensaje=f"Error al obtener menús por tipo: {str(e)}", data=[])
+        return objRespuesta(
+            respuesta = False, 
+            errorMensaje = f"Error al obtener menús por tipo: {str(e)}",
+            errorNum = 500)

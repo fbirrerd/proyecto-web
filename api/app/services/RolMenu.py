@@ -90,13 +90,10 @@ def set_relaciones(db: Session, obj: ObjetoRelaciones) -> objRespuesta:
     except Exception as e:
         db.rollback()
         return objRespuesta(
-            respuesta= True,
-            data = { 
-                    "status_code": 500, 
-                    "detail": "Error al guardar relaciones. Detalles: " + str(e)
-                    }
-            )        
-
+            respuesta = True,
+            errorNum = 500,
+            errorMensaje = "Error al guardar relaciones. Detalles: " + str(e)
+        )
        
   
 
