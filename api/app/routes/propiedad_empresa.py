@@ -27,10 +27,17 @@ def list_propiedades_empresa(empresa_id: Optional[int] = None, db: Session = Dep
 
 @router.get("/empresa/{id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def get_propiedad_empresa(id: int, db: Session = Depends(get_db)):
-    obj = get_propiedad_empresa(db, id)
-    if not obj:
-        raise HTTPException(404, "PropiedadEmpresa no encontrada")
-    return obj
+    try:
+        obj = get_propiedad_empresa(db, id)
+        if not obj:
+            raise HTTPException(404, "PropiedadEmpresa no encontrada")
+        return obj
+    except Exception as e:
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al crear registro: {str(e)}"
+        )
 
 @router.put("/empresa/{id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def update_propiedad_empresa(id: int, payload: PropiedadEmpresaUpdate, db: Session = Depends(get_db)):

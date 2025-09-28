@@ -104,14 +104,14 @@ def get_lista_menu(db: Session)  -> objRespuesta:
         menu_pydantic_list = [MenuAcceso.from_orm(Menu) for Menu in MenuList]
         
         return objRespuesta(
-            respuesta=True,
+            respuesta = True,
             data=menu_pydantic_list
         )        
         
     except Exception as e:
         # Captura de errores genéricos
         return objRespuesta(
-            respuesta=False,
+            respuesta = False,
             data={"error": str(e)}
         ) 
     
@@ -121,14 +121,14 @@ def actualizar_menu(db: Session, menu: MenuUpdate)  -> objRespuesta:
         valor = editar_menu(db, menu.id, menu.nombre, menu.icono, menu.url, menu.id_padre,None,menu.tipo, None)
         if valor:
             return objRespuesta(
-                respuesta=True,
+                respuesta = True,
                 # data=getListMenuOrdenada(db, None, None)
             )
                         
     except Exception as e:
         # Captura de errores genéricos
         return objRespuesta(
-            respuesta=False,
+            respuesta = False,
             data={"error": str(e)}
         )         
         

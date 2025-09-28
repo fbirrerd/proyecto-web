@@ -19,9 +19,9 @@ def get_db():
 def obtener_menus_generales(db: Session = Depends(get_db)):  
     try:
         data = getListMenuOrdenada(db, None, None)
-        return objRespuesta(respuesta=True, data=data)
+        return objRespuesta(respuesta = True, data=data)
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al obtener menús: {str(e)}")
+        return objRespuesta(respuesta = False, data=f"Error al obtener menús: {str(e)}")
 
 
 
@@ -30,13 +30,13 @@ def actualizar_datos_menu(menu: MenuUpdate, db: Session = Depends(get_db)):
     try:
         respuesta = actualizar_menu(db, menu)
         if respuesta:
-            return objRespuesta(respuesta=True, data=respuesta)
+            return objRespuesta(respuesta = True, data=respuesta)
         return objRespuesta(
-            respuesta=False,
+            respuesta = False,
             data={"numero": 401, "mensaje": "Problema al actualizar los datos del menú"}
         )
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al actualizar menú: {str(e)}")
+        return objRespuesta(respuesta = False, data=f"Error al actualizar menú: {str(e)}")
 
 @router.put("/cambiar-estado", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def cambiar_estado_menu(menu: MenuEstadoUpdate, db: Session = Depends(get_db)):
@@ -44,30 +44,38 @@ def cambiar_estado_menu(menu: MenuEstadoUpdate, db: Session = Depends(get_db)):
         respuesta = actualizar_estado(db, menu.id, menu.estado)
         if respuesta:
             return objRespuesta(
-                respuesta=True,
+                respuesta = True,
                 data={"actualiza": respuesta}
             )
         return objRespuesta(
-            respuesta=False,
+            respuesta = False,
             data={"numero": 401, "mensaje": "Problema al actualizar el estado"}
         )
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al cambiar estado del menú: {str(e)}")
+        return objRespuesta(respuesta = False, data=f"Error al cambiar estado del menú: {str(e)}")
     
 @router.post("/lista", response_model=objRespuesta)
 def obtener_menus_x_tipo(filtro: MenuFiltroPlus, db: Session = Depends(get_db)):  
     try:
         data = obtener_menu(db,filtro)
-        return objRespuesta(respuesta=True, data=data)
+        return objRespuesta(respuesta = True, data=data)
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al obtener menús: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al crear registro: {str(e)}"
+        )
 
 
 @router.post("/modulos", response_model=objRespuesta)
 def obtener_menus_x_tipo(filtro: MenuFiltroPlus, db: Session = Depends(get_db)):  
     try:
         data = obtener_menu_modulo(db,filtro)
-        return objRespuesta(respuesta=True, data=data)
+        return objRespuesta(respuesta = True, data=data)
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al obtener menús: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al crear registro: {str(e)}"
+        )
 

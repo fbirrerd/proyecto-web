@@ -12,7 +12,14 @@ router = APIRouter(tags=["VademecumLaboratorio"])
 # ---- Laboratorios ----
 @router.post("/laboratorios", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def api_create_laboratorio(payload: LaboratorioCreate, db: Session = Depends(get_db)):
-    return create_laboratorio(db, payload)
+    try:
+        return create_laboratorio(db, payload)
+    except Exception as e:
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al crear registro: {str(e)}"
+        )
 
 @router.get("/laboratorios", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def api_list_laboratorios(

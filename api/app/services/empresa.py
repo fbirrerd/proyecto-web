@@ -72,7 +72,7 @@ def delete(db: Session, empresa_id: int) ->  EmpresaOut:
     return obj
 
 def get_lista(db: Session) ->  EmpresaList:
-    datos = db.query(Empresa).filter(Empresa.estado == True).order_by(Empresa.nombre).all()
+    data = db.query(Empresa).filter(Empresa.estado == True).order_by(Empresa.nombre).all()
     return [EmpresaList.from_orm(emp) for emp in datos]
 
 

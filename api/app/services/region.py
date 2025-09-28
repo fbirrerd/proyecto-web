@@ -45,13 +45,13 @@ def delete(db: Session, item_id: int) -> RegionBase:
     return db_item
 
 def create(db: Session, modulo: RegionCreate):
-    datos = Region(**modulo.dict())
+    data = Region(**modulo.dict())
     db.add(datos)
     db.commit()
     db.refresh(datos)
 
 def update(db: Session, modulo_id: int, modulo: RegionUpdate) -> RegionBase:
-    datos = get_by_id(db, modulo_id)
+    data = get_by_id(db, modulo_id)
     if datos:
         for key, value in modulo.dict(exclude_unset=True).items():
             setattr(datos, key, value)

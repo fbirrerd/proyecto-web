@@ -20,14 +20,19 @@ def get_db():
 def obtener_roles_empresa_usuario(db: Session = Depends(get_db)):
     try:
         data = obtener_roles_por_empresa_usuario(db)
-        return objRespuesta(respuesta=True, data=data)
+        return objRespuesta(respuesta = True, data=data)
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al obtener permisos: {str(e)}")
+        return objRespuesta(respuesta = False, data=f"Error al obtener permisos: {str(e)}")
 
-# @router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
-# def guardar_relacion(oCreate: EmpresaUsuarioRolCreate, db: Session = Depends(get_db)):
-#     try:
-#         resultado = setEmpresaUsuario(db, oCreate.id_empresa, oCreate.id_usuario)
-#         return objRespuesta(respuesta=True, data=resultado)
-#     except Exception as e:
-#         return objRespuesta(respuesta=False, data=f"Error al guardar relación: {str(e)}")
+
+@router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
+def guardar_relacion(oCreate: EmpresaUsuarioRolCreate, db: Session = Depends(get_db)):
+    try:
+        resultado = setEmpresaUsuario(db, oCreate.id_empresa, oCreate.id_usuario)
+        return objRespuesta(respuesta = True, data=resultado)
+    except Exception as e:
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al crear registro: {str(e)}"
+        )

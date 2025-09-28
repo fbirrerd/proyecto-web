@@ -22,10 +22,10 @@ def get_db():
 # def obtener_lista_vademecum( id_empresa: int, db: Session = Depends(get_db)):
 #     try:
 #         lista = get_vademecum_cache(db,id_empresa)
-#         return objRespuesta(respuesta=True, data=lista)
+#         return objRespuesta(respuesta = True, data=lista)
 #     except Exception as e:
 #         return objRespuesta(
-#             respuesta=False,
+#             respuesta = False,
 #             mensaje=f"Error al obtener la lista de empresas: {str(e)}",
 #             data=[]
 #         )
@@ -37,9 +37,9 @@ def get_medicamentos(id_empresa: int, db: Session = Depends(get_db)):
         medicamentos = get_vademecum(db, id_empresa)
         if not medicamentos:
             raise HTTPException(status_code=404, detail="No medicamentos found")
-        return objRespuesta(respuesta=True, data=medicamentos)
+        return objRespuesta(respuesta = True, data=medicamentos)
     except Exception as e:
         return objRespuesta(
-            respuesta=False,
+            respuesta = False,
             data=f"Error al obtener la lista de empresas: {str(e)}"
         )

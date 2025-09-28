@@ -135,7 +135,7 @@ def get_lista(db: Session) -> List[UsuarioList]:
     """
     Retorna lista de usuarios activos (para selects).
     """
-    datos = db.query(
+    data = db.query(
         Usuario.id,
         func.concat(Usuario.nombres, ' ', Usuario.apellidos).label("nombreCompleto")
     ).filter(Usuario.estado == True).all()

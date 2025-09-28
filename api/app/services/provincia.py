@@ -45,14 +45,14 @@ def delete(db: Session, item_id: int) -> ProvinciaBase:
     return db_item
 
 def create(db: Session, modulo: ProvinciaCreate):
-    datos = Provincia(**modulo.dict())
+    data = Provincia(**modulo.dict())
     db.add(datos)
     db.commit()
     db.refresh(datos)
     return datos
 
 def update(db: Session, modulo_id: int, modulo: ProvinciaUpdate) -> ProvinciaBase:
-    datos = get_by_id(db, modulo_id)
+    data = get_by_id(db, modulo_id)
     if datos:
         for key, value in modulo.dict(exclude_unset=True).items():
             setattr(datos, key, value)

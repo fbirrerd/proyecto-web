@@ -16,7 +16,6 @@ class Nacionalidad(NacionalidadBase):
 
 
 class NacionalidadUpdate(NacionalidadBase):
-    id: int
 
     class Config:
         orm_mode = True

@@ -49,9 +49,9 @@ def update(db: Session, id: int, data: TipoEmpresaUpdate) -> TipoEmpresaOut:
     return obj
 
 def get_lista(db: Session) ->  TipoEmpresaList:
-    datos = db.query(TipoEmpresa).filter(TipoEmpresa.estado == True).all()
+    data = db.query(TipoEmpresa).filter(TipoEmpresa.estado == True).all()
     return [TipoEmpresaList.from_orm(emp) for emp in datos]
 
 def get_lista_empresas_x_tipo(id_tipo_empresa: int,db: Session) ->  EmpresasOut:
-    datos = db.query(Empresa).filter(Empresa.id_tipo_empresa==id_tipo_empresa).all()
+    data = db.query(Empresa).filter(Empresa.id_tipo_empresa==id_tipo_empresa).all()
     return [EmpresasOut.from_orm(emp) for emp in datos]

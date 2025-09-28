@@ -23,8 +23,9 @@ def cambiarPassword(user: UsuarioCambioPassword, request: Request, db: Session =
         return respuesta
     # Si las credenciales no coinciden
     return objRespuesta(
-        respuesta=False,
-        data={"numero":401, "mensaje":"Problema al actualizar la clave"}
+        respuesta = False,
+        errorNum=500,
+        errorMensaje="Problema al actualizar la clave"
     )    
 
 
@@ -35,9 +36,9 @@ def crear(user: UsuarioLogin, request: Request, db: Session = Depends(get_db)):
         return respuesta
     # Si las credenciales no coinciden
     return objRespuesta(
-        respuesta=False,
-        status_code=401,
-        error="Problema con las credenciales"
+        respuesta = False,
+        errorNum=401,
+        errorMensaje="Error con las credenciales"
     )
     
     
@@ -48,8 +49,8 @@ def crear(login: LoginReload, request: Request, db: Session = Depends(get_db)):
         return respuesta
     # Si las credenciales no coinciden
     return objRespuesta(
-        respuesta=False,
-        status_code=401,
-        error="Problema con la validación del Token"
+        respuesta = False,
+        errorNum=401,
+        errorMensaje="Problema con la validación del token"
     )
        

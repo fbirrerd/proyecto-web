@@ -18,37 +18,56 @@ def get_db():
 @router.get("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def read_provincias(db: Session = Depends(get_db)):
     try:
-        datos = get_all(db)
+        data = get_all(db)
         return objRespuesta(
-            respuesta=True,
-            data=datos
+            respuesta = True,
+            data = data
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener provincias: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al obtener registros: {str(e)}"
+        )
+
 
 @router.get("/{id_provincia}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def read_provincia(id_provincia: int, db: Session = Depends(get_db)):
     try:
-        db_provincia = get_by_id(db, id_provincia)
-        if db_provincia is None:
+        data = get_by_id(db, id_provincia)
+        if data is None:
             raise HTTPException(status_code=404, detail="Provincia no encontrada")
         return objRespuesta(
-            respuesta=True,
-            data=db_provincia
+            respuesta = True,
+            data=data
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener provincia: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al obtener registros: {str(e)}"
+        )
 
 @router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def create_provincia(provincia: ProvinciaCreate, db: Session = Depends(get_db)):
     try:
-        datos = create(db, provincia)
+        data = create(db, provincia)
         return objRespuesta(
-            respuesta=True,
-            data=datos
+            respuesta = True,
+            data = data
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al crear provincia: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al crear registros: {str(e)}"
+        )
+    except Exception as e:
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al crear registros: {str(e)}"
+        )
 
 
 @router.put("/{id_provincia}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
@@ -58,8 +77,18 @@ def update_provincia(id_provincia: int, obj: ProvinciaUpdate, db: Session = Depe
         if db_provincia is None:
             raise HTTPException(status_code=404, detail="Provincia no encontrada para actualizar")
         return objRespuesta(
-            respuesta=True,
+            respuesta = True,
             data=db_provincia
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al actualizar provincia: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al actualizar registros: {str(e)}"
+        )
+    except Exception as e:
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al actualizar registros: {str(e)}"
+        )

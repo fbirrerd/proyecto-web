@@ -71,7 +71,7 @@ function LoadMenu(menuJson, idPadre, idContainer) {
     if(menuJson==null){
         return
     }
-    let datos = getHijosOrdenados(menuJson, idPadre);
+    let data = getHijosOrdenados(menuJson, idPadre);
     let menuHTML = "";
     let urlInicio = localStorage.getItem('paginaInicio');
     if(datos.length!=0){
@@ -110,7 +110,7 @@ function LoadMenu(menuJson, idPadre, idContainer) {
 
 function loadSubMenu(menuJson, idPadre, identificadorMenuHijo) {
 
-    let datos = getHijosOrdenados(menuJson, idPadre);
+    let data = getHijosOrdenados(menuJson, idPadre);
 
     // console.log("datos", identificadorMenuHijo, datos);
     let menuHTML = `<ul class="collapse list-unstyled" id="${identificadorMenuHijo}">`

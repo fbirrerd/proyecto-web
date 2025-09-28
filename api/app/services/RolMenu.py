@@ -36,10 +36,10 @@ def getDatosRol(db: Session, UsuarioId: int, EmpresaId: int):
         return None
 
 def get_RolMenu(db: Session)  -> objRespuesta:
-    datos = db.query(MenuRol).all()
+    data = db.query(MenuRol).all()
     return objRespuesta(
-        respuesta=True,
-        data=datos
+        respuesta = True,
+        data = data
     )
     
 

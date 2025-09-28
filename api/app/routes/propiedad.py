@@ -17,11 +17,43 @@ def get_db():
 # --- Propiedades ---
 @router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def create_propiedad(payload: PropiedadCreate, db: Session = Depends(get_db)):
-    return create_propiedad(db, payload)
+    try:
+        return create_propiedad(db, payload)
+    except Exception as e:
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al crear registro: {str(e)}"
+        )
+    try:
+        data = get_all(db=db)
+        return objRespuesta(
+            respuesta = True, 
+            data=usuarios
+        )
+    except Exception as e:
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al obtener registros: {str(e)}"
+        )
+        
 
 @router.get("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
-def list_propiedades(db: Session = Depends(get_db)):
+def read_propiedades(db: Session = Depends(get_db)):
     return list_propiedades(db)
+    try:
+        data = get_all(db=db)
+        return objRespuesta(
+            respuesta = True, 
+            data=usuarios
+        )
+    except Exception as e:
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al obtener registros: {str(e)}"
+        )
 
 @router.get("/{id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def get_propiedad(id: int, db: Session = Depends(get_db)):

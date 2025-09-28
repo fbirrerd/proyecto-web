@@ -50,9 +50,9 @@ def update(db: Session, id: int, data: TipoMenuUpdate) -> TipoMenuOut:
     return obj
 
 def get_lista(db: Session) ->  TipoMenuOut:
-    datos = db.query(TipoMenu).filter(TipoMenu.estado == True).all()
+    data = db.query(TipoMenu).filter(TipoMenu.estado == True).all()
     return [TipoMenuList.from_orm(emp) for emp in datos]
 
 def get_lista_menus_x_tipo(id_tipo_empresa: int,db: Session) ->  MenusOut:
-    datos = db.query(Menu).filter(Menu.id_tipo_empresa==id_tipo_empresa).all()
+    data = db.query(Menu).filter(Menu.id_tipo_empresa==id_tipo_empresa).all()
     return [MenusOut.from_orm(emp) for emp in datos]

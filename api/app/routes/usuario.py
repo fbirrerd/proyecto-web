@@ -33,10 +33,10 @@ def get_db():
 def obtener_lista_empresas(db: Session = Depends(get_db)):
     try:
         lista = get_lista(db)
-        return objRespuesta(respuesta=True, data=lista)
+        return objRespuesta(respuesta = True, data=lista)
     except Exception as e:
         return objRespuesta(
-            respuesta=False,
+            respuesta = False,
             mensaje=f"Error al obtener la lista de empresas: {str(e)}",
             data=[]
         )
@@ -48,22 +48,27 @@ def obtener_lista_empresas(db: Session = Depends(get_db)):
 def obtener_usuario_por_username(username: str, db: Session = Depends(get_db)):
     usuario = get_usuario_x_login(db, username)
     if not usuario:
-        return objRespuesta(respuesta=False, data="Usuario no encontrado")
-    return objRespuesta(respuesta=True, data=usuario)
+        return objRespuesta(respuesta = False, data="Usuario no encontrado")
+    return objRespuesta(respuesta = True, data=usuario)
 
 # -------------------------------
 # ENDPOINT: Listar todos los usuarios
 # -------------------------------
 @router.get("/", response_model=objRespuesta)
-def listar_usuarios(db: Session = Depends(get_db)):
+def read_usuarios(db: Session = Depends(get_db)):
     try:
         usuarios = get_usuarios(db)
-        return objRespuesta(respuesta=True, data=usuarios)
+        return objRespuesta(
+            respuesta = True, 
+            data=usuarios
+        )
     except Exception as e:
         return objRespuesta(
-            respuesta=False,
-            data={"mensaje": f"Error al listar usuarios: {str(e)}"}
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al obtener registros: {str(e)}"
         )
+
 
 # -------------------------------
 # ENDPOINT: Obtener un usuario por ID
@@ -72,8 +77,8 @@ def listar_usuarios(db: Session = Depends(get_db)):
 def obtener_usuario_por_id(usuario_id: int, db: Session = Depends(get_db)):
     usuario = get_usuario(db, usuario_id)
     if not usuario:
-        return objRespuesta(respuesta=False, data="Usuario no encontrado")
-    return objRespuesta(respuesta=True, data=usuario)
+        return objRespuesta(respuesta = False, data="Usuario no encontrado")
+    return objRespuesta(respuesta = True, data=usuario)
 
 # -------------------------------
 # ENDPOINT: Crear un nuevo usuario
@@ -82,9 +87,9 @@ def obtener_usuario_por_id(usuario_id: int, db: Session = Depends(get_db)):
 def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     try:
         result = salvar_usuario(db, usuario)
-        return objRespuesta(respuesta=True, data=result)
+        return objRespuesta(respuesta = True, data=result)
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al crear el usuario: {str(e)}")
+        return objRespuesta(respuesta = False, data=f"Error al crear el usuario: {str(e)}")
 
 # -------------------------------
 # ENDPOINT: Actualizar un usuario
@@ -94,10 +99,10 @@ def actualizar_usuario(usuario_id: int, datos: UsuarioUpdate, db: Session = Depe
     try:
         result = update_usuario(db, usuario_id, datos)
         if not result:
-            return objRespuesta(respuesta=False, data="Usuario no encontrado")
-        return objRespuesta(respuesta=True, data=result)
+            return objRespuesta(respuesta = False, data="Usuario no encontrado")
+        return objRespuesta(respuesta = True, data=result)
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al actualizar el usuario: {str(e)}")
+        return objRespuesta(respuesta = False, data=f"Error al actualizar el usuario: {str(e)}")
 
 # -------------------------------
 # ENDPOINT: Eliminar un usuario
@@ -106,8 +111,8 @@ def actualizar_usuario(usuario_id: int, datos: UsuarioUpdate, db: Session = Depe
 def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
     result = delete_usuario(db, usuario_id)
     if not result:
-        return objRespuesta(respuesta=False, data="Usuario no encontrado")
-    return objRespuesta(respuesta=True, mensaje="Usuario eliminado", data=[])
+        return objRespuesta(respuesta = False, data="Usuario no encontrado")
+    return objRespuesta(respuesta = True, mensaje="Usuario eliminado", data=[])
 
 # -------------------------------
 # ENDPOINT: Cambiar estado del usuario
@@ -116,9 +121,9 @@ def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
 def cambiar_estado_usuario(obj: UsuarioCambioEstado, db: Session = Depends(get_db)):
     try:
         respuesta = cambiar_estado(db, obj)
-        return objRespuesta(respuesta=True, data=respuesta)
+        return objRespuesta(respuesta = True, data=respuesta)
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al cambiar el estado: {str(e)}")
+        return objRespuesta(respuesta = False, data=f"Error al cambiar el estado: {str(e)}")
 
 # -------------------------------
 # ENDPOINT: Cambiar contraseña del usuario
@@ -127,6 +132,6 @@ def cambiar_estado_usuario(obj: UsuarioCambioEstado, db: Session = Depends(get_d
 def cambiar_clave_usuario(obj: UsuarioCambioClave, db: Session = Depends(get_db)):
     try:
         respuesta = cambiar_clave(db, obj)
-        return objRespuesta(respuesta=True, data=respuesta)
+        return objRespuesta(respuesta = True, data=respuesta)
     except Exception as e:
-        return objRespuesta(respuesta=False, data=f"Error al cambiar la password: {str(e)}")
+        return objRespuesta(respuesta = False, data=f"Error al cambiar la password: {str(e)}")

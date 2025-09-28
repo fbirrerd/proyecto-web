@@ -18,13 +18,17 @@ def get_db():
 @router.get("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def read_regions(db: Session = Depends(get_db)):
     try:
-        datos = get_all(db)
+        data = get_all(db)
         return objRespuesta(
-            respuesta=True,
-            data=datos
+            respuesta = True,
+            data = data
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener regiones: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al obtener los registros: {str(e)}"
+        )
 
 @router.get("/{region_id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def read_region(region_id: int, db: Session = Depends(get_db)):
@@ -33,22 +37,30 @@ def read_region(region_id: int, db: Session = Depends(get_db)):
         if db_region is None:
             raise HTTPException(status_code=404, detail="Región no encontrada")
         return objRespuesta(
-            respuesta=True,
+            respuesta = True,
             data=db_region
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener región: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al obtener el registro: {str(e)}"
+        )
 
 @router.post("/", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
 def create_region(region: RegionCreate, db: Session = Depends(get_db)):
     try:
-        datos = create(db, region)
+        data = create(db, region)
         return objRespuesta(
-            respuesta=True,
-            data=datos
+            respuesta = True,
+            data = data
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al crear región: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al crear registro: {str(e)}"
+        )
 
 
 @router.put("/{region_id}", response_model=objRespuesta, responses={400: {"model": objRespuesta}})
@@ -58,8 +70,12 @@ def update_region(region_id: int, obj: RegionUpdate, db: Session = Depends(get_d
         if db_region is None:
             raise HTTPException(status_code=404, detail="Región no encontrada para actualizar")
         return objRespuesta(
-            respuesta=True,
+            respuesta = True,
             data=db_region
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al actualizar región: {str(e)}")
+        return objRespuesta(
+            respuesta = False,
+            errorNum=500,
+            errorMensaje=f"Error al actualizar registro: {str(e)}"
+        )

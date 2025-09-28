@@ -182,10 +182,10 @@ async function cargarModulos(){
 };
 
 async function getEmpresaModulo(empresa){
-  let datos = [];
+  let data = [];
   await callApi('GET', `empresamodulo/empresa/${empresa}`, undefined)
     .done(function(response) {
-        datos = response.data;
+        data = response.data;
     })
     .fail(function() {
         showDanger("No se puede conectar con el servidor");          

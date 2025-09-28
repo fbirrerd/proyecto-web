@@ -58,5 +58,5 @@ def getDatosRol(db: Session, UsuarioId: int, EmpresaId: int):
         return None
     
 def get_lista(db: Session) ->  List[RolList]:
-    datos = db.query(Rol).filter(Rol.estado == True).all()
+    data = db.query(Rol).filter(Rol.estado == True).all()
     return [RolList.from_orm(r) for r in datos]
