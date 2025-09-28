@@ -125,7 +125,7 @@ function guardarFilaInline() {
   const payload = {
     id_empresa,
     id_usuario,
-    true,
+    True,
     roles: []
   };
 
