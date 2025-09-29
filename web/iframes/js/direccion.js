@@ -33,28 +33,35 @@
 $(document).ready(() => {
 --  // Cargar regiones
 
-  // Cambiar región
   $region.on('change', function(){
-    const rid = $(this).val();
-    $provincia.html('<option value="">Seleccione provincia</option>');
-    $comuna.html('<option value="">Seleccione comuna</option>');
-    if (rid && provinciasData[rid]) {
-      $.each(provinciasData[rid], function(_, p){
-        $provincia.append(`<option value="${p.id}">${p.nombre}</option>`);
-      });
-    }
+    const idRegion = parseInt($(this).val(), 10);
+    const provincias = provinciasData.filter(
+      item => item.id_region === idRegion
+    );
+
+    $provincia.empty().append('<option value="">Seleccione provincia</option>');
+    $comuna.empty().append('<option value="">Seleccione comuna</option>');
+
+    $.each(provincias, function(_, p){
+      $provincia.append(`<option value="${p.id}">${p.nombre}</option>`);
+    });
   });
 
-  // Cambiar provincia
   $provincia.on('change', function(){
-    const pid = $(this).val();
-    $comuna.html('<option value="">Seleccione comuna</option>');
-    if (pid && comunasData[pid]) {
-      $.each(comunasData[pid], function(_, c){
-        $comuna.append(`<option value="${c.id}">${c.nombre}</option>`);
-      });
-    }
+    alert("pasa por aca")
+    const idProvincia = parseInt($(this).val(), 10);
+    // OJO: aquí se filtra por id_provincia, no por id_region
+    const comunas = comunasData.filter(
+      item => item.id_provincia === idProvincia
+    );
+
+    $comuna.empty().append('<option value="">Seleccione comuna</option>');
+    $.each(comunas, function(_, c){
+      $comuna.append(`<option value="${c.id}">${c.nombre}</option>`);
+    });
   });
+
+
 
   // ========= Leaflet Mapa =========
   const defaultLat = -33.4489; // Santiago
